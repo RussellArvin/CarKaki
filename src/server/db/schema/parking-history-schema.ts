@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { createdAt, updatedAt } from "./schema-constants";
+import { createdAt, updatedAt, userId, carParkId } from "./schema-constants";
 import userSchema from "./user-schema";
 
 const parkingHistorySchema = pgTable(
@@ -8,8 +8,8 @@ const parkingHistorySchema = pgTable(
       id:text("id").primaryKey(),
       startDate: timestamp("start_date").notNull(),
       endDate: timestamp("end_date"),
-      carParkId: uuid("car_park_id").notNull(),
-      userId: uuid("user_id").notNull(),
+      carParkId,
+      userId,
       createdAt,
       updatedAt,
     }
