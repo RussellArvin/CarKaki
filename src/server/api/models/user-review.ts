@@ -16,14 +16,14 @@ export class UserReview {
     }
 
     
-    public Delete(): UserReview {
+    public delete(): UserReview {
         return new UserReview({
             ...this.props,
             deletedAt: new Date()
         })
     }
 
-    public Update(rating: number, description: string): UserReview {
+    public dpdate(rating: number, description: string): UserReview {
         return new UserReview({
             ...this.props,
             rating,

@@ -13,7 +13,7 @@ export class UserFavourite {
     }
 
     
-    public Delete(): UserFavourite {
+    public delete(): UserFavourite {
         return new UserFavourite({
             ...this.props,
             deletedAt: new Date()

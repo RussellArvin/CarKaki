@@ -16,7 +16,7 @@ export class UserProfile {
         return { ...this.props };
     }
 
-    public Delete(): UserProfile {
+    public delete(): UserProfile {
         return new UserProfile({
             ...this.props,
             deletedAt: new Date()
