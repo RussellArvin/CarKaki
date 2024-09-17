@@ -1,12 +1,12 @@
 import CarParkAgency from "../types/car-park-agency"
+import Location from "../types/location"
 import LotType from "../types/lot-type"
 
 interface CarParkProps {
     id: string
     area: string
     development: string
-    latitude: number
-    longitude: number
+    location: Location
     availableLots: number
     lotType: LotType
     agency: CarParkAgency
