@@ -1,6 +1,5 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt, userId, carParkId } from "./schema-constants";
-import userSchema from "./user-schema";
 
 const parkingHistorySchema = pgTable(
     "parking_history",

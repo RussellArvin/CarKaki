@@ -1,4 +1,4 @@
-import { pgTable, primaryKey, uuid } from "drizzle-orm/pg-core";
+import { pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { createdAt, deletedAt, carParkId, userId } from "./schema-constants";
 
 const userFavouriteSchema = pgTable(
