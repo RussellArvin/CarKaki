@@ -1,7 +1,7 @@
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt, deletedAt } from "./schema-constants";
 
-const schema = pgTable(
+const userSchema = pgTable(
     "user",
     {
       id:text("id").primaryKey(),
@@ -16,4 +16,4 @@ const schema = pgTable(
     }
 );
 
-export default schema
+export default userSchema

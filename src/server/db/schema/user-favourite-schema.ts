@@ -1,7 +1,7 @@
 import { pgTable, uuid } from "drizzle-orm/pg-core";
 import { createdAt, deletedAt } from "./schema-constants";
 
-const schema = pgTable(
+const userFavouriteSchema = pgTable(
     "user_favourite",
     {
       carParkId: uuid("car_park_id").notNull(),
@@ -11,4 +11,4 @@ const schema = pgTable(
     }
 );
 
-export default schema
+export default userFavouriteSchema

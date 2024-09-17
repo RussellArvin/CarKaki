@@ -1,7 +1,8 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt } from "./schema-constants";
+import userSchema from "./user-schema";
 
-const schema = pgTable(
+const parkingHistorySchema = pgTable(
     "parking_history",
     {
       id:text("id").primaryKey(),
@@ -14,4 +15,4 @@ const schema = pgTable(
     }
 );
 
-export default schema
+export default parkingHistorySchema
