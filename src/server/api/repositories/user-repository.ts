@@ -1,5 +1,69 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { UserProfile } from "../models/user-profile";
+import userSchema from "~/server/db/schema/user-schema";
+import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 
 export class UserRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
+
+    public async save(entity: UserProfile){
+        try{
+            await this.db
+            .insert(userSchema)
+            .values(entity.getValue())
+
+            return;
+        } catch(err){
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async update(entity: UserProfile){
+        try{
+            await this.db.update(userSchema)
+            .set({
+                ...entity.getValue(),
+                updatedAt: new Date()
+            })
+            .where(eq(userSchema.id,entity.getValue().id))
+        } catch(err){
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async findOneByUserId(userId: string): Promise<UserProfile> {
+        try{
+            const userData = await this.db
+                .select()
+                .from(userSchema)
+                .where(eq(userSchema.id,userId))
+                .limit(1)
+
+            if(!userData[0]) throw new TRPCError({
+                code:"NOT_FOUND",
+                message:"Unable to find user"
+            })
+
+            return new UserProfile({
+                ...userData[0]
+            })
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
 }
