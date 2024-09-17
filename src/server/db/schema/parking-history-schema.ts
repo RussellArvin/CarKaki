@@ -5,7 +5,7 @@ import userSchema from "./user-schema";
 const parkingHistorySchema = pgTable(
     "parking_history",
     {
-      id:text("id").primaryKey(),
+      id:uuid("id").primaryKey(),
       startDate: timestamp("start_date").notNull(),
       endDate: timestamp("end_date"),
       carParkId,
