@@ -6,7 +6,7 @@ const userSchema = pgTable(
     "user",
     {
       id:text("id").primaryKey(),
-      firstname: text("first_name").notNull(),
+      firstName: text("first_name").notNull(),
       lastName: text("last_name").notNull(),
       email:text("email").unique().notNull(),
       homeCarParkId: uuid("home_car_park_id").references(() => carParkSchema.id),
