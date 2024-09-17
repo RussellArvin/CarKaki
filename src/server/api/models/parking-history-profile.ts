@@ -1,4 +1,5 @@
 interface ParkingHistoryProps {
+    id: string,
     startDate: Date
     endDate: Date
     carParkId: string
