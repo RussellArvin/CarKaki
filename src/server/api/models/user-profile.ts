@@ -6,8 +6,8 @@ interface UserProfileProps {
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;
-    homeCarParkId: string;
-    workCarParkId: string;
+    homeCarParkId: string | null;
+    workCarParkId: string | null;
 }
 
 export class UserProfile {
