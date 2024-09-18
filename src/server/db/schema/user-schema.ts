@@ -1,4 +1,4 @@
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt, deletedAt } from "./schema-constants";
 import carParkSchema from "./car-park-schema";
 
@@ -9,6 +9,8 @@ const userSchema = pgTable(
       firstName: text("first_name").notNull(),
       lastName: text("last_name").notNull(),
       email:text("email").unique().notNull(),
+      isDarkMode: boolean("is_dark_mode").notNull().default(false),
+      isNotificationsEnabled: boolean("is_notifications_enabled").notNull().default(false),
       homeCarParkId: uuid("home_car_park_id").references(() => carParkSchema.id),
       workCarParkId: uuid("work_car_park_id").references(() => carParkSchema.id),
       createdAt,

@@ -3,6 +3,8 @@ interface UserProfileProps {
     email: string;
     firstName: string;
     lastName: string;
+    isDarkMode: boolean;
+    isNotificationsEnabled: boolean
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;
@@ -44,5 +46,19 @@ export class UserProfile {
             ...this.props,
             workCarParkId: carParkId
         });
+    }
+
+    public setNotifications(isNotificationsEnabled: boolean): UserProfile {
+        return new UserProfile({
+            ...this.props,
+            isNotificationsEnabled,
+        })
+    }
+
+    public setDarkMode(isDarkMode: boolean) : UserProfile {
+        return new UserProfile({
+            ...this.props,
+            isDarkMode,
+        })
     }
 }
