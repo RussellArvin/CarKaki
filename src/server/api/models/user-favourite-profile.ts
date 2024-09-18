@@ -5,7 +5,7 @@ interface UserFavouriteProps {
     deletedAt: Date | null
 }
 
-export class UserFavourite {
+export class UserFavouriteProfile {
     constructor(private readonly props: Readonly<UserFavouriteProps>) {}
 
     public getValue(): UserFavouriteProps {
@@ -13,8 +13,8 @@ export class UserFavourite {
     }
 
     
-    public delete(): UserFavourite {
-        return new UserFavourite({
+    public delete(): UserFavouriteProfile {
+        return new UserFavouriteProfile({
             ...this.props,
             deletedAt: new Date()
         })

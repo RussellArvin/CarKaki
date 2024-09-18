@@ -16,29 +16,29 @@ interface CarParkProps {
     updatedAt: Date
 }
 
-export class CarPark {
+export class CarParkProfile {
     constructor(private readonly props: Readonly<CarParkProps>) {}
 
     public getValue(): CarParkProps {
         return { ...this.props };
     }
 
-    public updateAvailableLots(availableLots: number): CarPark {
-        return new CarPark({
+    public updateAvailableLots(availableLots: number): CarParkProfile {
+        return new CarParkProfile({
             ...this.props,
             availableLots
         })
     }
 
-    public updateDailyRate(dailyRate: number): CarPark{
-        return new CarPark({
+    public updateDailyRate(dailyRate: number): CarParkProfile{
+        return new CarParkProfile({
             ...this.props,
             dailyRate
         })
     }
 
-    public updateHourlyRate(hourlyRate: number): CarPark{
-        return new CarPark({
+    public updateHourlyRate(hourlyRate: number): CarParkProfile{
+        return new CarParkProfile({
             ...this.props,
             hourlyRate
         })
