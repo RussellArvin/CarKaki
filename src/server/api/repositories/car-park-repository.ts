@@ -56,10 +56,7 @@ export class CarParkRepository {
             })
 
             return new CarParkProfile({
-                ...userData[0],
-                //TODO: Do enum for database
-                lotType: userData[0].lotType as LotType,
-                agency: userData[0].agency as CarParkAgency
+                ...userData[0]
             })
         } catch(err) {
             if(err instanceof TRPCError) throw err;
