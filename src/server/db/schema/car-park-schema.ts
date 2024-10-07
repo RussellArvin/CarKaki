@@ -1,30 +1,10 @@
 import { pgTable, text, uuid, geometry, integer, pgEnum, time, decimal } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt } from "./schema-constants";
 import { vehicleCategory } from "~/server/api/types/vehicle-category";
-import { carParkAgency } from "~/server/api/types/car-park-agency";
 import { parkingSystem } from "~/server/api/types/parking-system";
 
 const vehicleCategoryEnum = pgEnum('lot_type_enum', vehicleCategory);
 const parkingSystemEnum = pgEnum('parking_system_enum',parkingSystem)
-
-// const carParkSchema = pgTable(
-//     "car_park",
-//     {
-//       id:uuid("id").primaryKey(),
-//       code:text("code").notNull(),
-//       name: text("name").notNull(),
-//       area: text("area").notNull(),
-//       development: text("development").notNull(), 
-//       location: geometry('location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),
-//       availableLots: integer("available_lots").notNull(),
-//       lotType: lotTypeEnum("lot_type").notNull(),
-//       agency :agencyEnum("agency").notNull(),
-//       hourlyRate: integer("hourly_rate").notNull(),
-//       dailyRate: integer("daily_rate").notNull(),
-//       createdAt,
-//       updatedAt,
-//     }
-// );
 
 const carParkSchema = pgTable(
   "car_park",
