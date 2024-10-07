@@ -4,19 +4,43 @@ import { eq } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
-import LotType, { lotType } from "../types/lot-type";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import { updatedAt } from "~/server/db/schema/schema-constants";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
+import { convertDrizzleTimeToISO } from "~/utils/convertDrizzleTimeToISO";
+import { vehicleCategory } from "../types/vehicle-category";
+
+type SelectCarPark = typeof carParkSchema.$inferSelect
 
 export class CarParkRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
+
+    private formatToDb(entity: CarPark){
+        return {
+            ...entity.getValue(),
+            weekDayRate: entity.getValue().weekDayRate.toString(),
+            satRate: entity.getValue().satRate.toString(),
+            sunPHRate: entity.getValue().sunPHRate.toString()
+        }
+    }
+
+    private formatFromDb(data: SelectCarPark): CarPark{
+        return new CarPark({
+            ...data,
+            weekDayRate: parseFloat(data.weekDayRate),
+            satRate: parseFloat(data.satRate),
+            sunPHRate: parseFloat(data.sunPHRate),
+            //TODO: Check if we need this?
+            // startTime: convertDrizzleTimeToISO(data.startTime),
+            // endTime: convertDrizzleTimeToISO(data.endTime),
+        })
+    }
 
     public async save(entity: CarPark){
         try{
             await this.db
             .insert(carParkSchema)
-            .values(entity.getValue())
+            .values(this.formatToDb(entity))
 
             return;
         } catch(err){
@@ -32,7 +56,7 @@ export class CarParkRepository {
         try{
             await this.db.update(carParkSchema)
             .set({
-                ...entity.getValue(),
+                ...this.formatToDb(entity),
                 updatedAt: new Date()
             })
             .where(eq(carParkSchema.id,entity.getValue().id))
@@ -58,9 +82,7 @@ export class CarParkRepository {
                 message:"Unable to find user"
             })
 
-            return new CarPark({
-                ...userData[0]
-            })
+            return this.formatFromDb(userData[0])
         } catch(err) {
             if(err instanceof TRPCError) throw err;
 
@@ -78,14 +100,21 @@ export class CarParkRepository {
         try{
             const results = await this.db.select({
                 id: carParkSchema.id,
-                area: carParkSchema.area,
-                location: carParkSchema.location,
+                code: carParkSchema.code,
+                name: carParkSchema.name,
+                vehicleCategory: carParkSchema.vehicleCategory,
+                startTime: carParkSchema.startTime,
+                endTime: carParkSchema.endTime,
+                weekDayRate: carParkSchema.weekDayRate,
+                weekDayMin: carParkSchema.weekDayMin,
+                satRate: carParkSchema.satRate,
+                satMin: carParkSchema.satMin,
+                sunPHRate: carParkSchema.sunPHRate,
+                sunPHMin: carParkSchema.sunPHMin,
+                parkingSystem: carParkSchema.parkingSystem,
+                capacity: carParkSchema.capacity,
                 availableLots: carParkSchema.availableLots,
-                lotType: carParkSchema.lotType,
-                agency: carParkSchema.agency,
-                development: carParkSchema.development,
-                hourlyRate: carParkSchema.hourlyRate,
-                dailyRate: carParkSchema.dailyRate,
+                location: carParkSchema.location,
                 createdAt: carParkSchema.createdAt,
                 updatedAt: carParkSchema.updatedAt
             })
@@ -93,7 +122,7 @@ export class CarParkRepository {
                 .innerJoin(carParkSchema,eq(carParkSchema.id,parkingHistorySchema.carParkId))
                 .where(eq(parkingHistorySchema.userId,userId))
 
-                return results.map((carpark) => new CarPark({...carpark}))
+                return results.map((carpark) => this.formatFromDb(carpark))
         } catch(err){
             const e = err as Error;
             return new TRPCError({
@@ -109,14 +138,21 @@ export class CarParkRepository {
         try{
             const results = await this.db.select({
                 id: carParkSchema.id,
-                area: carParkSchema.area,
-                location: carParkSchema.location,
+                code: carParkSchema.code,
+                name: carParkSchema.name,
+                vehicleCategory: carParkSchema.vehicleCategory,
+                startTime: carParkSchema.startTime,
+                endTime: carParkSchema.endTime,
+                weekDayRate: carParkSchema.weekDayRate,
+                weekDayMin: carParkSchema.weekDayMin,
+                satRate: carParkSchema.satRate,
+                satMin: carParkSchema.satMin,
+                sunPHRate: carParkSchema.sunPHRate,
+                sunPHMin: carParkSchema.sunPHMin,
+                parkingSystem: carParkSchema.parkingSystem,
+                capacity: carParkSchema.capacity,
                 availableLots: carParkSchema.availableLots,
-                lotType: carParkSchema.lotType,
-                agency: carParkSchema.agency,
-                development: carParkSchema.development,
-                hourlyRate: carParkSchema.hourlyRate,
-                dailyRate: carParkSchema.dailyRate,
+                location: carParkSchema.location,
                 createdAt: carParkSchema.createdAt,
                 updatedAt: carParkSchema.updatedAt
             })
@@ -124,7 +160,7 @@ export class CarParkRepository {
                 .innerJoin(carParkSchema,eq(carParkSchema.id,userFavouriteSchema.carParkId))
                 .where(eq(userFavouriteSchema.userId,userId))
 
-                return results.map((carpark) => new CarPark({...carpark}))
+                return results.map((carpark) => this.formatFromDb(carpark))
         } catch(err){
             const e = err as Error;
             return new TRPCError({
