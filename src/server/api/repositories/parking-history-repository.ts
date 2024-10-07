@@ -3,7 +3,7 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
-import { ParkingHistory } from "../models/parking-history-profile";
+import { ParkingHistory } from "../models/parking-history";
 
 export class ParkingHistoryRepository {
     constructor(private readonly db: PostgresJsDatabase) {}

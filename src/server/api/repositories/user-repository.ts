@@ -1,5 +1,5 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { User } from "../models/user-profile";
+import { User } from "../models/user";
 import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";

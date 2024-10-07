@@ -3,7 +3,7 @@ import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
-import { UserFavourite } from "../models/user-favourite-profile";
+import { UserFavourite } from "../models/user-favourite";
 
 export class UserFavouriteRepository {
     constructor(private readonly db: PostgresJsDatabase) {}

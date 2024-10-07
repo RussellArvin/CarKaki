@@ -1,7 +1,7 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { CarPark } from "../models/car-park-profile";
+import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
 import LotType, { lotType } from "../types/lot-type";

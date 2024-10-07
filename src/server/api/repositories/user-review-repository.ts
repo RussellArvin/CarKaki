@@ -2,7 +2,7 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import userReviewSchema from "~/server/db/schema/user-review-schema";
-import { UserReview } from "../models/user-review-profile";
+import { UserReview } from "../models/user-review";
 
 export class UserReviewRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
