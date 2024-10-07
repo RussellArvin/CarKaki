@@ -48,17 +48,14 @@ export class User {
         });
     }
 
-    public setNotifications(isNotificationsEnabled: boolean): User {
+    public setMainSettings(
+        isNotificationsEnabled: boolean,
+        isDarkMode: boolean
+    ) {
         return new User({
             ...this.props,
             isNotificationsEnabled,
-        })
-    }
-
-    public setDarkMode(isDarkMode: boolean) : User {
-        return new User({
-            ...this.props,
-            isDarkMode,
+            isDarkMode
         })
     }
 }

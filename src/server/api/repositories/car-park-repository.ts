@@ -7,7 +7,7 @@ import CarParkAgency from "../types/car-park-agency";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import { updatedAt } from "~/server/db/schema/schema-constants";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
-import { convertDrizzleTimeToISO } from "~/utils/convertDrizzleTimeToISO";
+import { convertDrizzleTimeToISO } from "~/server/utils/convertDrizzleTimeToISO";
 import { vehicleCategory } from "../types/vehicle-category";
 
 type SelectCarPark = typeof carParkSchema.$inferSelect
