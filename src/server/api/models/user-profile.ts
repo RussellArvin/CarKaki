@@ -1,4 +1,4 @@
-interface UserProfileProps {
+interface UserProps {
     id: string;
     email: string;
     firstName: string;
@@ -12,51 +12,51 @@ interface UserProfileProps {
     workCarParkId: string | null;
 }
 
-export class UserProfile {
-    constructor(private readonly props: Readonly<UserProfileProps>) {}
+export class User {
+    constructor(private readonly props: Readonly<UserProps>) {}
 
-    public getValue(): UserProfileProps {
+    public getValue(): UserProps {
         return { ...this.props };
     }
 
-    public delete(): UserProfile {
-        return new UserProfile({
+    public delete(): User {
+        return new User({
             ...this.props,
             deletedAt: new Date()
         });
     }
 
-    public setNames(firstName: string, lastName: string): UserProfile {
-        return new UserProfile({
+    public setNames(firstName: string, lastName: string): User {
+        return new User({
             ...this.props,
             firstName,
             lastName
         });
     }
 
-    public setHomeCarPark(carParkId: string): UserProfile {
-        return new UserProfile({
+    public setHomeCarPark(carParkId: string): User {
+        return new User({
             ...this.props,
             homeCarParkId: carParkId
         });
     }
 
-    public setWorkCarPark(carParkId: string): UserProfile {
-        return new UserProfile({
+    public setWorkCarPark(carParkId: string): User {
+        return new User({
             ...this.props,
             workCarParkId: carParkId
         });
     }
 
-    public setNotifications(isNotificationsEnabled: boolean): UserProfile {
-        return new UserProfile({
+    public setNotifications(isNotificationsEnabled: boolean): User {
+        return new User({
             ...this.props,
             isNotificationsEnabled,
         })
     }
 
-    public setDarkMode(isDarkMode: boolean) : UserProfile {
-        return new UserProfile({
+    public setDarkMode(isDarkMode: boolean) : User {
+        return new User({
             ...this.props,
             isDarkMode,
         })

@@ -1,5 +1,5 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { UserProfile } from "../models/user-profile";
+import { User } from "../models/user-profile";
 import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 export class UserRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
-    public async save(entity: UserProfile){
+    public async save(entity: User){
         try{
             await this.db
             .insert(userSchema)
@@ -23,7 +23,7 @@ export class UserRepository {
         }
     }
 
-    public async update(entity: UserProfile){
+    public async update(entity: User){
         try{
             await this.db.update(userSchema)
             .set({
@@ -40,7 +40,7 @@ export class UserRepository {
         }
     }
 
-    public async findOneByUserId(userId: string): Promise<UserProfile> {
+    public async findOneByUserId(userId: string): Promise<User> {
         try{
             const userData = await this.db
                 .select()
@@ -53,7 +53,7 @@ export class UserRepository {
                 message:"Unable to find user"
             })
 
-            return new UserProfile({
+            return new User({
                 ...userData[0]
             })
         } catch(err) {

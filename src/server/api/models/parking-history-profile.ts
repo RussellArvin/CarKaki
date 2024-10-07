@@ -8,15 +8,15 @@ interface ParkingHistoryProps {
     updatedAt: Date
 }
 
-export class ParkingHistoryProfile {
+export class ParkingHistory {
     constructor(private readonly props: Readonly<ParkingHistoryProps>) {}
 
     public getValue(): ParkingHistoryProps {
         return { ...this.props };
     }
 
-    public endParking(): ParkingHistoryProfile {
-        return new ParkingHistoryProfile({
+    public endParking(): ParkingHistory {
+        return new ParkingHistory({
             ...this.props,
             endDate: new Date()
         })

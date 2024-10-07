@@ -1,7 +1,7 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { CarParkProfile } from "../models/car-park-profile";
+import { CarPark } from "../models/car-park-profile";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
 import LotType, { lotType } from "../types/lot-type";
@@ -12,7 +12,7 @@ import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 export class CarParkRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
-    public async save(entity: CarParkProfile){
+    public async save(entity: CarPark){
         try{
             await this.db
             .insert(carParkSchema)
@@ -28,7 +28,7 @@ export class CarParkRepository {
         }
     }
 
-    public async update(entity: CarParkProfile){
+    public async update(entity: CarPark){
         try{
             await this.db.update(carParkSchema)
             .set({
@@ -45,7 +45,7 @@ export class CarParkRepository {
         }
     }
 
-    public async findOneByUserId(userId: string): Promise<CarParkProfile> {
+    public async findOneByUserId(userId: string): Promise<CarPark> {
         try{
             const userData = await this.db
                 .select()
@@ -58,7 +58,7 @@ export class CarParkRepository {
                 message:"Unable to find user"
             })
 
-            return new CarParkProfile({
+            return new CarPark({
                 ...userData[0]
             })
         } catch(err) {
@@ -93,7 +93,7 @@ export class CarParkRepository {
                 .innerJoin(carParkSchema,eq(carParkSchema.id,parkingHistorySchema.carParkId))
                 .where(eq(parkingHistorySchema.userId,userId))
 
-                return results.map((carpark) => new CarParkProfile({...carpark}))
+                return results.map((carpark) => new CarPark({...carpark}))
         } catch(err){
             const e = err as Error;
             return new TRPCError({
@@ -124,7 +124,7 @@ export class CarParkRepository {
                 .innerJoin(carParkSchema,eq(carParkSchema.id,userFavouriteSchema.carParkId))
                 .where(eq(userFavouriteSchema.userId,userId))
 
-                return results.map((carpark) => new CarParkProfile({...carpark}))
+                return results.map((carpark) => new CarPark({...carpark}))
         } catch(err){
             const e = err as Error;
             return new TRPCError({

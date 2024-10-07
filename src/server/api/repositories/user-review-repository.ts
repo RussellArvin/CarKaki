@@ -2,12 +2,12 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import userReviewSchema from "~/server/db/schema/user-review-schema";
-import { UserReviewProfile } from "../models/user-review-profile";
+import { UserReview } from "../models/user-review-profile";
 
 export class UserReviewRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
-    public async save(entity: UserReviewProfile){
+    public async save(entity: UserReview){
         try{
             await this.db
             .insert(userReviewSchema)
@@ -23,7 +23,7 @@ export class UserReviewRepository {
         }
     }
 
-    public async update(entity: UserReviewProfile){
+    public async update(entity: UserReview){
         try{
             await this.db.update(userReviewSchema)
             .set({
@@ -45,14 +45,14 @@ export class UserReviewRepository {
 
     public async findManyByCarParkId(
         carParkId: string
-    ): Promise<UserReviewProfile[]> {
+    ): Promise<UserReview[]> {
         try{
             const results = await this.db.select()
                 .from(userReviewSchema)
                 .where(eq(userReviewSchema.carParkId,carParkId))
 
             return results.map((result)=>{
-                return new UserReviewProfile({
+                return new UserReview({
                    ...result 
                 })
             })
@@ -70,7 +70,7 @@ export class UserReviewRepository {
     public async findOneByUserIdAndCarParkId(
         userId: string, 
         carParkId: string
-    ): Promise<UserReviewProfile> {
+    ): Promise<UserReview> {
         try{
             const userData = await this.db
                 .select()
@@ -86,7 +86,7 @@ export class UserReviewRepository {
                 message:"Unable to find user"
             })
 
-            return new UserReviewProfile({
+            return new UserReview({
                 ...userData[0]
             })
         } catch(err) {

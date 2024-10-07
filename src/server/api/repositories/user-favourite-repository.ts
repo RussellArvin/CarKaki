@@ -3,12 +3,12 @@ import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
-import { UserFavouriteProfile } from "../models/user-favourite-profile";
+import { UserFavourite } from "../models/user-favourite-profile";
 
 export class UserFavouriteRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
-    public async save(entity: UserFavouriteProfile){
+    public async save(entity: UserFavourite){
         try{
             await this.db
             .insert(userFavouriteSchema)
@@ -26,14 +26,14 @@ export class UserFavouriteRepository {
 
     public async findManyByUserId(
         userId:string
-    ): Promise<UserFavouriteProfile[]> {
+    ): Promise<UserFavourite[]> {
         try{
             const results = await this.db.select()
                 .from(userFavouriteSchema)
                 .where(eq(userFavouriteSchema.userId,userId))
 
             return results.map((result) => {
-                return new UserFavouriteProfile({
+                return new UserFavourite({
                     ...result
                 })
             })
@@ -48,7 +48,7 @@ export class UserFavouriteRepository {
         }
     }
 
-    public async update(entity: UserFavouriteProfile){
+    public async update(entity: UserFavourite){
         try{
             await this.db.update(userSchema)
             .set({

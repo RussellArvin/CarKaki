@@ -3,12 +3,12 @@ import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
-import { ParkingHistoryProfile } from "../models/parking-history-profile";
+import { ParkingHistory } from "../models/parking-history-profile";
 
 export class ParkingHistoryRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
-    public async save(entity: ParkingHistoryProfile){
+    public async save(entity: ParkingHistory){
         try{
             await this.db
             .insert(parkingHistorySchema)
@@ -24,7 +24,7 @@ export class ParkingHistoryRepository {
         }
     }
 
-    public async update(entity: ParkingHistoryProfile){
+    public async update(entity: ParkingHistory){
         try{
             await this.db.update(parkingHistorySchema)
             .set({
@@ -41,14 +41,14 @@ export class ParkingHistoryRepository {
         }
     }
 
-    public async findManyByUserId(userId: string): Promise<ParkingHistoryProfile[]> {
+    public async findManyByUserId(userId: string): Promise<ParkingHistory[]> {
         try{
             const results = await this.db.select()
                 .from(parkingHistorySchema)
                 .where(eq(parkingHistorySchema.userId,userId))
 
             return results.map((result) => {
-                return new ParkingHistoryProfile({
+                return new ParkingHistory({
                     ...result
                 })
             })
@@ -66,7 +66,7 @@ export class ParkingHistoryRepository {
     public async findManyByUserIdAndCarParkId(
         userId: string,
         carParkId: string
-    ): Promise<ParkingHistoryProfile[]> {
+    ): Promise<ParkingHistory[]> {
         try{
             const results = await this.db.select()
                 .from(parkingHistorySchema)
@@ -76,7 +76,7 @@ export class ParkingHistoryRepository {
                 ))
 
             return results.map((result) => {
-                return new ParkingHistoryProfile({
+                return new ParkingHistory({
                     ...result
                 })
             })

@@ -8,7 +8,7 @@ interface UserReviewProps {
     deletedAt: Date | null
 }
 
-export class UserReviewProfile {
+export class UserReview {
     constructor(private readonly props: Readonly<UserReviewProps>) {}
 
     public getValue(): UserReviewProps {
@@ -16,15 +16,15 @@ export class UserReviewProfile {
     }
 
     
-    public delete(): UserReviewProfile {
-        return new UserReviewProfile({
+    public delete(): UserReview {
+        return new UserReview({
             ...this.props,
             deletedAt: new Date()
         })
     }
 
-    public update(rating: number, description: string): UserReviewProfile {
-        return new UserReviewProfile({
+    public update(rating: number, description: string): UserReview {
+        return new UserReview({
             ...this.props,
             rating,
             description,
