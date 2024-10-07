@@ -4,7 +4,10 @@ import { eq } from "drizzle-orm";
 import { CarParkProfile } from "../models/car-park-profile";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
-import LotType from "../types/lot-type";
+import LotType, { lotType } from "../types/lot-type";
+import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
+import { updatedAt } from "~/server/db/schema/schema-constants";
+import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 
 export class CarParkRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
@@ -63,6 +66,68 @@ export class CarParkRepository {
 
             const e = err as Error;
             throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async findUserParkingHistory(
+        userId: string
+    ) {
+        try{
+            const results = await this.db.select({
+                id: carParkSchema.id,
+                area: carParkSchema.area,
+                location: carParkSchema.location,
+                availableLots: carParkSchema.availableLots,
+                lotType: carParkSchema.lotType,
+                agency: carParkSchema.agency,
+                development: carParkSchema.development,
+                hourlyRate: carParkSchema.hourlyRate,
+                dailyRate: carParkSchema.dailyRate,
+                createdAt: carParkSchema.createdAt,
+                updatedAt: carParkSchema.updatedAt
+            })
+                .from(parkingHistorySchema)
+                .innerJoin(carParkSchema,eq(carParkSchema.id,parkingHistorySchema.carParkId))
+                .where(eq(parkingHistorySchema.userId,userId))
+
+                return results.map((carpark) => new CarParkProfile({...carpark}))
+        } catch(err){
+            const e = err as Error;
+            return new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async findUserFavourites(
+        userId: string
+    ) {
+        try{
+            const results = await this.db.select({
+                id: carParkSchema.id,
+                area: carParkSchema.area,
+                location: carParkSchema.location,
+                availableLots: carParkSchema.availableLots,
+                lotType: carParkSchema.lotType,
+                agency: carParkSchema.agency,
+                development: carParkSchema.development,
+                hourlyRate: carParkSchema.hourlyRate,
+                dailyRate: carParkSchema.dailyRate,
+                createdAt: carParkSchema.createdAt,
+                updatedAt: carParkSchema.updatedAt
+            })
+                .from(userFavouriteSchema)
+                .innerJoin(carParkSchema,eq(carParkSchema.id,userFavouriteSchema.carParkId))
+                .where(eq(userFavouriteSchema.userId,userId))
+
+                return results.map((carpark) => new CarParkProfile({...carpark}))
+        } catch(err){
+            const e = err as Error;
+            return new TRPCError({
                 code:"INTERNAL_SERVER_ERROR",
                 message:e.message
             })
