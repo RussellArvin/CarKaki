@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import axios from 'axios';
-import { AvailabilityCarPark, InformationCarPark, URAResponse, URAResult } from "../types/ura-types";
+import { AvailabilityCarPark, InformationCarPark, URAAuthenticationResponse, URAResponse, URAResult } from "../types/ura-types";
 
 export class UrbanRedevelopmentAuthority {
     private accessKey: string;
@@ -14,7 +14,7 @@ export class UrbanRedevelopmentAuthority {
 
     async initialize(): Promise<void> {
         try{
-            const response = await axios.get(
+            const response = await axios.get<URAAuthenticationResponse>(
                 `${UrbanRedevelopmentAuthority.BASE_URL}/insertNewToken.action`,{
                     headers: {
                         'AccessKey': this.accessKey

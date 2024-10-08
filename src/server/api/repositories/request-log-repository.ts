@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
 import { RequestLog } from "../models/request-log";
 import requestLogSchema from "~/server/db/schema/request-log-schema";
-import UraAPIRequestType from "../types/ura-api-request-type";
+import { UraAPIRequestType } from "../types/ura-types";
 
 export class RequestLogRepository {
     constructor(private readonly db: PostgresJsDatabase) {}

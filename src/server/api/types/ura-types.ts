@@ -1,6 +1,6 @@
 import VehicleCategory from "./vehicle-category"
 
-const uraApiRequestType = ["INFO","AVAIL"] as const
+export const uraApiRequestType = ["INFO","AVAIL"] as const
 export type UraAPIRequestType = typeof uraApiRequestType[number]
 
 type Geometry = {
@@ -36,4 +36,10 @@ export type URAResponse = {
     Status: string,
     Message: string,
     Result: URAResult
+}
+
+export type URAAuthenticationResponse = {
+    Status: string,
+    Message: string,
+    Result: string
 }

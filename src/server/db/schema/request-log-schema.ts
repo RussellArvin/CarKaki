@@ -1,6 +1,6 @@
 import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 import { createdAt } from "./schema-constants";
-import { uraApiRequestType } from "~/server/api/types/ura-api-request-type";
+import { uraApiRequestType } from "~/server/api/types/ura-types";
 
 const requestTypeEnum = pgEnum('parking_system_enum',uraApiRequestType)
 
