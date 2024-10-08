@@ -1,13 +1,17 @@
 
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
-import { carParkRepository, userRepository } from "../repositories";
+import { carParkRepository, parkingHistoryRepository, userRepository } from "../repositories";
 import handleError from "~/server/utils/handleError"
 import { getUserInformation } from "~/server/utils/clerk";
 import { User } from "../models/user";
 import clerk from "@clerk/clerk-sdk-node";
 
 export const userRouter = createTRPCRouter({
+    getFrequentlyVisitedCarParks: protectedProcedure
+    .query(async ({ctx})=> {
+        return await parkingHistoryRepository.findFrequentlyVisited(ctx.auth.userId)
+    }),
     getFavouriteCarParks: protectedProcedure
     .query(async ({ctx}) => {
         return await carParkRepository.findUserFavourites(ctx.auth.userId)

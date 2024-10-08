@@ -1,9 +1,12 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql, desc } from "drizzle-orm";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 import { ParkingHistory } from "../models/parking-history";
+import handleError from "~/server/utils/handleError";
+import carParkSchema from "~/server/db/schema/car-park-schema";
+import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 
 export class ParkingHistoryRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
@@ -39,6 +42,30 @@ export class ParkingHistoryRepository {
                 message:e.message
             })
         }
+    }
+
+    public async findFrequentlyVisited(userId: string){
+        try{
+            //TODO: Check if this works!
+            const results = await this.db.select({
+                id: carParkSchema.id,
+                name: carParkSchema.name,
+                visits: sql<number>`COUNT(*)`.as('visits'),
+                isFavourited: sql<boolean>`MAX(CASE WHEN ${userFavouriteSchema.carParkId} IS NOT NULL THEN true ELSE false END)`.as('isFavourited')
+            })
+            .from(parkingHistorySchema)
+            .leftJoin(carParkSchema,eq(carParkSchema.id, parkingHistorySchema.carParkId))
+            .leftJoin(userFavouriteSchema, and(
+                eq(userFavouriteSchema.carParkId, parkingHistorySchema.carParkId),
+                eq(userFavouriteSchema.userId,parkingHistorySchema.userId)
+            ))
+            .groupBy(carParkSchema.id, carParkSchema.name)
+            .where(eq(parkingHistorySchema.userId,userId))
+            .orderBy(desc(sql`visits`))
+            .limit(5)
+
+            return results;
+        } catch(e){handleError(e)}
     }
 
     public async findManyByUserId(userId: string): Promise<ParkingHistory[]> {
