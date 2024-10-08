@@ -1,6 +1,6 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { eq, getTableColumns, sql } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
@@ -9,6 +9,8 @@ import { updatedAt } from "~/server/db/schema/schema-constants";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 import { convertDrizzleTimeToISO } from "~/server/utils/convertDrizzleTimeToISO";
 import { vehicleCategory } from "../types/vehicle-category";
+import handleError from "~/server/utils/handleError";
+import Location from "../types/location";
 
 type SelectCarPark = typeof carParkSchema.$inferSelect
 
@@ -69,6 +71,32 @@ export class CarParkRepository {
         }
     }
 
+    public async findNearByCarParks(
+        location: Location, amount: number
+    ): Promise<CarPark[]>{
+        try{
+            const sqlPoint = sql`ST_SetSRID(ST_MakePoint(${location.x}, ${location.y}), 4326)`;
+
+            const results = await this.db
+                .select({
+                    ...getTableColumns(carParkSchema),
+                    //TODO: Check if need this
+                    //distance: sql`ST_Distance(${carParkSchema.location}, ${sqlPoint})`
+                })
+                .from(carParkSchema)
+                .orderBy(sql`${carParkSchema.location} <-> ${sqlPoint}`)
+                .limit(amount)
+            
+            return results.map((carpark) => this.formatFromDb(carpark))
+        }  catch(err){
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findOneById(id: string): Promise<CarPark> {
         try{
             const userData = await this.db
@@ -79,7 +107,7 @@ export class CarParkRepository {
 
             if(!userData[0]) throw new TRPCError({
                 code:"NOT_FOUND",
-                message:"Unable to find user"
+                message:"Unable to find CarPark"
             })
 
             return this.formatFromDb(userData[0])

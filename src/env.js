@@ -15,6 +15,7 @@ export const env = createEnv({
         "You forgot to change the default URL"
       ),
     GOOGLE_MAPS_API_KEY : z.string(),
+    URA_ACCESS_KEY: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -36,6 +37,7 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+    URA_ACCESS_KEY: process.env.URA_ACCESS_KEY,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },

@@ -1,14 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import axios from 'axios';
 import { AvailabilityCarPark, InformationCarPark, URAAuthenticationResponse, URAResponse, URAResult } from "../types/ura-types";
+import { env } from "~/env";
 
 export class UrbanRedevelopmentAuthority {
-    private accessKey: string;
+    private static readonly accessKey = env.URA_ACCESS_KEY;
     private token: string | null;
     private static readonly BASE_URL = 'https://www.ura.gov.sg/uraDataService'
 
-    constructor(accessKey: string){
-        this.accessKey = accessKey;
+    constructor(){
         this.token = null;
     }
 
@@ -18,7 +18,7 @@ export class UrbanRedevelopmentAuthority {
             const response = await axios.get<URAAuthenticationResponse>(
                 `${UrbanRedevelopmentAuthority.BASE_URL}/insertNewToken.action`,{
                     headers: {
-                        'AccessKey': this.accessKey
+                        'AccessKey': UrbanRedevelopmentAuthority.accessKey
                     }
                 }
             )
@@ -49,7 +49,7 @@ export class UrbanRedevelopmentAuthority {
             const response = await axios.get<URAResponse>(`${UrbanRedevelopmentAuthority.BASE_URL}invokeUraDS`, {
                 params: { service },
                 headers: {
-                    'AccessKey': this.accessKey,
+                    'AccessKey': UrbanRedevelopmentAuthority.accessKey,
                     'Token': this.token
                 }
             });
