@@ -13,6 +13,7 @@ export class UrbanRedevelopmentAuthority {
     }
 
     async initialize(): Promise<void> {
+        //TODO: Store key somewhere?
         try{
             const response = await axios.get<URAAuthenticationResponse>(
                 `${UrbanRedevelopmentAuthority.BASE_URL}/insertNewToken.action`,{
