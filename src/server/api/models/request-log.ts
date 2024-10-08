@@ -1,4 +1,4 @@
-import UraAPIRequestType from "../types/ura-api-request-type";
+import { UraAPIRequestType } from "../types/ura-types";
 
 interface RequestLogProps {
     id: string

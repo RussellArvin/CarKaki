@@ -1,6 +1,6 @@
 import VehicleCategory from "./vehicle-category"
 
-export const uraApiRequestType = ["INFO","AVAIL"] as const
+const uraApiRequestType = ["INFO","AVAIL"] as const
 export type UraAPIRequestType = typeof uraApiRequestType[number]
 
 type Geometry = {
