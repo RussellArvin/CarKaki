@@ -19,6 +19,7 @@ const handleAvailabilityRequest = async () => {
     if(!canMakeRequest(latestRequest)) return;
 
     const ura = new UrbanRedevelopmentAuthority();
+    await ura.initialize()
     const [uraData, carparks] = await Promise.all([
         await ura.getCarParkAvailability(),
         await carParkRepository.findAll()
@@ -39,6 +40,7 @@ const handleInformationRequest = async () => {
     if(!canMakeRequest(latestRequest)) return;
 
     const ura = new UrbanRedevelopmentAuthority();
+    await ura.initialize()
     const [uraData, carparks] = await Promise.all([
         await ura.getCarParkDetails(),
         await carParkRepository.findAll()
