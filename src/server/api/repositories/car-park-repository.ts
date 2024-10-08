@@ -1,6 +1,6 @@
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
-import { eq, getTableColumns, sql } from "drizzle-orm";
+import { and, eq, getTableColumns, sql } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
@@ -102,6 +102,32 @@ export class CarParkRepository {
                 updatedAt: new Date()
             })
             .where(eq(carParkSchema.id,entity.getValue().id))
+        } catch(err){
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async isFavouritedByUser(
+        carParkId: string,
+        userId: string
+    ): Promise<boolean>{
+        try{
+            const results = await this.db
+                .select({
+                    carParkId: userFavouriteSchema.carParkId
+                })
+                .from(userFavouriteSchema)
+                .where(and(
+                    eq(userFavouriteSchema.carParkId,carParkId),
+                    eq(userFavouriteSchema.userId,userId)
+                ))
+                .limit(1);
+
+            return !!results.length
         } catch(err){
             const e = err as Error;
             throw new TRPCError({

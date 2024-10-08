@@ -46,9 +46,13 @@ export const carParkRouter = createTRPCRouter({
             await checkAndMakeURARequests() //Reload URA Data
         ])
 
-        const nearByCarParks = await mapManyCarParkWithAddress(
-            await carParkRepository.findNearByCarParks(carpark.getValue().location,5)
-        );
+        const [nearByCarParks, isFavourited] = await Promise.all([
+            mapManyCarParkWithAddress(
+                await carParkRepository.findNearByCarParks(carpark.getValue().location,5)
+            ),
+            carParkRepository.isFavouritedByUser(input.id,ctx.auth.userId)
+        ])
+
 
         const {
             name,
@@ -62,9 +66,8 @@ export const carParkRouter = createTRPCRouter({
             address,
             capacity,
             availableLots,
+            isFavourited,
             rate: getAppropriateRate(carpark),
-            //TODO: DB call to check for this
-            isFavourited: false,
             nearByCarParks: nearByCarParks.map((item) => {
                 const {name,address,capacity,availableLots} = item.getValue();
                 return {
