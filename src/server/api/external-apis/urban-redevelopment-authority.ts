@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import axios from 'axios';
+import { AvailabilityCarPark, InformationCarPark, URAResponse, URAResult } from "../types/ura-types";
 
 export class UrbanRedevelopmentAuthority {
     private accessKey: string;
@@ -37,14 +38,14 @@ export class UrbanRedevelopmentAuthority {
         }
     }
 
-    private async makeRequest(service: string): Promise<any> {
+    private async makeRequest(service: string): Promise<URAResult> {
         if(!this.token) throw new TRPCError({
             code:"INTERNAL_SERVER_ERROR",
             message:"Missing URA Token"
         })
 
         try{
-            const response = await axios.get(`${UrbanRedevelopmentAuthority.BASE_URL}invokeUraDS`, {
+            const response = await axios.get<URAResponse>(`${UrbanRedevelopmentAuthority.BASE_URL}invokeUraDS`, {
                 params: { service },
                 headers: {
                     'AccessKey': this.accessKey,
@@ -69,14 +70,14 @@ export class UrbanRedevelopmentAuthority {
     }
 
     async getCarParkAvailability() {
-        return this.makeRequest('Car_Park_Availability');
+        return await this.makeRequest('Car_Park_Availability') as AvailabilityCarPark[]
     }
 
     async getCarParkDetails() {
-        return this.makeRequest('Car_Park_Details');
+        return await this.makeRequest('Car_Park_Details') as InformationCarPark[];
     }
 
-    async getSeasonCarParkDetails() {
-        return this.makeRequest('Season_Car_Park_Details');
-    }
+    // async getSeasonCarParkDetails() {
+    //     return this.makeRequest('Season_Car_Park_Details');
+    // }
 }
