@@ -17,8 +17,6 @@ type SelectCarPark = typeof carParkSchema.$inferSelect
 export class CarParkRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
-    //TODO: CAN REMOVE THIS!
-
     private formatToDb(entity: CarPark){
         return {
             ...entity.getValue(),
