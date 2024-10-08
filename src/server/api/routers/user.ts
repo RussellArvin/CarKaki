@@ -85,6 +85,11 @@ export const userRouter = createTRPCRouter({
             return;
         } catch(e){handleError(e)}
     }),
+    get: protectedProcedure
+    .query(async ({ctx}) => {
+        const user = await userRepository.findOneByUserId(ctx.auth.userId)
+        return user.getValue()
+    }),
     updatePassword: protectedProcedure
     .input(z.object({
         password: z.string(),
