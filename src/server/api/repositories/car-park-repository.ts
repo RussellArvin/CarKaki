@@ -17,6 +17,8 @@ type SelectCarPark = typeof carParkSchema.$inferSelect
 export class CarParkRepository {
     constructor(private readonly db: PostgresJsDatabase) {}
 
+    //TODO: CAN REMOVE THIS!
+
     private formatToDb(entity: CarPark){
         return {
             ...entity.getValue(),
@@ -38,6 +40,29 @@ export class CarParkRepository {
         })
     }
 
+    public async findAll(){
+        try{
+            const results = await this.db
+                .select()
+                .from(carParkSchema)
+
+            if(!results) throw new TRPCError({
+                code:"NOT_FOUND",
+                message:"Unable to find CarPark"
+            })
+
+            return results.map((result)=>this.formatFromDb(result))
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async save(entity: CarPark){
         try{
             await this.db
@@ -45,6 +70,21 @@ export class CarParkRepository {
             .values(this.formatToDb(entity))
 
             return;
+        } catch(err){
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async saveMany(entitites: CarPark[]){
+        try{
+            const values = entitites.map((entity)=> entity.getValue())
+            await this.db
+            .insert(carParkSchema)
+            .values(entitites.map((entity)=> this.formatToDb(entity)))
         } catch(err){
             const e = err as Error;
             throw new TRPCError({
