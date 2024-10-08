@@ -6,7 +6,7 @@ import { GoogleMapsGeocodingResponse } from "../types/google-maps-types";
 export class GoogleMap {
     private static readonly API_KEY = env.GOOGLE_MAPS_API_KEY
 
-    public static async getAddressFromCoordinates(location: { x: number; y: number }): Promise<string | null> {
+    public static async getAddressFromCoordinates(location: Location): Promise<string | null> {
       const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.x},${location.y}&key=${GoogleMap.API_KEY}`;
     
       try {

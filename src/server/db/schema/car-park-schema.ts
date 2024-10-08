@@ -12,6 +12,7 @@ const carParkSchema = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     code: text('code').notNull(),
     name: text('name').notNull(),
+    address: text('address'),
     vehicleCategory: vehicleCategoryEnum('vehicle_category').notNull(),
     startTime: time('start_time').notNull(),
     endTime: time('end_time').notNull(),

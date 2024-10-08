@@ -7,6 +7,7 @@ interface CarParkProps {
     id: string
     code: string
     name: string
+    address: string | null
     vehicleCategory: VehicleCategory
     startTime: string
     endTime: string

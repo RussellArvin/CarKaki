@@ -69,12 +69,12 @@ export class CarParkRepository {
         }
     }
 
-    public async findOneByUserId(userId: string): Promise<CarPark> {
+    public async findOneById(id: string): Promise<CarPark> {
         try{
             const userData = await this.db
                 .select()
                 .from(carParkSchema)
-                .where(eq(carParkSchema.id,userId))
+                .where(eq(carParkSchema.id,id))
                 .limit(1)
 
             if(!userData[0]) throw new TRPCError({
@@ -102,6 +102,7 @@ export class CarParkRepository {
                 id: carParkSchema.id,
                 code: carParkSchema.code,
                 name: carParkSchema.name,
+                address: carParkSchema.address,
                 vehicleCategory: carParkSchema.vehicleCategory,
                 startTime: carParkSchema.startTime,
                 endTime: carParkSchema.endTime,
@@ -140,6 +141,7 @@ export class CarParkRepository {
                 id: carParkSchema.id,
                 code: carParkSchema.code,
                 name: carParkSchema.name,
+                address: carParkSchema.address,
                 vehicleCategory: carParkSchema.vehicleCategory,
                 startTime: carParkSchema.startTime,
                 endTime: carParkSchema.endTime,
