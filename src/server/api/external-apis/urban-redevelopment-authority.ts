@@ -3,6 +3,7 @@ import axios from 'axios';
 import { AvailabilityCarPark, InformationCarPark, URAAuthenticationResponse, URAResponse, URAResult } from "../types/ura-types";
 import { env } from "~/env";
 import { availabilityValidator, informationValidator } from "../validators/ura-validators";
+import { uraTokenRepository } from "../repositories";
 
 export class UrbanRedevelopmentAuthority {
     private static readonly accessKey = env.URA_ACCESS_KEY;
@@ -14,7 +15,21 @@ export class UrbanRedevelopmentAuthority {
     }
 
     async initialize(): Promise<void> {
-        //TODO: Store key somewhere?
+        const existingToken = await uraTokenRepository.findOne();
+        const tokenExpired = existingToken && existingToken.createdAt < new Date(Date.now() - 23 * 60 * 60 * 1000);
+    
+        if (!existingToken || tokenExpired) {
+            const newToken = await this.generateAccessToken();
+            await (existingToken ? uraTokenRepository.update(newToken) : uraTokenRepository.save(newToken));
+            this.token = newToken;
+            return;
+        } 
+        this.token = existingToken.token;
+        return;
+    }
+
+
+    private async generateAccessToken(): Promise<string> {
         try{
             const response = await axios.get<URAAuthenticationResponse>(
                 `${UrbanRedevelopmentAuthority.BASE_URL}/insertNewToken.action`,{
@@ -24,7 +39,7 @@ export class UrbanRedevelopmentAuthority {
                 }
             )
 
-            if(response.data.Status === 'Success') this.token = response.data.Result;
+            if(response.data.Status === 'Success') return response.data.Result;
             else throw new TRPCError({
                 code:"INTERNAL_SERVER_ERROR",
                 message:"Request to URA failed"
