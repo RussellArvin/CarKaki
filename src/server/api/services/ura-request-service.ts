@@ -154,7 +154,7 @@ const createNewCarparkFromUra = (uraCarPark: InformationCarPark): CarPark  => {
         sunPHRate: uraCarPark.sunPHRate,
         sunPHMin: uraCarPark.sunPHMin,
         parkingSystem: uraCarPark.parkingSystem,
-        location: formatLocation(uraCarPark.geometries[0]?.coordinates?, null),
+        location: formatLocation(uraCarPark.geometries[0]?.coordinates!, null),
         address:null,
         createdAt: currentDate,
         updatedAt: currentDate,
