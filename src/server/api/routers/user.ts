@@ -6,6 +6,7 @@ import handleError from "~/server/utils/handleError"
 import { getUserInformation } from "~/server/utils/clerk";
 import { User } from "../models/user";
 import clerk from "@clerk/clerk-sdk-node";
+import { TRPCError } from "@trpc/server";
 
 export const userRouter = createTRPCRouter({
     getFrequentlyVisitedCarParks: protectedProcedure
@@ -61,7 +62,15 @@ export const userRouter = createTRPCRouter({
                 isDarkMode,
                 isNotificationsEnabled
             }
-        } catch(e) {handleError(e)}
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
     }),
     register: protectedProcedure
     .mutation(async ({ctx})=> {
