@@ -1,12 +1,12 @@
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import { UserFavourite } from "../models/user-favourite";
+import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 export class UserFavouriteRepository {
-    constructor(private readonly db: PostgresJsDatabase) {}
+    constructor(private readonly db: NeonHttpDatabase) {}
 
     public async save(entity: UserFavourite){
         try{

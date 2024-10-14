@@ -1,4 +1,3 @@
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { and, eq, getTableColumns, sql } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
@@ -10,11 +9,12 @@ import { convertDrizzleTimeToISO } from "~/server/utils/convertDrizzleTimeToISO"
 import { vehicleCategory } from "../types/vehicle-category";
 import handleError from "~/server/utils/handleError";
 import Location from "../types/location";
+import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 type SelectCarPark = typeof carParkSchema.$inferSelect
 
 export class CarParkRepository {
-    constructor(private readonly db: PostgresJsDatabase) {}
+    constructor(private readonly db: NeonHttpDatabase) {}
 
     private formatToDb(entity: CarPark){
         return {

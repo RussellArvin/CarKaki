@@ -1,11 +1,11 @@
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { User } from "../models/user";
 import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
+import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 export class UserRepository {
-    constructor(private readonly db: PostgresJsDatabase) {}
+    constructor(private readonly db: NeonHttpDatabase) {}
 
     public async save(entity: User){
         try{

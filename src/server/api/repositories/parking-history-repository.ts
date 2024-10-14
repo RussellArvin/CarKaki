@@ -1,5 +1,3 @@
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
 import { TRPCError } from "@trpc/server";
 import { and, eq, sql, desc } from "drizzle-orm";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
@@ -7,9 +5,10 @@ import { ParkingHistory } from "../models/parking-history";
 import handleError from "~/server/utils/handleError";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
+import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 export class ParkingHistoryRepository {
-    constructor(private readonly db: PostgresJsDatabase) {}
+    constructor(private readonly db: NeonHttpDatabase) {}
 
     public async save(entity: ParkingHistory){
         try{

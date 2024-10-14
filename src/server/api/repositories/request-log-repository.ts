@@ -1,12 +1,12 @@
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
 import { RequestLog } from "../models/request-log";
 import requestLogSchema from "~/server/db/schema/request-log-schema";
 import { UraAPIRequestType } from "../types/ura-types";
+import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 export class RequestLogRepository {
-    constructor(private readonly db: PostgresJsDatabase) {}
+    constructor(private readonly db: NeonHttpDatabase) {}
 
     public async save(entity: RequestLog){
         try{
