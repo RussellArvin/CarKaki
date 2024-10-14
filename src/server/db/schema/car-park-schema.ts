@@ -1,5 +1,5 @@
-import { pgTable, text, uuid, geometry, integer, pgEnum, time, decimal } from "drizzle-orm/pg-core";
-import { createdAt, updatedAt } from "./schema-constants";
+import { pgTable, text, uuid, geometry, integer, pgEnum, time, decimal, timestamp } from "drizzle-orm/pg-core";
+import { CURRENT_TIMESTAMP } from "./schema-constants";
 import { vehicleCategory } from "~/server/api/types/vehicle-category";
 import { parkingSystem } from "~/server/api/types/parking-system";
 
@@ -26,8 +26,12 @@ const carParkSchema = pgTable(
     capacity: integer('capacity').notNull(),
     availableLots: integer("available_lots").notNull(),
     location: geometry('location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),
-    createdAt,
-    updatedAt,
+    createdAt: timestamp("created_at")
+    .default(CURRENT_TIMESTAMP)
+    .notNull(),
+    updatedAt:timestamp("updated_at")
+    .default(CURRENT_TIMESTAMP)
+    .notNull()
   }
 )
 

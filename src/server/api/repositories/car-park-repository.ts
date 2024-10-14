@@ -5,7 +5,6 @@ import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import CarParkAgency from "../types/car-park-agency";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
-import { updatedAt } from "~/server/db/schema/schema-constants";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 import { convertDrizzleTimeToISO } from "~/server/utils/convertDrizzleTimeToISO";
 import { vehicleCategory } from "../types/vehicle-category";
