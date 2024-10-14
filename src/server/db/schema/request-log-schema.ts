@@ -2,7 +2,7 @@ import { pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 import { CURRENT_TIMESTAMP } from "./schema-constants";
 import { uraApiRequestType } from "~/server/api/types/ura-types";
 
-const requestTypeEnum = pgEnum('parking_system_enum',uraApiRequestType)
+export const requestTypeEnum = pgEnum('parking_system_enum',uraApiRequestType)
 
 const requestLogSchema = pgTable(
     "request_log",

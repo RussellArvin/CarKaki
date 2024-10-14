@@ -3,8 +3,8 @@ import { CURRENT_TIMESTAMP } from "./schema-constants";
 import { vehicleCategory } from "~/server/api/types/vehicle-category";
 import { parkingSystem } from "~/server/api/types/parking-system";
 
-const vehicleCategoryEnum = pgEnum('lot_type_enum', vehicleCategory);
-const parkingSystemEnum = pgEnum('parking_system_enum',parkingSystem)
+export const vehicleCategoryEnum = pgEnum('lot_type_enum', vehicleCategory);
+export const parkingSystemEnum = pgEnum('parking_system_enum',parkingSystem)
 
 const carParkSchema = pgTable(
   "car_park",
