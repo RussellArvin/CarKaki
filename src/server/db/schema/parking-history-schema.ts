@@ -11,7 +11,7 @@ const parkingHistorySchema = pgTable(
       endDate: timestamp("end_date"),
       carParkId: uuid("car_park_id").notNull().references(() => carParkSchema.id),
       userId: text("user_id").notNull().references(() => userSchema.id),
-      createdA: timestamp("created_at")
+      createdAt: timestamp("created_at")
       .default(CURRENT_TIMESTAMP)
       .notNull(),
       updatedAt:timestamp("updated_at")
