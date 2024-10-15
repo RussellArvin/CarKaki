@@ -1,6 +1,6 @@
 {
-  "id": "e72df586-fbe7-43ff-b7ca-e59fc4d10a64",
-  "prevId": "b5679bc7-cb43-4a5f-a8f8-e719f264fd44",
+  "id": "37da4879-42bc-4bde-8e53-f3c072ad2701",
+  "prevId": "ff125db9-8bea-47b1-8a30-e53e3b0862b6",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -226,7 +226,7 @@
         },
         "type": {
           "name": "type",
-          "type": "parking_system_enum",
+          "type": "request_type_enum",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -547,6 +547,14 @@
       "name": "parking_system_enum",
       "schema": "public",
       "values": [
+        "C",
+        "B"
+      ]
+    },
+    "public.request_type_enum": {
+      "name": "request_type_enum",
+      "schema": "public",
+      "values": [
         "INFO",
         "AVAIL"
       ]
@@ -555,9 +563,9 @@
       "name": "lot_type_enum",
       "schema": "public",
       "values": [
-        "C",
-        "H",
-        "Y"
+        "Car",
+        "Motorcycle",
+        "Heavy Vehicle"
       ]
     }
   },

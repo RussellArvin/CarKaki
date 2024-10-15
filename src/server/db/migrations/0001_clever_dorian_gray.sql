@@ -1,11 +1,17 @@
 DO $$ BEGIN
- CREATE TYPE "public"."parking_system_enum" AS ENUM('INFO', 'AVAIL');
+ CREATE TYPE "public"."parking_system_enum" AS ENUM('C', 'B');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."lot_type_enum" AS ENUM('C', 'H', 'Y');
+ CREATE TYPE "public"."request_type_enum" AS ENUM('INFO', 'AVAIL');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."lot_type_enum" AS ENUM('Car', 'Motorcycle', 'Heavy Vehicle');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -44,7 +50,7 @@ CREATE TABLE IF NOT EXISTS "parking_history" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "request_log" (
 	"id" uuid PRIMARY KEY NOT NULL,
-	"type" "parking_system_enum" NOT NULL,
+	"type" "request_type_enum" NOT NULL,
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
