@@ -1,9 +1,11 @@
 const APP_ROUTES = {
+    LANDING: '/',
+    HOME:'/app/home',
     SETTINGS: {
-        MAIN: '/settings',
-        NAME: '/settings/name',
-        PASSWORD:'/settings/password',
-        DELETE: 'settings/delete'
+        MAIN: '/app/settings',
+        NAME: '/app/settings/name',
+        PASSWORD:'/app/settings/password',
+        DELETE: '/app/settings/delete'
     }
 }
 

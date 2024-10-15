@@ -41,47 +41,47 @@ import {
 } from "~/components/ui/table"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-]
-
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
+type NearbyCarPark = {
+  name: string,
+  address: string
+  availableLots: number
+  totalLots: number
 }
 
-export const columns: ColumnDef<Payment>[] = [
+const sampleData: NearbyCarPark[] = [
+  {
+    name: "Marina Bay Car Park",
+    address: "8 Marina Blvd, Singapore 018981",
+    availableLots: 30,
+    totalLots: 70
+  },
+  {
+    name: "ION Orchard Car Park",
+    address: "2 Orchard Turn, Singapore 238801",
+    availableLots: 50,
+    totalLots: 120
+  },
+  {
+    name: "VivoCity Car Park",
+    address: "1 HarbourFront Walk, Singapore 098585",
+    availableLots: 100,
+    totalLots: 300
+  },
+  {
+    name: "Changi Airport Car Park",
+    address: "78 Airport Blvd, Singapore 819666",
+    availableLots: 200,
+    totalLots: 500
+  },
+  {
+    name: "Suntec City Car Park",
+    address: "3 Temasek Blvd, Singapore 038983",
+    availableLots: 80,
+    totalLots: 250
+  }
+];
+
+const columns: ColumnDef<NearbyCarPark>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -105,47 +105,41 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="capitalize">{row.getValue("name")}</div>
     ),
   },
   {
-    accessorKey: "email",
+    accessorKey: "address",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Address
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div>{row.getValue("address")}</div>,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "availableLots",
+    header: () => <div className="text-right">Available/Total</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
+      const available = parseInt(row.getValue("availableLots"))
+      const total = row.original.totalLots;
+      return <div className="text-right font-medium">{available}/{total}</div>
     },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original
+      const carPark = row.original
 
       return (
         <DropdownMenu>
@@ -158,13 +152,13 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(carPark.name)}
             >
-              Copy payment ID
+              Copy car park name
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem>Check route</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -172,35 +166,32 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ]
 
-export function NearbyCarparks(){
-    return (
-        <Card>
-        <CardHeader>
-            <CardTitle>Nearby Carparks</CardTitle>
-            <CardDescription>Carparks that are nearby</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <DataTable />
-        </CardContent>
-        <CardFooter className="flex justify-between">
-            <Button>Save as Home</Button>
-            <Button>Save as Work</Button>
-        </CardFooter>
+export function NearbyCarparks() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Nearby Carparks</CardTitle>
+        <CardDescription>Carparks that are nearby</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <DataTable />
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button>Save as Home</Button>
+        <Button>Save as Work</Button>
+      </CardFooter>
     </Card>
-    )
+  )
 }
 
 function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
-    data,
+    data: sampleData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -222,10 +213,10 @@ function DataTable() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter car parks..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

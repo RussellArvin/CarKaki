@@ -1,11 +1,15 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { NearbyCarparks } from "./components/nearby-carparks"
+import Navbar from "~/components/global/navbar"
 
 
 export default function CarParkPage(){
     return (
-        <CarParkMainContent />
+        <>
+            <Navbar />
+            <CarParkMainContent />
+        </>
     )
 }
 
