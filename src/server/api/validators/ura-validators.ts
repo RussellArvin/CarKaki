@@ -5,13 +5,24 @@ import { vehicleCategory } from "../types/vehicle-category";
 const parkingSystemEnum = z.enum(parkingSystem); 
 const vehicleCategoryEnum = z.enum(vehicleCategory)
 
-const rateTransformer = z.string().transform((val) => parseFloat(val.replace('$', '')));
+const rateTransformer = z
+  .string()
+  .optional()
+  .transform((val) => {
+    if (!val || val === '') return 0; // If val is undefined, null, or empty, return 0
+    return parseFloat(val.replace('$', '')) || 0; // Default to 0 if parsing fails
+  });
 
-// Helper function to parse "30 mins" to 30
-const minTransformer = z.string().transform((val) => {
-  const numberMatch = val.match(/\d+/);
-  return numberMatch ? parseInt(numberMatch[0], 10) : 0;
-});
+
+  const minTransformer = z
+  .string()
+  .optional()
+  .transform((val) => {
+    if (!val || val === '') return 0; // If val is undefined, null, or empty, return 0
+    const numberMatch = val.match(/\d+/);
+    return numberMatch ? parseInt(numberMatch[0], 10) : 0;
+  });
+
 
 // Define Zod schema with transformations
 export const informationValidator = z.object({
