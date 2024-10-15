@@ -15,6 +15,13 @@
       "when": 1728871529771,
       "tag": "0001_late_thor_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1728976962313,
+      "tag": "0002_quick_mastermind",
+      "breakpoints": true
     }
   ]
 }
