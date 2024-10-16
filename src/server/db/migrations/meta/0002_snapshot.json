@@ -1,6 +1,6 @@
 {
-  "id": "ff433dc3-00ac-46e7-9429-acae60a9a592",
-  "prevId": "ff125db9-8bea-47b1-8a30-e53e3b0862b6",
+  "id": "9b5d6515-40cd-4d19-a17d-1f189c0638f7",
+  "prevId": "ff433dc3-00ac-46e7-9429-acae60a9a592",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -169,15 +169,15 @@
         "car_park_rate_car_park_id_car_park_id_fk": {
           "name": "car_park_rate_car_park_id_car_park_id_fk",
           "tableFrom": "car_park_rate",
-          "tableTo": "car_park",
           "columnsFrom": [
             "car_park_id"
           ],
+          "tableTo": "car_park",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -237,28 +237,28 @@
         "parking_history_car_park_id_car_park_id_fk": {
           "name": "parking_history_car_park_id_car_park_id_fk",
           "tableFrom": "parking_history",
-          "tableTo": "car_park",
           "columnsFrom": [
             "car_park_id"
           ],
+          "tableTo": "car_park",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "parking_history_user_id_user_id_fk": {
           "name": "parking_history_user_id_user_id_fk",
           "tableFrom": "parking_history",
-          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -397,38 +397,38 @@
         "user_home_car_park_id_car_park_id_fk": {
           "name": "user_home_car_park_id_car_park_id_fk",
           "tableFrom": "user",
-          "tableTo": "car_park",
           "columnsFrom": [
             "home_car_park_id"
           ],
+          "tableTo": "car_park",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "user_work_car_park_id_car_park_id_fk": {
           "name": "user_work_car_park_id_car_park_id_fk",
           "tableFrom": "user",
-          "tableTo": "car_park",
           "columnsFrom": [
             "work_car_park_id"
           ],
+          "tableTo": "car_park",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "user_email_unique": {
           "name": "user_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
@@ -467,28 +467,28 @@
         "user_favourite_car_park_id_car_park_id_fk": {
           "name": "user_favourite_car_park_id_car_park_id_fk",
           "tableFrom": "user_favourite",
-          "tableTo": "car_park",
           "columnsFrom": [
             "car_park_id"
           ],
+          "tableTo": "car_park",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "user_favourite_user_id_user_id_fk": {
           "name": "user_favourite_user_id_user_id_fk",
           "tableFrom": "user_favourite",
-          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -556,28 +556,28 @@
         "user_review_car_park_id_car_park_id_fk": {
           "name": "user_review_car_park_id_car_park_id_fk",
           "tableFrom": "user_review",
-          "tableTo": "car_park",
           "columnsFrom": [
             "car_park_id"
           ],
+          "tableTo": "car_park",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "user_review_user_id_user_id_fk": {
           "name": "user_review_user_id_user_id_fk",
           "tableFrom": "user_review",
-          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {

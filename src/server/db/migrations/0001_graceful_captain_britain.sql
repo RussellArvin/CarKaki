@@ -22,6 +22,17 @@ CREATE TABLE IF NOT EXISTS "car_park" (
 	"name" text NOT NULL,
 	"address" text,
 	"vehicle_category" "lot_type_enum" NOT NULL,
+	"parking_system" "parking_system_enum" NOT NULL,
+	"capacity" integer NOT NULL,
+	"available_lots" integer NOT NULL,
+	"location" geometry(point) NOT NULL,
+	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updated_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "car_park_rate" (
+	"id" uuid PRIMARY KEY NOT NULL,
+	"car_park_id" uuid NOT NULL,
 	"start_time" time NOT NULL,
 	"end_time" time NOT NULL,
 	"weekday_rate" numeric(5, 2) NOT NULL,
@@ -30,10 +41,6 @@ CREATE TABLE IF NOT EXISTS "car_park" (
 	"sat_min" integer NOT NULL,
 	"sun_ph_rate" numeric(5, 2) NOT NULL,
 	"sun_ph_min" integer NOT NULL,
-	"parking_system" "parking_system_enum" NOT NULL,
-	"capacity" integer NOT NULL,
-	"available_lots" integer NOT NULL,
-	"location" geometry(point) NOT NULL,
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"updated_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -92,6 +99,12 @@ CREATE TABLE IF NOT EXISTS "user_review" (
 	"deleted_at" timestamp,
 	CONSTRAINT "user_review_car_park_id_user_id_pk" PRIMARY KEY("car_park_id","user_id")
 );
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "car_park_rate" ADD CONSTRAINT "car_park_rate_car_park_id_car_park_id_fk" FOREIGN KEY ("car_park_id") REFERENCES "public"."car_park"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "parking_history" ADD CONSTRAINT "parking_history_car_park_id_car_park_id_fk" FOREIGN KEY ("car_park_id") REFERENCES "public"."car_park"("id") ON DELETE no action ON UPDATE no action;

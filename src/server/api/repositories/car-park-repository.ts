@@ -2,40 +2,13 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, getTableColumns, sql } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
-import CarParkAgency from "../types/car-park-agency";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
-import { convertDrizzleTimeToISO } from "~/server/utils/convertDrizzleTimeToISO";
-import { vehicleCategory } from "../types/vehicle-category";
-import handleError from "~/server/utils/handleError";
 import Location from "../types/location";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
-type SelectCarPark = typeof carParkSchema.$inferSelect
-
 export class CarParkRepository {
     constructor(private readonly db: NeonHttpDatabase) {}
-
-    private formatToDb(entity: CarPark){
-        return {
-            ...entity.getValue(),
-            weekDayRate: entity.getValue().weekDayRate.toString(),
-            satRate: entity.getValue().satRate.toString(),
-            sunPHRate: entity.getValue().sunPHRate.toString()
-        }
-    }
-
-    private formatFromDb(data: SelectCarPark): CarPark{
-        return new CarPark({
-            ...data,
-            weekDayRate: parseFloat(data.weekDayRate),
-            satRate: parseFloat(data.satRate),
-            sunPHRate: parseFloat(data.sunPHRate),
-            //TODO: Check if we need this?
-            // startTime: convertDrizzleTimeToISO(data.startTime),
-            // endTime: convertDrizzleTimeToISO(data.endTime),
-        })
-    }
 
     public async findAll(){
         try{
@@ -43,12 +16,7 @@ export class CarParkRepository {
                 .select()
                 .from(carParkSchema)
 
-            if(!results) throw new TRPCError({
-                code:"NOT_FOUND",
-                message:"Unable to find CarPark"
-            })
-
-            return results.map((result)=>this.formatFromDb(result))
+            return results.map((result)=> new CarPark({...result}))
         } catch(err) {
             if(err instanceof TRPCError) throw err;
 
@@ -64,7 +32,7 @@ export class CarParkRepository {
         try{
             await this.db
             .insert(carParkSchema)
-            .values(this.formatToDb(entity))
+            .values({...entity.getValue()})
 
             return;
         } catch(err){
@@ -81,7 +49,7 @@ export class CarParkRepository {
             const values = entitites.map((entity)=> entity.getValue())
             await this.db
             .insert(carParkSchema)
-            .values(entitites.map((entity)=> this.formatToDb(entity)))
+            .values(entitites.map((entity)=> entity.getValue()))
         } catch(err){
             const e = err as Error;
             throw new TRPCError({
@@ -95,7 +63,7 @@ export class CarParkRepository {
         try{
             await this.db.update(carParkSchema)
             .set({
-                ...this.formatToDb(entity),
+                ...entity.getValue(),
                 updatedAt: new Date()
             })
             .where(eq(carParkSchema.id,entity.getValue().id))
@@ -138,19 +106,25 @@ export class CarParkRepository {
         location: Location, amount: number
     ): Promise<CarPark[]>{
         try{
-            const sqlPoint = sql`ST_SetSRID(ST_MakePoint(${location.x}, ${location.y}), 4326)`;
+            
+            const sqlPoint = sql`ST_SetSRID(ST_MakePoint(${location.x}, ${location.y}), 3414)`;
 
             const results = await this.db
                 .select({
-                    ...getTableColumns(carParkSchema),
-                    //TODO: Check if need this
-                    //distance: sql`ST_Distance(${carParkSchema.location}, ${sqlPoint})`
+                ...getTableColumns(carParkSchema),
+                distance: sql`ST_Distance(
+                    ${carParkSchema.location}::geometry,
+                    ${sqlPoint}
+                )`
                 })
                 .from(carParkSchema)
-                .orderBy(sql`${carParkSchema.location} <-> ${sqlPoint}`)
+                .orderBy(sql`${carParkSchema.location}::geometry <-> ${sqlPoint}`)
                 .limit(amount)
+                .offset(1)
+
+
             
-            return results.map((carpark) => this.formatFromDb(carpark))
+            return results.map((carpark) => new CarPark({...carpark}))
         }  catch(err){
             const e = err as Error;
             throw new TRPCError({
@@ -173,7 +147,7 @@ export class CarParkRepository {
                 message:"Unable to find CarPark"
             })
 
-            return this.formatFromDb(userData[0])
+            return new CarPark({...userData[0]})
         } catch(err) {
             if(err instanceof TRPCError) throw err;
 
@@ -190,31 +164,13 @@ export class CarParkRepository {
     ) {
         try{
             const results = await this.db.select({
-                id: carParkSchema.id,
-                code: carParkSchema.code,
-                name: carParkSchema.name,
-                address: carParkSchema.address,
-                vehicleCategory: carParkSchema.vehicleCategory,
-                startTime: carParkSchema.startTime,
-                endTime: carParkSchema.endTime,
-                weekDayRate: carParkSchema.weekDayRate,
-                weekDayMin: carParkSchema.weekDayMin,
-                satRate: carParkSchema.satRate,
-                satMin: carParkSchema.satMin,
-                sunPHRate: carParkSchema.sunPHRate,
-                sunPHMin: carParkSchema.sunPHMin,
-                parkingSystem: carParkSchema.parkingSystem,
-                capacity: carParkSchema.capacity,
-                availableLots: carParkSchema.availableLots,
-                location: carParkSchema.location,
-                createdAt: carParkSchema.createdAt,
-                updatedAt: carParkSchema.updatedAt
+                ...getTableColumns(carParkSchema)
             })
                 .from(parkingHistorySchema)
                 .innerJoin(carParkSchema,eq(carParkSchema.id,parkingHistorySchema.carParkId))
                 .where(eq(parkingHistorySchema.userId,userId))
 
-                return results.map((carpark) => this.formatFromDb(carpark))
+                return results.map((carpark) => new CarPark({...carpark}))
         } catch(err){
             const e = err as Error;
             return new TRPCError({
@@ -229,31 +185,13 @@ export class CarParkRepository {
     ) {
         try{
             const results = await this.db.select({
-                id: carParkSchema.id,
-                code: carParkSchema.code,
-                name: carParkSchema.name,
-                address: carParkSchema.address,
-                vehicleCategory: carParkSchema.vehicleCategory,
-                startTime: carParkSchema.startTime,
-                endTime: carParkSchema.endTime,
-                weekDayRate: carParkSchema.weekDayRate,
-                weekDayMin: carParkSchema.weekDayMin,
-                satRate: carParkSchema.satRate,
-                satMin: carParkSchema.satMin,
-                sunPHRate: carParkSchema.sunPHRate,
-                sunPHMin: carParkSchema.sunPHMin,
-                parkingSystem: carParkSchema.parkingSystem,
-                capacity: carParkSchema.capacity,
-                availableLots: carParkSchema.availableLots,
-                location: carParkSchema.location,
-                createdAt: carParkSchema.createdAt,
-                updatedAt: carParkSchema.updatedAt
+                ...getTableColumns(carParkSchema)
             })
                 .from(userFavouriteSchema)
                 .innerJoin(carParkSchema,eq(carParkSchema.id,userFavouriteSchema.carParkId))
                 .where(eq(userFavouriteSchema.userId,userId))
 
-                return results.map((carpark) => this.formatFromDb(carpark))
+                return results.map((carpark) => new CarPark({...carpark}))
         } catch(err){
             const e = err as Error;
             return new TRPCError({
