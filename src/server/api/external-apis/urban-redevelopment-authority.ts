@@ -62,7 +62,7 @@ export class UrbanRedevelopmentAuthority {
         })
 
         try{
-            const rawResponse = await axios.get(`${UrbanRedevelopmentAuthority.BASE_URL}invokeUraDS`, {
+            const rawResponse = await axios.get(`${UrbanRedevelopmentAuthority.BASE_URL}/invokeUraDS`, {
                 params: { service: 'Car_Park_Availability' },
                 headers: {
                     'AccessKey': UrbanRedevelopmentAuthority.accessKey,
@@ -95,9 +95,9 @@ export class UrbanRedevelopmentAuthority {
             message:"Missing URA Token"
         })
 
+
         try{
-            const rawResponse = await axios.get(`${UrbanRedevelopmentAuthority.BASE_URL}invokeUraDS`, {
-                params: { service: 'Car_Park_Details' },
+            const rawResponse = await axios.get(`${UrbanRedevelopmentAuthority.BASE_URL}/invokeUraDS?service=Car_Park_Details`, {
                 headers: {
                     'AccessKey': UrbanRedevelopmentAuthority.accessKey,
                     'Token': this.token
