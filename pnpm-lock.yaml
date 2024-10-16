@@ -14,6 +14,9 @@ importers:
       '@clerk/nextjs':
         specifier: ^4.31.5
         version: 4.31.5(next@14.2.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@googlemaps/google-maps-services-js':
+        specifier: ^3.4.0
+        version: 3.4.0
       '@neondatabase/serverless':
         specifier: ^0.10.1
         version: 0.10.1
@@ -65,6 +68,9 @@ importers:
       '@trpc/server':
         specifier: ^10.45.2
         version: 10.45.2
+      '@types/proj4':
+        specifier: ^2.5.5
+        version: 2.5.5
       axios:
         specifier: ^1.7.7
         version: 1.7.7
@@ -92,6 +98,9 @@ importers:
       postgres:
         specifier: ^3.4.4
         version: 3.4.4
+      proj4:
+        specifier: ^2.12.1
+        version: 2.12.1
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -663,6 +672,12 @@ packages:
 
   '@floating-ui/utils@0.2.8':
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
+
+  '@googlemaps/google-maps-services-js@3.4.0':
+    resolution: {integrity: sha512-M1G+Jl4ri9YIODxC+RwvW4UkonTQ+ZFE5gjdIrKP/4/vYG2q2dDN1IgTp03I2MI0eGQs2FmQlxGJ0lBaZ5Ysyw==}
+
+  '@googlemaps/url-signature@1.0.37':
+    resolution: {integrity: sha512-SwXdTkGCx647aKbU1K7SjvMPQSmEmpEbTsqSCY0xE1dSnywgXG6Td1B83NjTjUuBBPrmFd+fkhqr/VFsGaaYNw==}
 
   '@humanwhocodes/config-array@0.13.0':
     resolution: {integrity: sha512-DZLEEqFWQFiyK6h5YIeynKx7JlvCYWL0cImfSRXZ9l4Sg2efkFGTuFf6vzXjK1cq6IYkU+Eg/JizXw+TD2vRNw==}
@@ -1299,6 +1314,9 @@ packages:
   '@types/pg@8.11.6':
     resolution: {integrity: sha512-/2WmmBXHLsfRqzfHW7BNZ8SbYzE8OSk7i3WjFYvfgRHj7S1xj+16Je5fUKv3lVdVzk/zn9TXOqf+avFCFIE0yQ==}
 
+  '@types/proj4@2.5.5':
+    resolution: {integrity: sha512-y4tHUVVoMEOm2nxRLQ2/ET8upj/pBmoutGxFw2LZJTQWPgWXI+cbxVEUFFmIzr/bpFR83hGDOTSXX6HBeObvZA==}
+
   '@types/prop-types@15.7.13':
     resolution: {integrity: sha512-hCZTSvwbzWGvhqxp/RqVqwU999pBf2vp7hzIjiYOsl8wqOmUxkQ6ddw1cV3l8811+kdUFus/q4d1Y3E3SyEifA==}
 
@@ -1396,6 +1414,10 @@ packages:
     resolution: {integrity: sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  agentkeepalive@4.5.0:
+    resolution: {integrity: sha512-5GG/5IbQQpC9FpkRGsSvZI5QYeSCzlJHdpBQntCsuTOxhKD8lqKhrleg2Yi7yvMIf82Ycmmqln9U8V9qwEiJew==}
+    engines: {node: '>= 8.0.0'}
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
@@ -1608,6 +1630,9 @@ packages:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
 
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+
   cssesc@3.0.0:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
     engines: {node: '>=4'}
@@ -1650,6 +1675,10 @@ packages:
     peerDependenciesMeta:
       supports-color:
         optional: true
+
+  decode-uri-component@0.2.2:
+    resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==}
+    engines: {node: '>=0.10'}
 
   deep-equal@2.2.3:
     resolution: {integrity: sha512-ZIwpnevOurS8bpT4192sqAowWM76JDKSHYzMLty3BZGSswgq6pBaH3DhCSW5xVAZICZyKdOBPjwww5wfgT/6PA==}
@@ -2004,6 +2033,10 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
+  filter-obj@1.1.0:
+    resolution: {integrity: sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==}
+    engines: {node: '>=0.10.0'}
+
   find-up@5.0.0:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
@@ -2150,6 +2183,9 @@ packages:
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
+
+  humanize-ms@1.2.1:
+    resolution: {integrity: sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==}
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -2399,6 +2435,9 @@ packages:
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
+
+  mgrs@1.0.0:
+    resolution: {integrity: sha512-awNbTOqCxK1DBGjalK3xqWIstBZgN6fxsMSiXLs9/spqWkF2pAhb2rrYCFSsr1/tT7PhcDGjZndG8SWYn0byYA==}
 
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
@@ -2730,6 +2769,9 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  proj4@2.12.1:
+    resolution: {integrity: sha512-vmhP3hmstjXjzFwg8QXJwpoj4n7GVrXk3ZW3DzNK/Ur4cuwXq7ZiMXaWYvLYLQbX8n4MXgbwTr4lthOUZltBpA==}
+
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
@@ -2746,6 +2788,10 @@ packages:
   pvutils@1.1.3:
     resolution: {integrity: sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ==}
     engines: {node: '>=6.0.0'}
+
+  query-string@7.1.3:
+    resolution: {integrity: sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==}
+    engines: {node: '>=6'}
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -2825,6 +2871,12 @@ packages:
   resolve@2.0.0-next.5:
     resolution: {integrity: sha512-U7WjGVG9sH8tvjW5SmGbQuui75FiyjAX72HX15DwBBwF9dNiQZRQAg9nnPhYy+TUnE0+VcrttuvNI8oSxZcocA==}
     hasBin: true
+
+  retry-axios@2.6.0:
+    resolution: {integrity: sha512-pOLi+Gdll3JekwuFjXO3fTq+L9lzMQGcSq7M5gIjExcl3Gu1hd4XXuf5o3+LuSBsaULQH7DiNbsqPd1chVpQGQ==}
+    engines: {node: '>=10.7.0'}
+    peerDependencies:
+      axios: '*'
 
   reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
@@ -2908,6 +2960,10 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
+  split-on-first@1.1.0:
+    resolution: {integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==}
+    engines: {node: '>=6'}
+
   stop-iteration-iterator@1.0.0:
     resolution: {integrity: sha512-iCGQj+0l0HOdZ2AEeBADlsRC+vsnDsZsbdSiH1yNSjcfKM7fdpCMfqAL/dwF5BLiw/XhRft/Wax6zQbhq2BcjQ==}
     engines: {node: '>= 0.4'}
@@ -2915,6 +2971,10 @@ packages:
   streamsearch@1.1.0:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
     engines: {node: '>=10.0.0'}
+
+  strict-uri-encode@2.0.0:
+    resolution: {integrity: sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==}
+    engines: {node: '>=4'}
 
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
@@ -3161,6 +3221,9 @@ packages:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
     hasBin: true
+
+  wkt-parser@1.3.3:
+    resolution: {integrity: sha512-ZnV3yH8/k58ZPACOXeiHaMuXIiaTk1t0hSUVisbO0t4RjA5wPpUytcxeyiN2h+LZRrmuHIh/1UlrR9e7DHDvTw==}
 
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
@@ -3510,6 +3573,20 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
 
   '@floating-ui/utils@0.2.8': {}
+
+  '@googlemaps/google-maps-services-js@3.4.0':
+    dependencies:
+      '@googlemaps/url-signature': 1.0.37
+      agentkeepalive: 4.5.0
+      axios: 1.7.7
+      query-string: 7.1.3
+      retry-axios: 2.6.0(axios@1.7.7)
+    transitivePeerDependencies:
+      - debug
+
+  '@googlemaps/url-signature@1.0.37':
+    dependencies:
+      crypto-js: 4.2.0
 
   '@humanwhocodes/config-array@0.13.0':
     dependencies:
@@ -4119,6 +4196,8 @@ snapshots:
       pg-protocol: 1.7.0
       pg-types: 4.0.2
 
+  '@types/proj4@2.5.5': {}
+
   '@types/prop-types@15.7.13': {}
 
   '@types/qs@6.9.16': {}
@@ -4242,6 +4321,10 @@ snapshots:
       acorn: 8.12.1
 
   acorn@8.12.1: {}
+
+  agentkeepalive@4.5.0:
+    dependencies:
+      humanize-ms: 1.2.1
 
   ajv@6.12.6:
     dependencies:
@@ -4487,6 +4570,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  crypto-js@4.2.0: {}
+
   cssesc@3.0.0: {}
 
   csstype@3.1.1: {}
@@ -4520,6 +4605,8 @@ snapshots:
   debug@4.3.7:
     dependencies:
       ms: 2.1.3
+
+  decode-uri-component@0.2.2: {}
 
   deep-equal@2.2.3:
     dependencies:
@@ -5034,6 +5121,8 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
+  filter-obj@1.1.0: {}
+
   find-up@5.0.0:
     dependencies:
       locate-path: 6.0.0
@@ -5193,6 +5282,10 @@ snapshots:
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
+
+  humanize-ms@1.2.1:
+    dependencies:
+      ms: 2.1.3
 
   ignore@5.3.2: {}
 
@@ -5424,6 +5517,8 @@ snapshots:
   map-obj@4.3.0: {}
 
   merge2@1.4.1: {}
+
+  mgrs@1.0.0: {}
 
   micromatch@4.0.8:
     dependencies:
@@ -5682,6 +5777,11 @@ snapshots:
 
   prettier@3.3.3: {}
 
+  proj4@2.12.1:
+    dependencies:
+      mgrs: 1.0.0
+      wkt-parser: 1.3.3
+
   prop-types@15.8.1:
     dependencies:
       loose-envify: 1.4.0
@@ -5697,6 +5797,13 @@ snapshots:
       tslib: 2.7.0
 
   pvutils@1.1.3: {}
+
+  query-string@7.1.3:
+    dependencies:
+      decode-uri-component: 0.2.2
+      filter-obj: 1.1.0
+      split-on-first: 1.1.0
+      strict-uri-encode: 2.0.0
 
   queue-microtask@1.2.3: {}
 
@@ -5782,6 +5889,10 @@ snapshots:
       is-core-module: 2.15.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+
+  retry-axios@2.6.0(axios@1.7.7):
+    dependencies:
+      axios: 1.7.7
 
   reusify@1.0.4: {}
 
@@ -5872,11 +5983,15 @@ snapshots:
 
   source-map@0.6.1: {}
 
+  split-on-first@1.1.0: {}
+
   stop-iteration-iterator@1.0.0:
     dependencies:
       internal-slot: 1.0.7
 
   streamsearch@1.1.0: {}
+
+  strict-uri-encode@2.0.0: {}
 
   string-width@4.2.3:
     dependencies:
@@ -6192,6 +6307,8 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  wkt-parser@1.3.3: {}
 
   word-wrap@1.2.5: {}
 

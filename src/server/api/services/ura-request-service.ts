@@ -7,7 +7,8 @@ import { AvailabilityCarPark, InformationCarPark } from "../types/ura-types";
 import { v4 as uuidv4 } from 'uuid';
 
 export const checkAndMakeURARequests = async () => {
-    return Promise.all([handleAvailabilityRequest, handleInformationRequest]);
+    await handleInformationRequest();
+    //return Promise.all([handleAvailabilityRequest, handleInformationRequest]);
 };
 
 const canMakeRequest = (request: RequestLog | null): boolean => {
@@ -36,9 +37,19 @@ const handleAvailabilityRequest = async () => {
     return;
 }
 
+const chunkArray = <T>(array: T[], size: number): T[][] => {
+    const result: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+
 const handleInformationRequest = async () => {
     const latestRequest = await requestLogRepository.findLatestRequestOrNull("INFO");
     if(!canMakeRequest(latestRequest)) return;
+
+    console.log("A Request was made")
 
     const ura = new UrbanRedevelopmentAuthority();
     await ura.initialize()
@@ -50,10 +61,24 @@ const handleInformationRequest = async () => {
         updatedCarParks, newCarParks
     } = mappingInformationRequest(uraData,carparks);
 
-    const promises = [carParkRepository.saveMany(newCarParks)];
+    console.log("Length of updated CarParks, ",updatedCarParks.length);
+    console.log("Length of new Carparks", newCarParks.length);
+
+    const newCarParksChunks = chunkArray(newCarParks, 500);
+
+    // Create promises for each chunk
+    const promises = newCarParksChunks.map(chunk => carParkRepository.saveMany(chunk));
     updatedCarParks.map((carpark)=>{
         promises.push(carParkRepository.update(carpark))
     })
+    
+    const newRequest = new RequestLog({
+        id:uuidv4(),
+        type:"INFO",
+        createdAt: new Date(),
+    })
+
+    promises.push(requestLogRepository.save(newRequest))
 
     await Promise.all(promises)
     return;
@@ -105,12 +130,12 @@ const mappingInformationRequest = (
             if (!areCarParksIdentical(existingCarpark, uraCarpark)) {
                 // Create an updated CarPark only if there are changes
                 const updatedCarpark = createUpdatedCarparkFromUra(existingCarpark, uraCarpark);
-                updatedCarParks.push(updatedCarpark);
+                if(updatedCarpark) updatedCarParks.push(updatedCarpark);
             }
         } else {
             // If it's a new car park, create a new instance and add it to newCarParks
-            const newCarpark = createNewCarparkFromUra(uraCarpark);
-            newCarParks.push(newCarpark);
+            const newCarPark = createNewCarparkFromUra(uraCarpark);
+            if(newCarPark) newCarParks.push(newCarPark);
         }
     });
 
@@ -121,7 +146,12 @@ const mappingInformationRequest = (
 const createUpdatedCarparkFromUra = (
     existingCarPark: CarPark,
     uraCarPark: InformationCarPark
-): CarPark => {
+): CarPark | null => {
+    const coordinates = uraCarPark.geometries[0]?.coordinates;
+    const updatedLocation = coordinates ? formatLocation(coordinates, existingCarPark.getValue().location) : existingCarPark.getValue().location;
+
+    if (!updatedLocation) return null;
+
     return new CarPark({
         ...existingCarPark.getValue(),
         vehicleCategory: uraCarPark.vehCat,
@@ -134,14 +164,18 @@ const createUpdatedCarparkFromUra = (
         sunPHRate: uraCarPark.sunPHRate,
         sunPHMin: uraCarPark.sunPHMin,
         parkingSystem: uraCarPark.parkingSystem,
-        location: formatLocation(uraCarPark.geometries[0]?.coordinates!, existingCarPark.getValue().location),
-    })
-}
+        location: updatedLocation,
+    });
+};
 
-const createNewCarparkFromUra = (uraCarPark: InformationCarPark): CarPark  => {
+const createNewCarparkFromUra = (uraCarPark: InformationCarPark): CarPark | null  => {
     const currentDate = new Date();
+    const coordinates = uraCarPark.geometries[0]?.coordinates;
+    const location = coordinates ? formatLocation(coordinates, null) : null;
+    if(!location) return null;
+
     return new CarPark({
-        id:uuidv4(),
+        id: uuidv4(),
         code: uraCarPark.ppCode,
         name: uraCarPark.ppName,
         vehicleCategory: uraCarPark.vehCat,
@@ -154,25 +188,40 @@ const createNewCarparkFromUra = (uraCarPark: InformationCarPark): CarPark  => {
         sunPHRate: uraCarPark.sunPHRate,
         sunPHMin: uraCarPark.sunPHMin,
         parkingSystem: uraCarPark.parkingSystem,
-        location: formatLocation(uraCarPark.geometries[0]?.coordinates!, null),
-        address:null,
+        location: location,
+        address: null,
         createdAt: currentDate,
         updatedAt: currentDate,
-        capacity:uraCarPark.parkCapacity,
-        availableLots:0,
-    })
-}
+        capacity: uraCarPark.parkCapacity,
+        availableLots: 0,
+    });
+};
 
-const formatLocation = (coordinates: string, existingLocation: Location | null)=> {
+const formatLocation = (coordinates: string, existingLocation: Location | null) => {
+    if (!coordinates) {
+        // Fallback if coordinates are not defined
+        return existingLocation;
+    }
+
     const segments = coordinates.split(',');
-    return{
+    if (segments.length < 2) {
+        // Fallback if split doesn't return enough data
+        return existingLocation;
+    }
+
+    return {
         x: parseFloat(segments[0]!),
         y: parseFloat(segments[1]!)
-    }
-}
+    };
+};
 
 const areCarParksIdentical = (existingCarPark: CarPark, uraCarPark: InformationCarPark): boolean => {
+    const coordinates = uraCarPark.geometries[0]?.coordinates;
+    if (!coordinates) return false;
+
     const existing = existingCarPark.getValue();
+    const coordSegments = coordinates.split(',');
+
     return (
         existing.vehicleCategory === uraCarPark.vehCat &&
         existing.startTime === uraCarPark.startTime &&
@@ -184,7 +233,7 @@ const areCarParksIdentical = (existingCarPark: CarPark, uraCarPark: InformationC
         existing.sunPHRate === uraCarPark.sunPHRate &&
         existing.sunPHMin === uraCarPark.sunPHMin &&
         existing.parkingSystem === uraCarPark.parkingSystem &&
-        existing.location.x === parseFloat(uraCarPark.geometries[0]?.coordinates.split(',')[0]!) &&
-        existing.location.y === parseFloat(uraCarPark.geometries[0]?.coordinates.split(',')[1]!)
+        existing.location.x === parseFloat(coordSegments[0]!) &&
+        existing.location.y === parseFloat(coordSegments[1]!)
     );
 };
