@@ -17,6 +17,7 @@ import { Skeleton } from "~/components/ui/skeleton"
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
+import Navbar from "~/components/global/navbar"
 
 const notifications = [
   {
@@ -45,16 +46,19 @@ export default function MainSettings() {
 
 
   return (
-    <div className={`flex items-center justify-center min-h-screen`}>
-      {isMainSettingsLoading ? (
-        <Skeleton className="h-[500px] w-[500px] rounded-xl" />
-      ) : mainSettings ? (
-       <MainSettingsContent
-          settings={mainSettings}
-        />
-      ) : (
-        <div>No settings available</div> // Optional: handle the undefined case
-      )}
+    <div>
+      <Navbar/>
+      <div className={`flex items-center justify-center min-h-screen`}>
+        {isMainSettingsLoading ? (
+          <Skeleton className="h-[500px] w-[500px] rounded-xl" />
+        ) : mainSettings ? (
+        <MainSettingsContent
+            settings={mainSettings}
+          />
+        ) : (
+          <div>No settings available</div> // Optional: handle the undefined case
+        )}
+      </div>
     </div>
   );
   

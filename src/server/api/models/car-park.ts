@@ -9,14 +9,6 @@ interface CarParkProps {
     name: string
     address: string | null
     vehicleCategory: VehicleCategory
-    startTime: string
-    endTime: string
-    weekDayRate: number
-    weekDayMin: number
-    satRate: number
-    satMin: number
-    sunPHRate: number
-    sunPHMin: number
     parkingSystem: ParkingSystem
     capacity: number
     availableLots: number

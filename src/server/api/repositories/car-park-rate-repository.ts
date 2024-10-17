@@ -70,7 +70,7 @@ export class CarParkRateRepository {
             })
             .from(carParkRateSchema)
             .where(
-                between(sql`NOW()`, carParkRateSchema.startTime, carParkRateSchema.endTime)
+                between(sql`CURRENT_TIM`, carParkRateSchema.startTime, carParkRateSchema.endTime)
             )
             .limit(1)
 

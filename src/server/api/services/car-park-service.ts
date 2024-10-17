@@ -1,46 +1,68 @@
 import { GoogleMap } from "../external-apis/google-maps";
 import { CarPark } from "../models/car-park";
+import { CarParkRate } from "../models/car-park-rate";
+import { CarParkRateRepository } from "../repositories/car-park-rate-repository";
+import { CarParkRepository } from "../repositories/car-park-repository";
 
-export const mapOneCarParkWithAddress = async (carPark: CarPark): Promise<CarPark> => {
-    const { address, location } = carPark.getValue()
-    if(address) return carPark;
-    
-    return new CarPark({
-        ...carPark.getValue(),
-        address: await GoogleMap.getAddressFromCoordinates(location)
-    })
-}
+export class CarParkService{
+    private carParkRateRepository: CarParkRateRepository
+    private carParkRepository: CarParkRepository
 
-export const mapManyCarParkWithAddress = async (carParks: CarPark[]): Promise<CarPark[]> => {
-    return Promise.all(carParks.map(carPark => mapOneCarParkWithAddress(carPark)))
-}
+    constructor(
+        carParkRateRepository: CarParkRateRepository,
+        carParkRepository: CarParkRepository
+    ){
+        this.carParkRateRepository = carParkRateRepository
+        this.carParkRepository = carParkRepository
+    }
 
-//TODO: public holiday api?
-export const getAppropriateRate = (carPark: CarPark) => {
-    const dayOfTheWeek = new Date().getDay();
-    const {
-        weekDayMin,
-        weekDayRate,
-        satMin,
-        satRate,
-        sunPHMin,
-        sunPHRate
-    }= carPark.getValue()
+    public async mapOneCarParkWithAddress(carPark:CarPark): Promise<CarPark> {
+        const { address, location } = carPark.getValue()
+        if(address) return carPark;
+        
+        const updatedCarPark =  new CarPark({
+            ...carPark.getValue(),
+            address: await GoogleMap.getAddressFromCoordinates(location)
+        })
+        await this.carParkRepository.update(updatedCarPark);
+        return updatedCarPark;
+    }
 
-    if(dayOfTheWeek === 0){
+    public async mapManyCarParkWithAddress(carParks: CarPark[]): Promise<CarPark[]>{
+        return Promise.all(carParks.map(carPark => this.mapOneCarParkWithAddress(carPark)))
+    }
+
+    private getDayRate(carParkRate: CarParkRate) {
+        const dayOfTheWeek = new Date().getDay();
+        //TODO: handle public holiday
+
+        if(dayOfTheWeek === 0){
+            return {
+                min: carParkRate.getValue().sunPHMin,
+                rate: carParkRate.getValue().sunPHRate
+            }
+        }
+        else if(dayOfTheWeek === 6) {
+            return {
+                min: carParkRate.getValue().satMin,
+                rate: carParkRate.getValue().satRate
+            }
+        }
         return {
-            min: sunPHMin,
-            rate: sunPHRate
+            min: carParkRate.getValue().weekDayMin,
+            rate: carParkRate.getValue().weekDayRate
         }
     }
-    if(dayOfTheWeek === 6){
-        return{
-            min: satMin,
-            rate: satRate
-        }
-    }
-    return {
-        min: weekDayMin,
-        rate: weekDayRate
+
+    public async getAppropriateRate(
+        carParkId: string,
+        minutes: number
+    ): Promise<number> {
+        const carParkRate = await this.carParkRateRepository.findOneByCarParkId(carParkId);
+        if(!carParkRate) return 0;
+
+        const { min, rate } = this.getDayRate(carParkRate);
+
+        return Math.ceil(minutes / min) * rate;
     }
 }

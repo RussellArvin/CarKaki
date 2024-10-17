@@ -49,18 +49,31 @@ export function convertToDrizzleTime(timeString: string): string {
 }
 
 /**
- * Formats a time value from Drizzle ORM to a string in the format "HH.MM AM/PM".
- * @param time - The time value from Drizzle ORM (assumed to be a Date object)
- * @returns A formatted time string
- * @throws Error if the input is not a valid Date object
+ * Formats a time string from Drizzle ORM to a string in the format "HH.MM AM/PM".
+ * @param timeString - The time string from Drizzle ORM (format: "HH:MM:SS") or undefined
+ * @returns A formatted time string, or "--:-- --" if the input is undefined or invalid
  */
-export function formatFromDrizzleTime(time: Date): string {
-  if (!(time instanceof Date) || isNaN(time.getTime())) {
-    throw new Error('Invalid input: time must be a valid Date object');
+export function formatFromDrizzleTime(timeString: string | undefined): string {
+  // Check if the input is undefined or doesn't match the expected format
+  if (timeString === undefined || !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(timeString)) {
+    return "--:-- --";
   }
 
-  const hours = time.getHours();
-  const minutes = time.getMinutes();
+  const [hoursStr, minutesStr] = timeString.split(':');
+  
+  // Additional check to ensure hoursStr and minutesStr are defined
+  if (hoursStr === undefined || minutesStr === undefined) {
+    return "--:-- --";
+  }
+
+  const hours = parseInt(hoursStr, 10);
+  const minutes = parseInt(minutesStr, 10);
+
+  // Check if parsing was successful
+  if (isNaN(hours) || isNaN(minutes)) {
+    return "--:-- --";
+  }
+
   const period = hours >= 12 ? 'PM' : 'AM';
   const formattedHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
   const formattedMinutes = minutes.toString().padStart(2, '0');

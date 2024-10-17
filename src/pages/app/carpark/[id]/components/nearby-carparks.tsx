@@ -40,46 +40,11 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
+import { RouterOutputs } from "~/utils/api"
 
-type NearbyCarPark = {
-  name: string,
-  address: string
-  availableLots: number
-  totalLots: number
-}
 
-const sampleData: NearbyCarPark[] = [
-  {
-    name: "Marina Bay Car Park",
-    address: "8 Marina Blvd, Singapore 018981",
-    availableLots: 30,
-    totalLots: 70
-  },
-  {
-    name: "ION Orchard Car Park",
-    address: "2 Orchard Turn, Singapore 238801",
-    availableLots: 50,
-    totalLots: 120
-  },
-  {
-    name: "VivoCity Car Park",
-    address: "1 HarbourFront Walk, Singapore 098585",
-    availableLots: 100,
-    totalLots: 300
-  },
-  {
-    name: "Changi Airport Car Park",
-    address: "78 Airport Blvd, Singapore 819666",
-    availableLots: 200,
-    totalLots: 500
-  },
-  {
-    name: "Suntec City Car Park",
-    address: "3 Temasek Blvd, Singapore 038983",
-    availableLots: 80,
-    totalLots: 250
-  }
-];
+type NearbyCarPark = RouterOutputs["carPark"]["getFullDetails"]["nearByCarParks"][number]
+
 
 const columns: ColumnDef<NearbyCarPark>[] = [
   {
@@ -131,7 +96,7 @@ const columns: ColumnDef<NearbyCarPark>[] = [
     header: () => <div className="text-right">Available/Total</div>,
     cell: ({ row }) => {
       const available = parseInt(row.getValue("availableLots"))
-      const total = row.original.totalLots;
+      const total = row.original.capacity;
       return <div className="text-right font-medium">{available}/{total}</div>
     },
   },
@@ -166,7 +131,9 @@ const columns: ColumnDef<NearbyCarPark>[] = [
   },
 ]
 
-export function NearbyCarparks() {
+export function NearbyCarparks(props: NearByCarParksProps) {
+  const {nearByCarParks} = props;
+
   return (
     <Card>
       <CardHeader>
@@ -174,24 +141,28 @@ export function NearbyCarparks() {
         <CardDescription>Carparks that are nearby</CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable />
+        <DataTable 
+          nearByCarParks={nearByCarParks}
+        />
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button>Save as Home</Button>
-        <Button>Save as Work</Button>
-      </CardFooter>
     </Card>
   )
 }
 
-function DataTable() {
+interface NearByCarParksProps {
+  nearByCarParks: NearbyCarPark[]
+}
+
+function DataTable(props: NearByCarParksProps) {
+  const {nearByCarParks} = props;
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
-    data: sampleData,
+    data: nearByCarParks,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

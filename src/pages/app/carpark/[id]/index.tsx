@@ -2,6 +2,13 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { NearbyCarparks } from "./components/nearby-carparks"
 import Navbar from "~/components/global/navbar"
+import { api } from "~/utils/api"
+import { useRouter } from "next/router"
+import { Skeleton } from "~/components/ui/skeleton"
+import { string } from "zod"
+import { Input } from "~/components/ui/input"
+import { useState } from "react"
+import { toast } from "react-hot-toast"
 
 
 export default function CarParkPage(){
@@ -14,35 +21,102 @@ export default function CarParkPage(){
 }
 
 const CarParkMainContent = () => {
+    const router = useRouter();
+    const {
+        isLoading: isCarParkLoading,
+        data: carParkData
+    } = api.carPark.getFullDetails.useQuery(
+        { id: router.query.id as string }, 
+        {
+            enabled: !!router.query.id, // Only run the query if `id` exists
+        }
+    );
+    
     return (
         <div className="flex flex-col lg:flex-row gap-4 p-4">
-            <div className="w-full lg:w-1/2 space-y-4">
-                <CarParkDetails />
-                <NearbyCarparks />
-            </div>
-            <div className="w-full lg:w-1/2 h-[500px]">
-                <CarParkMap />
-            </div>
+            {isCarParkLoading || carParkData === undefined  ? (
+                <Skeleton className="h-[500px] w-[500px] rounded-xl" />
+            ) : (
+                <>
+                    <div className="w-full lg:w-1/2 space-y-4">
+                        <CarParkDetails 
+                            id={carParkData.id}
+                            name={carParkData.name}
+                            address={carParkData.address}
+                            availableSpace={carParkData.availableLots}
+                        />
+                        <NearbyCarparks 
+                            nearByCarParks={carParkData.nearByCarParks}
+                        />
+                    </div>
+                    <div className="w-full lg:w-1/2 h-[500px]">
+                        <CarParkMap />
+                    </div>
+                </>
+            )}
         </div>
     )
+    
 }
 
-const CarParkDetails = () => {
+interface CarParkDetailsProps {
+    id: string
+    name: string
+    address: string | null
+    availableSpace: number
+
+}
+
+const CarParkDetails = (props: CarParkDetailsProps) => {
+    const {
+        id,
+        name,
+        address,
+        availableSpace,
+    } = props;
+    
+    const router = useRouter()
+    const [rate, setRate] = useState<number|null>(null)
+
+    const {
+        mutate: getAppropriateRate
+    } = api.carPark.getRate.useMutation()
+
+    const handleRateChange = (hours: string) => {
+
+        getAppropriateRate({
+            id: router.query.id as string,
+            hours:parseInt(hours)
+        },
+        {
+            onSuccess: ({rate}) => {
+                setRate(rate)
+            }
+        })
+    }
+
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Marina Bay Car Park</CardTitle>
-                <CardDescription>8 Marina Blvd, Singapore 018981</CardDescription>
+                <CardTitle>{name}</CardTitle>
+                <CardDescription>{address}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div>
-                    Available spaces: 325
+                    Available spaces: {availableSpace}
                 </div>
                 <div>
-                    Hourly rate: $4.50
+                    Enter number of hours you are parking for
                 </div>
+                <Input 
+                    className="w-[200px]"
+                    id="hours"
+                    type="number"
+                    placeholder="Number of hours" 
+                    onChangeCapture={e => handleRateChange(e.currentTarget.value)} 
+                />
                 <div>
-                    Daily Rate: $45
+                    {rate}
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between">
@@ -62,9 +136,6 @@ const CarParkMap = () => {
             ></iframe>
             <div className="absolute top-4 right-4">
                 <Button variant="secondary" size="sm">Search this area</Button>
-            </div>
-            <div className="absolute bottom-4 left-4 bg-white bg-opacity-75 px-2 py-1 rounded text-sm">
-                Marina Bay
             </div>
         </div>
     );

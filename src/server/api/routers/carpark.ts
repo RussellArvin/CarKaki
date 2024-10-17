@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { carParkRepository } from "../repositories";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { getAppropriateRate, mapManyCarParkWithAddress, mapOneCarParkWithAddress } from "../services/car-park-service";
+import { carParkService } from "../services";
 import { checkAndMakeURARequests } from "../services/ura-request-service";
 
 export const carParkRouter = createTRPCRouter({
@@ -11,7 +11,7 @@ export const carParkRouter = createTRPCRouter({
     }))
     .query(async ({ctx,input}) => {
         const [carpark] = await Promise.all([
-            await mapOneCarParkWithAddress(
+            await carParkService.mapOneCarParkWithAddress(
                 await carParkRepository.findOneById(input.id)
             ),
             await checkAndMakeURARequests() //Reload URA Data
@@ -29,7 +29,6 @@ export const carParkRouter = createTRPCRouter({
             address,
             capacity,
             availableLots,
-            rate: getAppropriateRate(carpark),
         }
 
     }),
@@ -39,22 +38,23 @@ export const carParkRouter = createTRPCRouter({
     }))
     .query(async ({ctx,input}) => {
 
-        const [carpark] = await Promise.all([
-            await mapOneCarParkWithAddress(
+         const [carpark] = await Promise.all([
+            await carParkService.mapOneCarParkWithAddress(
                 await carParkRepository.findOneById(input.id)
             ),
             await checkAndMakeURARequests() //Reload URA Data
         ])
 
         const [nearByCarParks, isFavourited] = await Promise.all([
-            mapManyCarParkWithAddress(
-                await carParkRepository.findNearByCarParks(carpark.getValue().location,5)
+            carParkService.mapManyCarParkWithAddress(
+                await carParkRepository.findNearByCarParks(carpark.getValue().location,10)
             ),
             carParkRepository.isFavouritedByUser(input.id,ctx.auth.userId)
         ])
 
 
         const {
+            id,
             name,
             address,
             capacity,
@@ -62,18 +62,30 @@ export const carParkRouter = createTRPCRouter({
         } = carpark.getValue()
 
         return{
+            id,
             name,
             address,
             capacity,
             availableLots,
             isFavourited,
-            rate: getAppropriateRate(carpark),
             nearByCarParks: nearByCarParks.map((item) => {
-                const {name,address,capacity,availableLots} = item.getValue();
+                const {id,name,address,capacity,availableLots} = item.getValue();
                 return {
-                    name,address,capacity,availableLots
+                    id,name,address,capacity,availableLots
                 }
             })
+        }
+    }),
+    getRate: protectedProcedure
+    .input(z.object({
+        hours: z.number().min(1),
+        id: z.string()
+    }))
+    .mutation(async ({input}) => {
+        const { hours, id } = input;
+
+        return {
+            rate: await carParkService.getAppropriateRate(id, hours* 60)
         }
     })
 })
