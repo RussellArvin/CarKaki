@@ -7,6 +7,13 @@ import carParkSchema from "~/server/db/schema/car-park-schema";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
+interface FrequentlyVisitedCarParks {
+    id: string,
+    name: string,
+    visits: number,
+    isFavourited: boolean
+}
+
 export class ParkingHistoryRepository {
     constructor(private readonly db: NeonHttpDatabase) {}
 
@@ -43,9 +50,8 @@ export class ParkingHistoryRepository {
         }
     }
 
-    public async findFrequentlyVisited(userId: string){
+    public async findFrequentlyVisited(userId: string): Promise<FrequentlyVisitedCarParks[]>{
         try{
-            //TODO: Check if this works!
             const results = await this.db.select({
                 id: carParkSchema.id,
                 name: carParkSchema.name,
@@ -53,7 +59,7 @@ export class ParkingHistoryRepository {
                 isFavourited: sql<boolean>`MAX(CASE WHEN ${userFavouriteSchema.carParkId} IS NOT NULL THEN true ELSE false END)`.as('isFavourited')
             })
             .from(parkingHistorySchema)
-            .leftJoin(carParkSchema,eq(carParkSchema.id, parkingHistorySchema.carParkId))
+            .innerJoin(carParkSchema,eq(carParkSchema.id, parkingHistorySchema.carParkId))
             .leftJoin(userFavouriteSchema, and(
                 eq(userFavouriteSchema.carParkId, parkingHistorySchema.carParkId),
                 eq(userFavouriteSchema.userId,parkingHistorySchema.userId)
@@ -64,7 +70,15 @@ export class ParkingHistoryRepository {
             .limit(5)
 
             return results;
-        } catch(e){handleError(e)}
+        } catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
     }
 
     public async findManyByUserId(userId: string): Promise<ParkingHistory[]> {

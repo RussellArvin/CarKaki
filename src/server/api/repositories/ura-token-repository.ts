@@ -8,10 +8,15 @@ import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import uraTokenSchema from "~/server/db/schema/ura-token-schema";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
+interface URAToken {
+    token: string
+    createdAt: Date
+}
+
 export class URATokenRepository {
     constructor(private readonly db: NeonHttpDatabase) {}
 
-    public async findOne(){
+    public async findOne(): Promise<URAToken | null>{
         try{
             const results = await this.db
                 .select()
