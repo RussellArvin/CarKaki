@@ -14,7 +14,7 @@ export class UrbanRedevelopmentAuthority {
         this.token = null;
     }
 
-    async initialize(): Promise<void> {
+    public async initialize(): Promise<void> {
         const existingToken = await uraTokenRepository.findOne();
         const tokenExpired = existingToken && existingToken.createdAt < new Date(Date.now() - 23 * 60 * 60 * 1000);
     
@@ -55,7 +55,7 @@ export class UrbanRedevelopmentAuthority {
         }
     }
 
-    async getCarParkAvailability() {
+    async getCarParkAvailability(): Promise<AvailabilityCarPark[]> {
         if(!this.token) throw new TRPCError({
             code:"INTERNAL_SERVER_ERROR",
             message:"Missing URA Token"
@@ -89,7 +89,7 @@ export class UrbanRedevelopmentAuthority {
     }
     
 
-    async getCarParkDetails() {
+    async getCarParkDetails(): Promise<InformationCarPark[]> {
         if(!this.token) throw new TRPCError({
             code:"INTERNAL_SERVER_ERROR",
             message:"Missing URA Token"
