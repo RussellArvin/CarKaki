@@ -4,6 +4,11 @@ import { CarParkRate } from "../models/car-park-rate";
 import { CarParkRateRepository } from "../repositories/car-park-rate-repository";
 import { CarParkRepository } from "../repositories/car-park-repository";
 
+interface DayRate {
+    min: number,
+    rate: number
+}
+
 export class CarParkService{
     private carParkRateRepository: CarParkRateRepository
     private carParkRepository: CarParkRepository
@@ -32,7 +37,7 @@ export class CarParkService{
         return Promise.all(carParks.map(carPark => this.mapOneCarParkWithAddress(carPark)))
     }
 
-    private getDayRate(carParkRate: CarParkRate) {
+    private getDayRate(carParkRate: CarParkRate): DayRate {
         const dayOfTheWeek = new Date().getDay();
         //TODO: handle public holiday
 

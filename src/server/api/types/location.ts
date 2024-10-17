@@ -1,4 +1,4 @@
-type Location = {
+interface Location  {
     x: number,
     y: number
 }
