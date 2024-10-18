@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { carParkRepository } from "../repositories";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { carParkService } from "../services";
-import { checkAndMakeURARequests } from "../services/ura-request-service";
+import { carParkService, uraRequestService  } from "../services";
+
 
 interface CarParkDetails {
     id: string
@@ -30,7 +30,7 @@ export const carParkRouter = createTRPCRouter({
             await carParkService.mapOneCarParkWithAddress(
                 await carParkRepository.findOneByLocation({x,y})
             ),
-            await checkAndMakeURARequests() //Reload URA Data
+            await uraRequestService.checkAndMakeRequests() //Reload URA Data
         ])
 
         const {
@@ -60,7 +60,7 @@ export const carParkRouter = createTRPCRouter({
             await carParkService.mapOneCarParkWithAddress(
                 await carParkRepository.findOneById(input.id)
             ),
-            await checkAndMakeURARequests() //Reload URA Data
+            await uraRequestService.checkAndMakeRequests() //Reload URA Data
         ])
 
         const [nearByCarParks, isFavourited] = await Promise.all([
