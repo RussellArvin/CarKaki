@@ -5,10 +5,10 @@ import Navbar from "~/components/global/navbar"
 import { api } from "~/utils/api"
 import { useRouter } from "next/router"
 import { Skeleton } from "~/components/ui/skeleton"
-import { string } from "zod"
 import { Input } from "~/components/ui/input"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
+import MapEmbed from "~/components/global/map-embed"
 
 
 export default function CarParkPage(){
@@ -34,23 +34,38 @@ const CarParkMainContent = () => {
     
     return (
         <div className="flex flex-col lg:flex-row gap-4 p-4">
-            {isCarParkLoading || carParkData === undefined  ? (
+            {isCarParkLoading || carParkData === undefined ? (
                 <Skeleton className="h-[500px] w-[500px] rounded-xl" />
             ) : (
                 <>
-                    <div className="w-full lg:w-1/2 space-y-4">
-                        <CarParkDetails 
-                            id={carParkData.id}
-                            name={carParkData.name}
-                            address={carParkData.address}
-                            availableSpace={carParkData.availableLots}
-                        />
-                        <NearbyCarparks 
-                            nearByCarParks={carParkData.nearByCarParks}
-                        />
+                    <div className="w-full lg:w-1/2 flex flex-col gap-4">
+                        <div className="flex-1">
+                            <CarParkDetails 
+                                id={carParkData.id}
+                                name={carParkData.name}
+                                address={carParkData.address}
+                                availableSpace={carParkData.availableLots}
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <NearbyCarparks 
+                                nearByCarParks={carParkData.nearByCarParks}
+                            />
+                        </div>
                     </div>
-                    <div className="w-full lg:w-1/2 h-[500px]">
-                        <CarParkMap />
+                    <div className="w-full lg:w-1/2 flex flex-col gap-4">
+                        <div className="flex-1">
+                            {carParkData.address ? (
+                                <MapEmbed 
+                                    address={carParkData.address}
+                                />
+                            ) : (
+                                <p>No address available</p>
+                            )}
+                        </div>
+                        <div className="flex-1">
+                            <CarParkReviews />
+                        </div>
                     </div>
                 </>
             )}
@@ -127,16 +142,32 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
     )
 }
 
-const CarParkMap = () => {
+const CarParkReviews = () => {
     return (
-        <div className="relative w-full h-full rounded-lg overflow-hidden">
-            <iframe
-                className="w-full h-full"
-                src="https://maps.google.com/maps?width=100%&height=100%&hl=en&q=Marina+Bay+Singapore&t=&z=14&ie=UTF8&iwloc=B&output=embed"
-            ></iframe>
-            <div className="absolute top-4 right-4">
-                <Button variant="secondary" size="sm">Search this area</Button>
-            </div>
-        </div>
-    );
-};
+        <Card>
+            <CardHeader>
+                <CardTitle>Reviews</CardTitle>
+                <CardDescription>Reviews for this particular carpark</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <CarParkReviewItem />
+                <CarParkReviewItem />
+            </CardContent>
+
+        </Card>
+    )
+}
+
+const CarParkReviewItem = () => {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>John Tan</CardTitle>
+            </CardHeader>
+            <CardContent>
+                Very Cool!
+            </CardContent>
+
+        </Card>
+    )
+}

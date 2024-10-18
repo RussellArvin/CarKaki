@@ -6,8 +6,11 @@ import { useSeedNewUser } from "~/hooks/use-seed-new-user";
 import { Button } from "~/components/ui/button";
 
 import { api } from "~/utils/api";
+import { useRouter } from "next/router";
+import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 
 export default function Home() {
+  const router = useRouter();
   const { data: userData, isLoading: userDataIsLoading } = api.user.get.useQuery();
 
   useSeedNewUser({ data: userData, isLoading: userDataIsLoading });
@@ -41,18 +44,26 @@ export default function Home() {
             </p>
 
             {
-              userData ? (
+              !userData || userDataIsLoading ? (
                 <>
-                  <Button className="w-full bg-blue-500 text-white hover:bg-blue-600" size="lg">
+                  <Button 
+                    className="w-full bg-blue-500 text-white hover:bg-blue-600" 
+                    size="lg"
+                    onClick={() => router.push(APP_ROUTES.HOME)}
+                  >
                     Sign in
                   </Button>
                   <p className="text-sm text-center mt-4">
-                    No account? <a href="#" className="text-blue-500 hover:underline">Sign up.</a>
+                    No account? <a href={APP_ROUTES.HOME} className="text-blue-500 hover:underline">Sign up.</a>
                   </p>
                 </>
               ) : (
                  (
-                  <Button className="w-full bg-blue-500 text-white hover:bg-blue-600" size="lg">
+                  <Button 
+                    className="w-full bg-blue-500 text-white hover:bg-blue-600" 
+                    size="lg"
+                    onClick={() => router.push(APP_ROUTES.HOME)}
+                  >
                     Let's go!
                   </Button>
                 )

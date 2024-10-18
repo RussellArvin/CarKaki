@@ -5,6 +5,7 @@ import { carParkService } from "../services";
 import { checkAndMakeURARequests } from "../services/ura-request-service";
 
 interface CarParkDetails {
+    id: string
     name: string
     address: string | null
     capacity: number
@@ -12,7 +13,6 @@ interface CarParkDetails {
 }
 
 interface FullCarParkDetails extends CarParkDetails{
-    id: string
     isFavourited: boolean
     nearByCarParks: CarParkDetails[]
 }
@@ -20,17 +20,21 @@ interface FullCarParkDetails extends CarParkDetails{
 export const carParkRouter = createTRPCRouter({
     getDetails: protectedProcedure
     .input(z.object({
-        id: z.string()
+        x:z.number(),
+        y:z.number()
     }))
     .query(async ({ctx,input}): Promise<CarParkDetails> => {
+        const {x,y} = input;
+
         const [carpark] = await Promise.all([
             await carParkService.mapOneCarParkWithAddress(
-                await carParkRepository.findOneById(input.id)
+                await carParkRepository.findOneByLocation({x,y})
             ),
             await checkAndMakeURARequests() //Reload URA Data
         ])
 
         const {
+            id,
             name,
             address,
             capacity,
@@ -38,6 +42,7 @@ export const carParkRouter = createTRPCRouter({
         } = carpark.getValue()
 
         return{
+            id,
             name,
             address,
             capacity,

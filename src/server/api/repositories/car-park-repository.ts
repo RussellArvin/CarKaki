@@ -134,6 +134,37 @@ export class CarParkRepository {
         }
     }
 
+    public async findOneByLocation(location: Location): Promise<CarPark>{
+        try{
+            const sqlPoint = sql`ST_SetSRID(ST_MakePoint(${location.x}, ${location.y}), 3414)`;
+
+            const results = await this.db
+                .select({
+                ...getTableColumns(carParkSchema),
+                distance: sql`ST_Distance(
+                    ${carParkSchema.location}::geometry,
+                    ${sqlPoint}
+                )`
+                })
+                .from(carParkSchema)
+                .orderBy(sql`${carParkSchema.location}::geometry <-> ${sqlPoint}`)
+                .limit(1)
+
+            if(!results[0]) throw Error("Unable to find a carpark")
+
+            return new CarPark({...results[0]})
+
+        }catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findOneById(id: string): Promise<CarPark> {
         try{
             const userData = await this.db
