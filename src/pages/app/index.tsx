@@ -10,6 +10,12 @@ import {Progress} from "~/components/ui/progress"
 import { api } from "~/utils/api"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import MapEmbed from "~/components/global/map-embed";
+import proj4 from 'proj4';
+
+// Define the projections
+const WGS84 = 'EPSG:4326';
+const SVY21 = 'EPSG:3414';
+
 
 export default function HomePage(){
     return (
@@ -100,7 +106,10 @@ const HomePageContent: React.FC = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setCoordinates({ x: latitude, y: longitude });
+          // Add the definition for EPSG:3414
+          proj4.defs('EPSG:3414', '+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1.0 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs');
+          const [easting, northing] = proj4(WGS84, SVY21, [longitude, latitude]);
+          setCoordinates({ x: easting, y: northing });
         },
         (err) => {
           setError("Geolocation is not enabled or available.");
