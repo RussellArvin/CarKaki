@@ -1,3 +1,4 @@
+import { env } from "~/env";
 import { UrbanRedevelopmentAuthority } from "../external-apis/urban-redevelopment-authority";
 import { CarPark } from "../models/car-park";
 import { CarParkRate } from "../models/car-park-rate";
@@ -34,6 +35,7 @@ export class URARequestService {
 
     public async checkAndMakeRequests(){
         //await this.handleInformationRequest();
+        if(env.IS_DEVELOPMENT == true) return;
         return Promise.all([this.handleAvailabilityRequest(), this.handleInformationRequest()]);
     }
 

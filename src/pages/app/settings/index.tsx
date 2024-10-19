@@ -18,12 +18,13 @@ import React from 'react';
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
 import Navbar from "~/components/global/navbar"
+import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 
 const notifications = [
   {
     title: "Update name",
     description: "Fill in name.",
-    navigation: "/settings/name",
+    navigation: APP_ROUTES.SETTINGS.NAME
   },
   {
     title: "Update password",

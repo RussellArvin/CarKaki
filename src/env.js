@@ -14,6 +14,7 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL"
       ),
+      IS_DEVELOPMENT: z.enum(['true', 'false']).transform((val) => val === 'true'),
     GOOGLE_MAPS_API_KEY : z.string(),
     URA_ACCESS_KEY: z.string(),
     NODE_ENV: z
@@ -37,6 +38,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    IS_DEVELOPMENT: process.env.IS_DEVELOPMENT,
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
     URA_ACCESS_KEY: process.env.URA_ACCESS_KEY,
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
