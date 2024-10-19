@@ -24,7 +24,7 @@ export class RequestLog {
 
         if(this.props.type === 'AVAIL'){
             //TEMP CHANGE TO 1 DAY
-            return timeSinceLastReqeuest >= COOLDOWN_TIMES.INFO
+            return timeSinceLastReqeuest >= COOLDOWN_TIMES.AVAIL
         }
         if(this.props.type === 'INFO'){
             return timeSinceLastReqeuest >= COOLDOWN_TIMES.INFO

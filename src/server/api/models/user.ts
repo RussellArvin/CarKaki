@@ -1,4 +1,4 @@
-interface UserProps {
+export interface UserProps {
     id: string;
     email: string;
     firstName: string;

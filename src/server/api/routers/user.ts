@@ -7,6 +7,7 @@ import { getUserInformation } from "~/server/utils/clerk";
 import { User } from "../models/user";
 import clerk from "@clerk/clerk-sdk-node";
 import { TRPCError } from "@trpc/server";
+import UserDetails from "../types/user-details";
 
 export const userRouter = createTRPCRouter({
     getFrequentlyVisitedCarParks: protectedProcedure
@@ -95,9 +96,18 @@ export const userRouter = createTRPCRouter({
         } catch(e){handleError(e)}
     }),
     get: protectedProcedure
-    .query(async ({ctx}) => {
-        const user = await userRepository.findOneByUserId(ctx.auth.userId)
-        return user.getValue()
+    .query(async ({ctx}): Promise<UserDetails> => {
+
+        const [user,currentParking] = await Promise.all([
+            await userRepository.findOneByUserId(ctx.auth.userId),
+            await carParkRepository.findCurrentParkingOrNull(ctx.auth.userId)
+        ])
+
+        return {
+            ...user.getValue(),
+            currentParking
+        }
+        
     }),
     updatePassword: protectedProcedure
     .input(z.object({

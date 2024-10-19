@@ -41,6 +41,8 @@ import {
 } from "~/components/ui/table"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { RouterOutputs } from "~/utils/api"
+import { useRouter } from "next/router"
+import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 
 
 type NearbyCarPark = RouterOutputs["carPark"]["getFullDetails"]["nearByCarParks"][number]
@@ -122,7 +124,8 @@ const columns: ColumnDef<NearbyCarPark>[] = [
               Copy car park name
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem
+            >View details</DropdownMenuItem>
             <DropdownMenuItem>Check route</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -153,7 +156,101 @@ interface NearByCarParksProps {
   nearByCarParks: NearbyCarPark[]
 }
 
+
+const getColumns = () => {
+  const router = useRouter()
+
+  const columns: ColumnDef<NearbyCarPark>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("name")}</div>
+      ),
+    },
+    {
+      accessorKey: "address",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Address
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div>{row.getValue("address")}</div>,
+    },
+    {
+      accessorKey: "availableLots",
+      header: () => <div className="text-right">Available/Total</div>,
+      cell: ({ row }) => {
+        const available = parseInt(row.getValue("availableLots"))
+        const total = row.original.capacity;
+        return <div className="text-right font-medium">{available}/{total}</div>
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const carPark = row.original
+  
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(carPark.name)}
+              >
+                Copy car park name
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={()=> router.push(APP_ROUTES.CARPARK(carPark.id))}
+              >View details</DropdownMenuItem>
+              <DropdownMenuItem>Check route</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
+  return columns;
+}
+
 function DataTable(props: NearByCarParksProps) {
+  
   const {nearByCarParks} = props;
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -163,7 +260,7 @@ function DataTable(props: NearByCarParksProps) {
 
   const table = useReactTable({
     data: nearByCarParks,
-    columns,
+    columns: getColumns(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql, desc } from "drizzle-orm";
+import { and, eq, sql, desc, getTableColumns, lte, gte } from "drizzle-orm";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 import { ParkingHistory } from "../models/parking-history";
 import handleError from "~/server/utils/handleError";
@@ -93,6 +93,69 @@ export class ParkingHistoryRepository {
                 })
             })
         } catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async findExistingByUserIdOrNull(
+        userId: string,
+    ): Promise<ParkingHistory | null> {
+        try{
+            const results = await this.db
+            .select({
+                ...getTableColumns(parkingHistorySchema)
+            })
+            .from(parkingHistorySchema)
+            .where(and(
+                eq(parkingHistorySchema.userId,userId),
+                lte(parkingHistorySchema.startDate,sql`NOW()`),
+                gte(parkingHistorySchema.endDate, sql`NOW()`)
+            ))
+            .limit(1);
+
+            if(!results[0]) return null;
+            return new ParkingHistory({...results[0]})
+        }catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async findExistingByUserIdAndCarParkId(
+        userId: string,
+        carParkId: string
+    ): Promise<ParkingHistory> {
+        try{
+            const results = await this.db
+            .select({
+                ...getTableColumns(parkingHistorySchema)
+            })
+            .from(parkingHistorySchema)
+            .where(and(
+                eq(parkingHistorySchema.userId,userId),
+                eq(parkingHistorySchema.carParkId,carParkId),
+                lte(parkingHistorySchema.startDate,sql`NOW()`),
+                gte(parkingHistorySchema.endDate, sql`NOW()`)
+            ))
+            .limit(1);
+
+            if(!results[0]) throw new TRPCError({
+                code:"NOT_FOUND",
+                message:"Unable to find corresponding parking record"
+            })
+            return new ParkingHistory({...results[0]})
+        }catch(err){
             if(err instanceof TRPCError) throw err;
 
             const e = err as Error;

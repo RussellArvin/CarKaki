@@ -1,11 +1,12 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, getTableColumns, sql } from "drizzle-orm";
+import { and, eq, getTableColumns, sql, lte, gte } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 import Location from "../types/location";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import CurrentParking from "../types/current-parking";
 
 export class CarParkRepository {
     constructor(private readonly db: NeonHttpDatabase) {}
@@ -180,6 +181,40 @@ export class CarParkRepository {
 
             return new CarPark({...userData[0]})
         } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async findCurrentParkingOrNull(
+        userId: string,
+    ): Promise<CurrentParking | null> {
+        try{
+            const results = await this.db
+            .select({
+                id: parkingHistorySchema.id,
+                carParkId: carParkSchema.id,
+                name: carParkSchema.name,
+                address: carParkSchema.address,
+                startDate: parkingHistorySchema.startDate,
+            })
+            .from(parkingHistorySchema)
+            .innerJoin(carParkSchema, eq(carParkSchema.id, parkingHistorySchema.carParkId))
+            .where(and(
+                eq(parkingHistorySchema.userId,userId),
+                lte(parkingHistorySchema.startDate,sql`NOW()`),
+                gte(parkingHistorySchema.endDate, sql`NOW()`)
+            ))
+            .limit(1);
+
+            if(!results[0]) return null;
+            return results[0]
+        }catch(err){
             if(err instanceof TRPCError) throw err;
 
             const e = err as Error;

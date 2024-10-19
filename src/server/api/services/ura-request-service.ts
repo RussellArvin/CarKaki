@@ -10,6 +10,13 @@ import Location from "../types/location";
 import { AvailabilityCarPark, InformationCarPark } from "../types/ura-types";
 import { v4 as uuidv4 } from 'uuid';
 
+interface MappedInformationRequest {
+ updatedCarParks: CarPark[]
+ newCarParks: CarPark[]
+ updatedCarParkRates: CarParkRate[]
+ newCarParkRates: CarParkRate[]       
+}
+
 export class URARequestService {
     private carParkRepository: CarParkRepository
     private carParkRateRepository: CarParkRateRepository
@@ -26,8 +33,8 @@ export class URARequestService {
     }
 
     public async checkAndMakeRequests(){
-        await this.handleInformationRequest();
-         //return Promise.all([handleAvailabilityRequest, handleInformationRequest]);
+        //await this.handleInformationRequest();
+        return Promise.all([this.handleAvailabilityRequest(), this.handleInformationRequest()]);
     }
 
     private canMakeRequest(request: RequestLog | null){
@@ -45,7 +52,10 @@ export class URARequestService {
 
     private async handleAvailabilityRequest(){
         const latestRequest = await this.requestLogRepository.findLatestRequestOrNull("AVAIL");
+        console.log(latestRequest?.getValue())
         if(!this.canMakeRequest(latestRequest)) return;
+
+        console.log("A Availability Request was made")
     
         const ura = new UrbanRedevelopmentAuthority();
         await ura.initialize()
@@ -55,11 +65,17 @@ export class URARequestService {
         ])
     
         const updatedCarParks = this.mappingAvailabilityRequest(uraData,carparks);
+        console.log("Number of updatd carparks: ", updatedCarParks.length)
     
         const promises = updatedCarParks.map((carpark) => {
             return this.carParkRepository.update(carpark)
         })
-    
+        promises.push(this.requestLogRepository.save(new RequestLog({
+            id: uuidv4(),
+            type:"AVAIL",
+            createdAt: new Date()
+        })))
+
         await Promise.all(promises)
         return;
     }
@@ -68,7 +84,7 @@ export class URARequestService {
         const latestRequest = await this.requestLogRepository.findLatestRequestOrNull("INFO");
         if(!this.canMakeRequest(latestRequest)) return;
     
-        console.log("A Request was made")
+        console.log("A Information Request was made")
     
         const ura = new UrbanRedevelopmentAuthority();
         await ura.initialize()
@@ -145,7 +161,7 @@ export class URARequestService {
         uraData: InformationCarPark[],
         existingCarParks: CarPark[],
         existingCarParkRates: CarParkRate[],
-    ): { updatedCarParks: CarPark[], newCarParks: CarPark[], updatedCarParkRates: CarParkRate[], newCarParkRates: CarParkRate[] }  {
+    ): MappedInformationRequest {
         console.log(`Processing ${uraData.length} URA car parks`);
         console.log(`Existing car parks: ${existingCarParks.length}`);
         console.log(`Existing car park rates: ${existingCarParkRates.length}`);
