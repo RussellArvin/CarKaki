@@ -8,6 +8,7 @@ import { User } from "../models/user";
 import clerk from "@clerk/clerk-sdk-node";
 import { TRPCError } from "@trpc/server";
 import UserDetails from "../types/user-details";
+import UserMainSettings from "../types/user-main-settings";
 
 export const userRouter = createTRPCRouter({
     getFrequentlyVisitedCarParks: protectedProcedure
@@ -54,7 +55,7 @@ export const userRouter = createTRPCRouter({
         } catch(e){handleError(e)}
     }),
     getMainSettings: protectedProcedure
-    .query(async ({ctx}) => {
+    .query(async ({ctx}): Promise<UserMainSettings> => {
         try{
             const user = await userRepository.findOneByUserId(ctx.auth.userId);
             const { isDarkMode, isNotificationsEnabled } = user.getValue();
