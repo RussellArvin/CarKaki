@@ -30,11 +30,8 @@ export class GoogleMap {
 
         const results: GeocodeResult[] = response.data.results;
   
-        if (results && results.length > 0 && results[0] && results[0].formatted_address) {
-          return results[0].formatted_address;
-        } else {
-          return null
-        }
+        return results?.[0]?.formatted_address ?? null;
+          
       } catch (error) {
         //console.log(error)
         throw new TRPCError({

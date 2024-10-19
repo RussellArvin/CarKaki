@@ -74,7 +74,7 @@ const ParkingInfo = () => {
               <p className="text-sm">{parkingData.address}</p>
             </div>
           </div>
-          <Button className="w-full mt-6">Let's Go!</Button>
+          <Button className="w-full mt-6">Let&apos;s Go!</Button>
         </CardContent>
       </Card>
 
@@ -199,6 +199,6 @@ const HomePageContent: React.FC = () => {
   
 };
 
-const HomePageSideBar = () => {
+// const HomePageSideBar = () => {
 
-}
+// }

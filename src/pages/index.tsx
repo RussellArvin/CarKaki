@@ -64,7 +64,7 @@ export default function Home() {
                     size="lg"
                     onClick={() => router.push(APP_ROUTES.HOME)}
                   >
-                    Let's go!
+                    Let&apos;s go!
                   </Button>
                 )
               )

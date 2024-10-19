@@ -77,9 +77,9 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
     mutateAsync: updateMainSettingsMutation
   } = api.user.updateMainSettings.useMutation()
 
-  const onSettingsChange = (isDarkMode: boolean, state: boolean) => {
+  // const onSettingsChange = (isDarkMode: boolean, state: boolean) => {
 
-  }
+  // }
 
   return (
       <Card className={cn("w-[500px]")}>

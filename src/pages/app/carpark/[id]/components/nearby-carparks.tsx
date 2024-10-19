@@ -157,7 +157,7 @@ interface NearByCarParksProps {
 }
 
 
-const getColumns = () => {
+const useColumns = () => {
   const router = useRouter()
 
   const columns: ColumnDef<NearbyCarPark>[] = [
@@ -260,7 +260,7 @@ function DataTable(props: NearByCarParksProps) {
 
   const table = useReactTable({
     data: nearByCarParks,
-    columns: getColumns(),
+    columns: useColumns(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

@@ -1,6 +1,16 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
   parser: "@typescript-eslint/parser",
+  overrides: [
+    {
+      files: ['src/components/ui/**/*.tsx', 'src/components/ui/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-empty-interface': 'off',
+        '@typescript-eslint/prefer-nullish-coalescing': 'off',
+        // You can add more rules to ignore here if needed
+      },
+    },
+  ],
   parserOptions: {
     project: true,
   },
