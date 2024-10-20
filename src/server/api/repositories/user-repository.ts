@@ -40,6 +40,30 @@ export class UserRepository {
         }
     }
 
+    public async findOneByUserIdOrNull(userId: string): Promise<User | null> {
+        try{
+            const userData = await this.db
+                .select()
+                .from(userSchema)
+                .where(eq(userSchema.id,userId))
+                .limit(1)
+
+            if(!userData[0]) return null
+
+            return new User({
+                ...userData[0]
+            })
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findOneByUserId(userId: string): Promise<User> {
         try{
             const userData = await this.db

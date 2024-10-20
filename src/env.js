@@ -17,6 +17,7 @@ export const env = createEnv({
       IS_DEVELOPMENT: z.enum(['true', 'false']).transform((val) => val === 'true'),
     GOOGLE_MAPS_API_KEY : z.string(),
     URA_ACCESS_KEY: z.string(),
+    CLERK_WEBHOOK_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -42,6 +43,7 @@ export const env = createEnv({
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
     URA_ACCESS_KEY: process.env.URA_ACCESS_KEY,
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
