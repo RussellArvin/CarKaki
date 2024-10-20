@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import useUserStore from "~/components/global/user-store";
 
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter();
   const {user: userData} = useUserStore();
 

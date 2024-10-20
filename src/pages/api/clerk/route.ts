@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     return new Response(undefined, { status: 400 });
   }
 
-  const wh = new Webhook(env.CLERK_WEBHOOK_SECRET);
+  const wh = new Webhook(env.CLERK_WEBHOOK_SECRET)
   let event: WebhookEvent;
 
   try {
