@@ -17,11 +17,21 @@ export const userRouter = createTRPCRouter({
     }),
     getFavouriteCarParks: protectedProcedure
     .query(async ({ctx}) => {
-        return await carParkRepository.findUserFavourites(ctx.auth.userId)
+        return (await carParkRepository.findUserFavourites(ctx.auth.userId)).map(
+            (carpark) => carpark.getValue()
+        )
     }),
     getCarParkHistory: protectedProcedure
     .query(async ({ctx}) => {
-        return await carParkRepository.findUserParkingHistory(ctx.auth.userId)
+        return (await carParkRepository.findUserParkingHistory(ctx.auth.userId)).map(
+            (carpark) => carpark.getValue()
+        )
+    }),
+    getSavedCarParks: protectedProcedure
+    .query(async ({ctx})=>{
+        return (await carParkRepository.findSavedCarParks(ctx.auth.userId)).map(
+            (carpark) => carpark.getValue()
+        )
     }),
     updateNames: protectedProcedure
     .input(z.object({
@@ -96,6 +106,13 @@ export const userRouter = createTRPCRouter({
             return;
         } catch(e){handleError(e)}
     }),
+    delete: protectedProcedure
+    .mutation(async ({ctx,input}) => {
+        const user = await userRepository.findOneByUserId(ctx.auth.userId);
+        const deletedUser = user.delete()
+        await userRepository.update(deletedUser);
+        return;
+    }),
     get: protectedProcedure
     .query(async ({ctx}): Promise<UserDetails> => {
 
@@ -120,6 +137,19 @@ export const userRouter = createTRPCRouter({
                 password: input.password
             })
             return;
-        } catch(e) {handleError(e)}
+        } catch (err: unknown) {
+            if (typeof err === 'object' && err !== null && 'errors' in err) {
+              // This is likely a Clerk API error
+              const clerkError = err as { errors: { message: string }[] };
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: clerkError.errors[0]?.message || "An error occurred while updating the password"
+              });
+            }
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "An unexpected error occurred"
+            });
+          }
     })
 });
