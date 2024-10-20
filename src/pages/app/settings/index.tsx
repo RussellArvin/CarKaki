@@ -85,9 +85,9 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
     setIsDarkModeChecked(props.isDarkMode);
   }, [props.isNotificationsEnabled, props.isDarkMode]);
 
-  const onSettingsChange = async (newNotifications: boolean, newDarkMode: boolean) => {
+  const onSettingsChange =  (newNotifications: boolean, newDarkMode: boolean) => {
     try {
-      await toast.promise(
+      void toast.promise(
         updateMainSettingsMutation({
           isNotificationsEnabled: newNotifications,
           isDarkMode: newDarkMode
@@ -95,7 +95,7 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
         {
           loading: "Updating settings...",
           success: "Settings Updated!",
-          error: (err) => `Error: ${err.message}`
+          error: (err: Error) => `Error: ${err.message}`
         }
       );
       setIsNotificationsChecked(newNotifications);
