@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
-import { NearbyCarparks } from "./components/nearby-carparks"
+import { NearbyCarparks } from "../../../../components/global/nearby-carparks"
 import Navbar from "~/components/global/navbar"
 import { api } from "~/utils/api"
 import { useRouter } from "next/router"
