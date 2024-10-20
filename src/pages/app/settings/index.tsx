@@ -14,11 +14,13 @@ import { Switch } from "~/components/ui/switch"
 import { Router, useRouter } from "next/router"
 import { api, RouterOutputs } from "~/utils/api"
 import { Skeleton } from "~/components/ui/skeleton"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
 import Navbar from "~/components/global/navbar"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
+import useUserStore from "~/components/global/user-store"
+import toast from "react-hot-toast"
 
 const notifications = [
   {
@@ -29,32 +31,29 @@ const notifications = [
   {
     title: "Update password",
     description: "Change password",
-    navigation: "/settings/password"
+    navigation: APP_ROUTES.SETTINGS.PASSWORD
   },
   {
     title: "Delete account",
     description: "All user data will be removed upon deletion.",
-    navigation: "/settings/delete"
+    navigation: APP_ROUTES.SETTINGS.DELETE
   },
 ]
 
 
 export default function MainSettings() {
-  const {
-    isLoading: isMainSettingsLoading,
-    data: mainSettings
-  } = api.user.getMainSettings.useQuery();
-
+  const { user, isUserLoading } = useUserStore();
 
   return (
     <div>
       <Navbar/>
       <div className={`flex items-center justify-center min-h-screen`}>
-        {isMainSettingsLoading ? (
+        {isUserLoading ? (
           <Skeleton className="h-[500px] w-[500px] rounded-xl" />
-        ) : mainSettings ? (
+        ) : user ? (
         <MainSettingsContent
-            settings={mainSettings}
+            isNotificationsEnabled={user.isNotificationsEnabled}
+            isDarkMode={user.isDarkMode}
           />
         ) : (
           <div>No settings available</div> // Optional: handle the undefined case
@@ -67,20 +66,52 @@ export default function MainSettings() {
 }
 
 interface MainSettingsContentProps {
-  settings: NonNullable<RouterOutputs["user"]["getMainSettings"]>
+  isNotificationsEnabled: boolean
+  isDarkMode: boolean
 }
 
 const MainSettingsContent = (props: MainSettingsContentProps) => {
   const router = useRouter();
 
-  const { settings } = props;
+  const [isNotificationsChecked, setIsNotificationsChecked] = useState<boolean>(props.isNotificationsEnabled);
+  const [isDarkModeChecked, setIsDarkModeChecked] = useState<boolean>(props.isDarkMode);
+
   const {
     mutateAsync: updateMainSettingsMutation
   } = api.user.updateMainSettings.useMutation()
 
-  // const onSettingsChange = (isDarkMode: boolean, state: boolean) => {
+  useEffect(() => {
+    setIsNotificationsChecked(props.isNotificationsEnabled);
+    setIsDarkModeChecked(props.isDarkMode);
+  }, [props.isNotificationsEnabled, props.isDarkMode]);
 
-  // }
+  const onSettingsChange = async (newNotifications: boolean, newDarkMode: boolean) => {
+    try {
+      await toast.promise(
+        updateMainSettingsMutation({
+          isNotificationsEnabled: newNotifications,
+          isDarkMode: newDarkMode
+        }),
+        {
+          loading: "Updating settings...",
+          success: "Settings Updated!",
+          error: (err) => `Error: ${err.message}`
+        }
+      );
+      setIsNotificationsChecked(newNotifications);
+      setIsDarkModeChecked(newDarkMode);
+    } catch (error) {
+      console.error("Failed to update settings:", error);
+    }
+  };
+
+  const onNotificationsChange = () => {
+    onSettingsChange(!isNotificationsChecked, isDarkModeChecked);
+  };
+
+  const onDarkModeChange = () => {
+    onSettingsChange(isNotificationsChecked, !isDarkModeChecked);
+  };
 
   return (
       <Card className={cn("w-[500px]")}>
@@ -99,7 +130,8 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
               </p>
             </div>
             <Switch 
-              checked={settings?.isNotificationsEnabled}
+              checked={isNotificationsChecked}
+              onCheckedChange={onNotificationsChange}
             />
           </div>
           <div className=" flex items-center space-x-4 rounded-md border p-4">
@@ -113,7 +145,8 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
               </p>
             </div>
             <Switch 
-              checked={settings?.isDarkMode}
+              checked={isDarkModeChecked}
+              onCheckedChange={onDarkModeChange}
             />
           </div>
           <div>

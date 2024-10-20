@@ -1,6 +1,7 @@
 import { useRouter } from "next/router"
 import * as React from "react"
 import Navbar from "~/components/global/navbar"
+import useUserStore from "~/components/global/user-store"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -17,6 +18,8 @@ import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 export default function NameSettings() {
   const router = useRouter();
 
+  const { user } = useUserStore();
+
   return (
     <>
       <Navbar />
@@ -31,10 +34,10 @@ export default function NameSettings() {
             <div className="grid w-full items-center gap-4">
                 <h1>Enter your name</h1>
               <div className="flex flex-col space-y-1.5">
-                <Input id="firstName" placeholder="First Name" />
+                <Input id="firstName" placeholder={user?.firstName} />
               </div>
               <div className="flex flex-col space-y-1.5">
-              <Input id="lastName" placeholder="Last Name" />
+              <Input id="lastName" placeholder={user?.lastName} />
               </div>
             </div>
           </form>

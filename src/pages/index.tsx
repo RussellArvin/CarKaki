@@ -8,12 +8,11 @@ import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
+import useUserStore from "~/components/global/user-store";
 
 export default function Home() {
   const router = useRouter();
-  const { data: userData, isLoading: userDataIsLoading } = api.user.get.useQuery();
-
-  useSeedNewUser({ data: userData, isLoading: userDataIsLoading });
+  const {user: userData} = useUserStore();
 
   return (
     <>
@@ -44,7 +43,7 @@ export default function Home() {
             </p>
 
             {
-              !userData || userDataIsLoading ? (
+              !userData? (
                 <>
                   <Button 
                     className="w-full bg-blue-500 text-white hover:bg-blue-600" 
