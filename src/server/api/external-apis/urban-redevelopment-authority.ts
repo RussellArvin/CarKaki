@@ -31,7 +31,6 @@ export class UrbanRedevelopmentAuthority {
 
     private async generateAccessToken(): Promise<string> {
         try{
-            console.log("Token generatred")
             const response = await axios.get<URAAuthenticationResponse>(
                 `${UrbanRedevelopmentAuthority.BASE_URL}/insertNewToken.action`,{
                     headers: {
