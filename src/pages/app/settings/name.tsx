@@ -1,5 +1,6 @@
 import { useRouter } from "next/router"
 import * as React from "react"
+import Navbar from "~/components/global/navbar"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -17,6 +18,8 @@ export default function NameSettings() {
   const router = useRouter();
 
   return (
+    <>
+      <Navbar />
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-[500px]">
         <CardHeader>
@@ -49,5 +52,6 @@ export default function NameSettings() {
         </CardFooter>
       </Card>
     </div>
+    </>
   )
 }
