@@ -16,7 +16,7 @@ export class UrbanRedevelopmentAuthority {
 
     public async initialize(): Promise<void> {
         const existingToken = await uraTokenRepository.findOne();
-        const tokenExpired = existingToken && existingToken.createdAt < new Date(Date.now() - 23 * 60 * 60 * 1000);
+        const tokenExpired = existingToken && existingToken.createdAt > new Date(Date.now() - 23 * 60 * 60 * 1000);
     
         if (!existingToken || tokenExpired) {
             const newToken = await this.generateAccessToken();
@@ -31,6 +31,7 @@ export class UrbanRedevelopmentAuthority {
 
     private async generateAccessToken(): Promise<string> {
         try{
+            console.log("Token generatred")
             const response = await axios.get<URAAuthenticationResponse>(
                 `${UrbanRedevelopmentAuthority.BASE_URL}/insertNewToken.action`,{
                     headers: {
