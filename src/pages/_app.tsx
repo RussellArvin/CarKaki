@@ -1,6 +1,7 @@
 import { type AppType } from "next/app";
 import { ClerkProvider } from "@clerk/nextjs";
 import { useEffect } from "react";
+import { Toaster } from 'react-hot-toast';
 
 import { api } from "~/utils/api";
 import { GeistSans } from "geist/font/sans";
@@ -25,6 +26,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider>
        <Component {...pageProps} />
+       <Toaster />
     </ClerkProvider>
   );
 };
