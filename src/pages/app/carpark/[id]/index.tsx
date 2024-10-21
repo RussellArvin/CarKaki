@@ -122,12 +122,12 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{name || <Skeleton className="h-6 w-32 rounded" />}</CardTitle>
-        <CardDescription>{address || <Skeleton className="h-4 w-48 rounded" />}</CardDescription>
+        <CardTitle>{name ?? <Skeleton className="h-6 w-32 rounded" />}</CardTitle>
+        <CardDescription>{address ?? <Skeleton className="h-4 w-48 rounded" />}</CardDescription>
       </CardHeader>
       <CardContent>
         <div>
-          Available spaces: {availableSpace || <Skeleton className="h-4 w-16 rounded" />}
+          Available spaces: {availableSpace ?? <Skeleton className="h-4 w-16 rounded" />}
         </div>
         <div>
           Enter number of hours you are parking for
