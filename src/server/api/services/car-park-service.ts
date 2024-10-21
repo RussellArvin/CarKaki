@@ -98,7 +98,7 @@ export class CarParkService{
     public async getFullDetails(
         userId: string,
         carParkId: string,
-    ){
+    ): Promise<FullCarParkDetails>{
         try{
             const [carpark] = await Promise.all([
                 await this.mapOneCarParkWithAddress(
