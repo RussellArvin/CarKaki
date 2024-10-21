@@ -11,6 +11,7 @@ import { api } from "~/utils/api"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import MapEmbed from "~/components/global/map-embed";
 import proj4 from 'proj4';
+import { Skeleton } from "~/components/ui/skeleton";
 
 // Define the projections
 const WGS84 = 'EPSG:4326';
@@ -128,71 +129,100 @@ const HomePageContent: React.FC = () => {
     { enabled: !!coordinates }
   );
 
+  const isPageLoading =  isCarParkLoading || carPark === undefined
+
 
   return (
     <div>
       {error ? (
         <p>{error}</p>
-      ) : !coordinates || isCarParkLoading ? (
-        <p>Loading coordinates...</p>
-      ) : carPark ? (
+      ) : (
         <div className="flex h-screen bg-gray-100 p-4">
             {/* Left Panel */}
             <Card className="w-1/3 mr-4">
               <CardHeader className="bg-blue-600 text-white">
-                <CardTitle>{carPark.name}</CardTitle>
-                <CardDescription className="text-blue-100">{carPark.capacity} lots</CardDescription>
+                {isPageLoading ? (
+                  <Skeleton />
+                ) : (
+                  <>
+                    <CardTitle>{carPark.name}</CardTitle>
+                    <CardDescription className="text-blue-100">{carPark.capacity} lots</CardDescription>
+                  </>
+                )}
               </CardHeader>
               <CardContent className="p-6">
-                <div className="flex space-x-2 mb-6">
-                  <Input placeholder="Location" />
-                  <Button size="icon"><Search className="h-4 w-4" /></Button>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span>Available spaces:</span>
-                      <span>{carPark.availableLots}</span>
+              {isPageLoading ? (
+          <div className="space-y-4">
+            <div className="flex space-x-2">
+              <Skeleton className="w-full h-10 rounded" />
+              <Skeleton className="w-10 h-10 rounded-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="w-full h-4 rounded" />
+              <Skeleton className="w-2/3 h-4 rounded" />
+              <Skeleton className="w-1/2 h-4 rounded" />
+            </div>
+            <div className="flex items-start space-x-2">
+              <Skeleton className="w-5 h-5 rounded-full" />
+              <Skeleton className="w-full h-4 rounded" />
+            </div>
+            <Skeleton className="w-full h-10 rounded" />
+          </div>
+                ) : (
+                  <>
+                    <div className="flex space-x-2 mb-6">
+                      <Input placeholder="Location" />
+                      <Button size="icon"><Search className="h-4 w-4" /></Button>
                     </div>
-                    <Progress value={(carPark.availableLots / carPark.capacity) * 100} className="h-2" />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Hourly rate:</span>
-                    <span>$7</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Daily rate:</span>
-                    <span>$45</span>
-                  </div>
-                  <div className="flex items-start pt-4">
-                    <MapPin className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm">{carPark.address}</p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={()=> router.push(APP_ROUTES.CARPARK(carPark.id))}
-                  className="w-full mt-6"
-                >
-                  See More!
-                </Button>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span>Available spaces:</span>
+                          <span>{carPark.availableLots}</span>
+                        </div>
+                        <Progress value={(carPark.availableLots / carPark.capacity) * 100} className="h-2" />
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Hourly rate:</span>
+                        <span>$7</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Daily rate:</span>
+                        <span>$45</span>
+                      </div>
+                      <div className="flex items-start pt-4">
+                        <MapPin className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm">{carPark.address}</p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
+                      className="w-full mt-6"
+                    >
+                      See More!
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
 
             {/* Right Panel - Map */}
             <Card className="w-2/3">
-              <CardContent className="p-0 h-full">
-              {carPark.address ? (
-                <MapEmbed 
-                  address={carPark.address}
-                />
-              ) : (
-                <p>none</p>
-              )}
+              <CardContent className="p-4 h-full">
+              {isPageLoading ? (
+                  <Skeleton className="w-full h-full rounded-[1rem]" />
+                ) : (
+                  carPark.address ? (
+                    <MapEmbed 
+                      address={carPark.address}
+                    />
+                  ) : (
+                    <p>none</p>
+                  )
+                )}
               </CardContent>
             </Card>
           </div>
-      ) : (
-        <p>No car park found.</p> // This is the fallback when no car park is found
       )}
     </div>
   );

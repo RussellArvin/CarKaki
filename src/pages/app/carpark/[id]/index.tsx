@@ -9,168 +9,176 @@ import { Input } from "~/components/ui/input"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import MapEmbed from "~/components/global/map-embed"
+import Rating from "~/components/global/rating"
 
-
-export default function CarParkPage(){
-    return (
-        <>
-            <Navbar />
-            <CarParkMainContent />
-        </>
-    )
+export default function CarParkPage() {
+  return (
+    <>
+      <Navbar />
+      <CarParkMainContent />
+    </>
+  )
 }
 
 const CarParkMainContent = () => {
-    const router = useRouter();
-    const {
-        isLoading: isCarParkLoading,
-        data: carParkData
-    } = api.carPark.getFullDetails.useQuery(
-        { id: router.query.id as string }, 
-        {
-            enabled: !!router.query.id, // Only run the query if `id` exists
-        }
-    );
-    
-    return (
-        <div className="flex flex-col lg:flex-row gap-4 p-4">
-            {isCarParkLoading || carParkData === undefined ? (
-                <Skeleton className="h-[500px] w-[500px] rounded-xl" />
-            ) : (
-                <>
-                    <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                        <div className="flex-1">
-                            <CarParkDetails 
-                                id={carParkData.id}
-                                name={carParkData.name}
-                                address={carParkData.address}
-                                availableSpace={carParkData.availableLots}
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <NearbyCarparks 
-                                nearByCarParks={carParkData.nearByCarParks}
-                            />
-                        </div>
-                    </div>
-                    <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                        <div className="flex-1">
-                            {carParkData.address ? (
-                                <MapEmbed 
-                                    address={carParkData.address}
-                                />
-                            ) : (
-                                <p>No address available</p>
-                            )}
-                        </div>
-                        <div className="flex-1">
-                            <CarParkReviews />
-                        </div>
-                    </div>
-                </>
-            )}
+  const router = useRouter();
+  const {
+    isLoading: isCarParkLoading,
+    data: carParkData
+  } = api.carPark.getFullDetails.useQuery(
+    { id: router.query.id as string },
+    {
+      enabled: !!router.query.id, // Only run the query if `id` exists
+    }
+  );
+
+  const isLoading = isCarParkLoading || carParkData === undefined;
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-4 p-4">
+      <div className="w-full lg:w-1/2 flex flex-col gap-4">
+        <div className="flex-1">
+          {isLoading ? (
+            <Skeleton className="w-full h-[300px] rounded" />
+          ) : (
+            <CarParkDetails
+              id={carParkData?.id}
+              name={carParkData?.name}
+              address={carParkData?.address}
+              availableSpace={carParkData?.availableLots}
+            />
+          )}
         </div>
-    )
-    
+        <div className="flex-1">
+          {isLoading ? (
+            <Skeleton className="w-full h-[300px] rounded" />
+          ) : (
+            <NearbyCarparks
+              nearByCarParks={carParkData?.nearByCarParks}
+            />
+          )}
+        </div>
+      </div>
+      <div className="w-full lg:w-1/2 flex flex-col gap-4">
+        <div className="flex-1">
+          {isLoading ? (
+            <Skeleton className="w-full h-[400px] rounded" />
+          ) : (
+            carParkData?.address ? (
+              <MapEmbed
+                address={carParkData.address}
+              />
+            ) : (
+              <p>No address available</p>
+            )
+          )}
+        </div>
+        <div className="flex-1">
+          {isLoading ? (
+            <Skeleton className="w-full h-[300px] rounded" />
+          ) : (
+            <CarParkReviews />
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 interface CarParkDetailsProps {
-    id: string
-    name: string
-    address: string | null
-    availableSpace: number
-
+  id: string | undefined
+  name: string | undefined
+  address: string | null | undefined
+  availableSpace: number | undefined
 }
 
 const CarParkDetails = (props: CarParkDetailsProps) => {
-    const {
-        id,
-        name,
-        address,
-        availableSpace,
-    } = props;
-    
-    const router = useRouter()
-    const [rate, setRate] = useState<number|null>(null)
+  const {
+    id,
+    name,
+    address,
+    availableSpace,
+  } = props;
 
-    const {
-        mutate: getAppropriateRate
-    } = api.carPark.getRate.useMutation()
+  const router = useRouter()
+  const [rate, setRate] = useState<number | null>(null)
 
-    const handleRateChange = (hours: string) => {
+  const {
+    mutate: getAppropriateRate
+  } = api.carPark.getRate.useMutation()
 
-        getAppropriateRate({
-            id: router.query.id as string,
-            hours:parseInt(hours)
-        },
-        {
-            onSuccess: (rate) => {
-                setRate(rate)
-            }
-        })
-    }
+  const handleRateChange = (hours: string) => {
+    getAppropriateRate({
+      id: router.query.id as string,
+      hours: parseInt(hours)
+    },
+    {
+      onSuccess: (rate) => {
+        setRate(rate)
+      }
+    })
+  }
 
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{name}</CardTitle>
-                <CardDescription>{address}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div>
-                    Available spaces: {availableSpace}
-                </div>
-                <div>
-                    Enter number of hours you are parking for
-                </div>
-                <Input 
-                    className="w-[200px]"
-                    id="hours"
-                    type="number"
-                    placeholder="Number of hours" 
-                    onChangeCapture={e => handleRateChange(e.currentTarget.value)} 
-                />
-                <div>
-                    {rate}
-                </div>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-                <Button>Save as Home</Button>
-                <Button>Save as Work</Button>
-            </CardFooter>
-        </Card>
-    )
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{name || <Skeleton className="h-6 w-32 rounded" />}</CardTitle>
+        <CardDescription>{address || <Skeleton className="h-4 w-48 rounded" />}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div>
+          Available spaces: {availableSpace || <Skeleton className="h-4 w-16 rounded" />}
+        </div>
+        <div>
+          Enter number of hours you are parking for
+        </div>
+        <Input
+          className="w-[200px]"
+          id="hours"
+          type="number"
+          placeholder="Number of hours"
+          onChangeCapture={e => handleRateChange(e.currentTarget.value)}
+        />
+
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button>Save as Home</Button>
+        <Button>Save as Work</Button>
+      </CardFooter>
+    </Card>
+  )
 }
 
 const CarParkReviews = () => {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Reviews</CardTitle>
-                <CardDescription>Reviews for this particular carpark</CardDescription>
-                <Button
-                    variant="outline"
-                >Add</Button>
-            </CardHeader>
-            <CardContent>
-                <CarParkReviewItem />
-                <CarParkReviewItem />
-            </CardContent>
-
-        </Card>
-    )
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Reviews</CardTitle>
+        <CardDescription>Reviews for this particular carpark</CardDescription>
+        <Button
+          variant="outline"
+        >Add</Button>
+      </CardHeader>
+      <CardContent>
+        <CarParkReviewItem />
+        <CarParkReviewItem />
+      </CardContent>
+    </Card>
+  )
 }
 
 const CarParkReviewItem = () => {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>John Tan</CardTitle>
-            </CardHeader>
-            <CardContent>
-                Very Cool!
-            </CardContent>
-
-        </Card>
-    )
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>John Tan</CardTitle>
+        <Rating
+          rating={2}
+        />
+      </CardHeader>
+      <CardContent>
+        Very Cool!
+      </CardContent>
+    </Card>
+  )
 }
