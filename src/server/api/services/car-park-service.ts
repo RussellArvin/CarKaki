@@ -1,27 +1,48 @@
+import { TRPCError } from "@trpc/server";
+import { uraRequestService } from ".";
 import { GoogleMap } from "../external-apis/google-maps";
 import { CarPark } from "../models/car-park";
-import { CarParkRate } from "../models/car-park-rate";
-import { CarParkRateRepository } from "../repositories/car-park-rate-repository";
 import { CarParkRepository } from "../repositories/car-park-repository";
+import Location from "../types/location";
+import { ParkingHistoryRepository } from "../repositories/parking-history-repository";
+import { ParkingHistory } from "../models/parking-history";
+import { v4 as uuidv4 } from 'uuid';
+import { UserFavourite } from "../models/user-favourite";
+import { UserFavouriteRepository } from "../repositories/user-favourite-repository";
+import { UserReview } from "../models/user-review";
+import { UserReviewRepository } from "../repositories/user-review-repository";
+interface CarParkDetails {
+    id: string
+    name: string
+    address: string | null
+    capacity: number
+    availableLots: number
+}
 
-interface DayRate {
-    min: number,
-    rate: number
+interface FullCarParkDetails extends CarParkDetails{
+    isFavourited: boolean
+    nearByCarParks: CarParkDetails[]
 }
 
 export class CarParkService{
-    private carParkRateRepository: CarParkRateRepository
     private carParkRepository: CarParkRepository
+    private parkingHistoryRepository: ParkingHistoryRepository
+    private userFavouriteRepository: UserFavouriteRepository
+    private userReviewRepository: UserReviewRepository
 
     constructor(
-        carParkRateRepository: CarParkRateRepository,
-        carParkRepository: CarParkRepository
+        carParkRepository: CarParkRepository,
+        parkingHistoryRepository: ParkingHistoryRepository,
+        userFavouriteRepository: UserFavouriteRepository,
+        userReviewRepository: UserReviewRepository
     ){
-        this.carParkRateRepository = carParkRateRepository
         this.carParkRepository = carParkRepository
+        this.parkingHistoryRepository = parkingHistoryRepository
+        this.userFavouriteRepository = userFavouriteRepository
+        this.userReviewRepository = userReviewRepository
     }
 
-    public async mapOneCarParkWithAddress(carPark:CarPark): Promise<CarPark> {
+    private async mapOneCarParkWithAddress(carPark:CarPark): Promise<CarPark> {
         const { address, location } = carPark.getValue()
         if(address) return carPark;
         
@@ -33,41 +54,251 @@ export class CarParkService{
         return updatedCarPark;
     }
 
-    public async mapManyCarParkWithAddress(carParks: CarPark[]): Promise<CarPark[]>{
+    private async mapManyCarParkWithAddress(carParks: CarPark[]): Promise<CarPark[]>{
         return Promise.all(carParks.map(carPark => this.mapOneCarParkWithAddress(carPark)))
     }
 
-    private getDayRate(carParkRate: CarParkRate): DayRate {
-        const dayOfTheWeek = new Date().getDay();
-        //TODO: handle public holiday
+    public async getDetails(location: Location): Promise<CarParkDetails>{
+        try{
+            const {x,y} = location
 
-        if(dayOfTheWeek === 0){
-            return {
-                min: carParkRate.getValue().sunPHMin,
-                rate: carParkRate.getValue().sunPHRate
+            const [carpark] = await Promise.all([
+                await this.mapOneCarParkWithAddress(
+                    await this.carParkRepository.findOneByLocation({x,y})
+                ),
+                await uraRequestService.checkAndMakeRequests()
+            ])
+
+            const {
+                id,
+                name,
+                address,
+                capacity,
+                availableLots,
+            } = carpark.getValue()
+
+            return{
+                id,
+                name,
+                address,
+                capacity,
+                availableLots,
             }
-        }
-        else if(dayOfTheWeek === 6) {
-            return {
-                min: carParkRate.getValue().satMin,
-                rate: carParkRate.getValue().satRate
-            }
-        }
-        return {
-            min: carParkRate.getValue().weekDayMin,
-            rate: carParkRate.getValue().weekDayRate
+        } catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
         }
     }
 
-    public async getAppropriateRate(
+    public async getFullDetails(
+        userId: string,
         carParkId: string,
-        minutes: number
-    ): Promise<number> {
-        const carParkRate = await this.carParkRateRepository.findOneByCarParkId(carParkId);
-        if(!carParkRate) return 0;
+    ){
+        try{
+            const [carpark] = await Promise.all([
+                await this.mapOneCarParkWithAddress(
+                    await this.carParkRepository.findOneById(carParkId)
+                ),
+                await uraRequestService.checkAndMakeRequests() //Reload URA Data
+            ])
+    
+            const [nearByCarParks, isFavourited] = await Promise.all([
+                this.mapManyCarParkWithAddress(
+                    await this.carParkRepository.findNearByCarParks(carpark.getValue().location,10)
+                ),
+                this.carParkRepository.isFavouritedByUser(carParkId,userId)
+            ])
+    
+    
+            const {
+                id,
+                name,
+                address,
+                capacity,
+                availableLots,
+            } = carpark.getValue()
+    
+            return{
+                id,
+                name,
+                address,
+                capacity,
+                availableLots,
+                isFavourited,
+                nearByCarParks: nearByCarParks.map((item) => {
+                    const {id,name,address,capacity,availableLots} = item.getValue();
+                    return {
+                        id,name,address,capacity,availableLots
+                    }
+                })
+            }
+        }  catch(err){
+            if(err instanceof TRPCError) throw err;
 
-        const { min, rate } = this.getDayRate(carParkRate);
-
-        return Math.ceil(minutes / min) * rate;
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
     }
+
+    public async startParking(
+        userId:string,
+        carParkId: string
+    ){
+        try{
+            const carpark = await this.carParkRepository.findOneById(carParkId);
+            const existingParkingHistory = await this.parkingHistoryRepository.findExistingByUserIdOrNull(
+                userId
+            )
+
+            if(existingParkingHistory) throw new TRPCError({
+                code:"BAD_REQUEST",
+                message:"You have an ongoing parking record"
+            })
+
+            const currentDate = new Date();
+
+            const newParkingHistory = new ParkingHistory({
+                id:uuidv4(),
+                carParkId,
+                userId,
+                startDate: currentDate,
+                endDate: null,
+                createdAt: currentDate,
+                updatedAt: currentDate
+            })
+            await this.parkingHistoryRepository.save(newParkingHistory)
+        }catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async endParking(
+        userId:string,
+        carParkId: string
+    ){
+        try{
+            const existingParkingRecord = await this.parkingHistoryRepository.findExistingByUserIdAndCarParkId(
+                userId,
+                carParkId
+            )
+    
+            const updatedParkingRecord = existingParkingRecord.endParking()
+            await this.parkingHistoryRepository.update(updatedParkingRecord);
+        }catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async setFavourite(
+        userId:string,
+        carParkId: string,
+        isFavourited: boolean
+    ){
+        try{
+            const existingFavourite = await this.userFavouriteRepository.findOneByCarParkAndUserIdOrNull(
+                carParkId,
+                userId
+            )
+    
+            //User wants to set to favourite but it already favourited
+            if(isFavourited && existingFavourite){
+                throw new TRPCError({
+                    code:"BAD_REQUEST",
+                    message:"Car park already favourited by user"
+                })
+            }
+            //User wants to set to not favourited but already favourited
+            else if(!isFavourited && existingFavourite){
+                await this.userFavouriteRepository.update(existingFavourite.delete())
+            }
+            // User wants to set to favourite but is not favourited
+            else if(isFavourited && !existingFavourite){
+                await this.userFavouriteRepository.save(new UserFavourite({
+                    carParkId,
+                    userId,
+                    createdAt: new Date(),
+                    deletedAt: null
+                }))
+            }
+            // User wants to set to not favourite but not favourited
+            else {
+                throw new TRPCError({
+                    code:"BAD_REQUEST",
+                    message:"Car park not favourited by user"
+                })
+            }
+        }catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async createReview(
+        userId:string,
+        carParkId: string,
+        rating: number,
+        description: string
+    ){
+        try{
+    
+            const [carPark, existingReview] = await Promise.all([
+                await this.carParkRepository.findOneById(carParkId),
+                await this.userReviewRepository.findOneByUserIdAndCarParkId(
+                    userId,
+                    carParkId
+                )
+            ]);
+    
+            if(existingReview) throw new TRPCError({
+                code:"BAD_REQUEST",
+                message:"You have already written a review for this car park"
+            })
+    
+            const currentDate = new Date();
+            const userReview = new UserReview({
+                carParkId,
+                userId,
+                rating,
+                description,
+                createdAt: currentDate,
+                updatedAt: currentDate,
+                deletedAt: null
+            })
+            await this.userReviewRepository.save(userReview)
+        }catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
 }

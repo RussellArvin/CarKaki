@@ -1,155 +1,50 @@
 
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
-import { carParkRepository, parkingHistoryRepository, userRepository } from "../repositories";
-import handleError from "~/server/utils/handleError"
-import { getUserInformation } from "~/server/utils/clerk";
-import { User } from "../models/user";
-import clerk from "@clerk/clerk-sdk-node";
-import { TRPCError } from "@trpc/server";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import UserDetails from "../types/user-details";
-import UserMainSettings from "../types/user-main-settings";
+import { userService } from "../services";
 
 export const userRouter = createTRPCRouter({
     getFrequentlyVisitedCarParks: protectedProcedure
-    .query(async ({ctx})=> {
-        return await parkingHistoryRepository.findFrequentlyVisited(ctx.auth.userId)
-    }),
+    .query(async ({ctx})=> await userService.getFrequentlyVisitedCarParks(ctx.auth.userId)),
     getFavouriteCarParks: protectedProcedure
-    .query(async ({ctx}) => {
-        return (await carParkRepository.findUserFavourites(ctx.auth.userId)).map(
-            (carpark) => carpark.getValue()
-        )
-    }),
+    .query(async ({ctx}) => await userService.getFavouriteCarParks(ctx.auth.userId)),
     getCarParkHistory: protectedProcedure
-    .query(async ({ctx}) => {
-        return (await carParkRepository.findUserParkingHistory(ctx.auth.userId)).map(
-            (carpark) => carpark.getValue()
-        )
-    }),
+    .query(async ({ctx}) => await userService.getCarParkHistory(ctx.auth.userId)),
     getSavedCarParks: protectedProcedure
-    .query(async ({ctx})=>{
-        return (await carParkRepository.findSavedCarParks(ctx.auth.userId)).map(
-            (carpark) => carpark.getValue()
-        )
-    }),
+    .query(async ({ctx})=> await userService.getSavedCarParks(ctx.auth.userId)),
     updateNames: protectedProcedure
     .input(z.object({
         firstName: z.string(),
         lastName: z.string()
     }))
-    .mutation(async ({ctx,input}) => {
-       try{
-            const user = await userRepository.findOneByUserId(ctx.auth.userId);
-            const updatedUser = user.setNames(input.firstName,input.lastName);
-
-            await userRepository.update(updatedUser);
-            return;
-       } catch(e) {handleError(e)}
-    }),
+    .mutation(async ({ctx,input}) => await userService.updateNames(
+        ctx.auth.userId,
+        input.firstName,
+        input.lastName
+    )),
     updateMainSettings: protectedProcedure
     .input(z.object({
         isNotificationsEnabled:z.boolean(),
         isDarkMode: z.boolean()
     }))
-    .mutation(async ({ctx,input})=>{
-        try{
-             const user = await userRepository.findOneByUserId(ctx.auth.userId)
-             const updatedUser = user.setMainSettings(
-                input.isNotificationsEnabled,
-                input.isDarkMode
-             )
-
-             await userRepository.update(updatedUser);
-             return;
-        } catch(e){handleError(e)}
-    }),
-    getMainSettings: protectedProcedure
-    .query(async ({ctx}): Promise<UserMainSettings> => {
-        try{
-            const user = await userRepository.findOneByUserId(ctx.auth.userId);
-            const { isDarkMode, isNotificationsEnabled } = user.getValue();
-
-            return{
-                isDarkMode,
-                isNotificationsEnabled
-            }
-        } catch(err) {
-            if(err instanceof TRPCError) throw err;
-
-            const e = err as Error;
-            throw new TRPCError({
-                code:"INTERNAL_SERVER_ERROR",
-                message:e.message
-            })
-        }
-    }),
+    .mutation(async ({ctx,input}) => await userService.updateMainSettings(
+        ctx.auth.userId,
+        input.isNotificationsEnabled,
+        input.isDarkMode
+    )),
     register: protectedProcedure
-    .mutation(async ({ctx})=> {
-        try{
-            const userDetails = await getUserInformation(ctx.auth.userId);
-            const currentDate = new Date();
-
-            const user = new User({
-                ...userDetails,
-                id: ctx.auth.userId,
-                isDarkMode:false,
-                isNotificationsEnabled: false,
-                createdAt: currentDate,
-                updatedAt: currentDate,
-                deletedAt: null,
-                homeCarParkId: null,
-                workCarParkId: null
-            })
-
-            await userRepository.save(user);
-            return;
-        } catch(e){handleError(e)}
-    }),
+    .mutation(async ({ctx})=> await userService.register(ctx.auth.userId)),
     delete: protectedProcedure
-    .mutation(async ({ctx,input}) => {
-        const user = await userRepository.findOneByUserId(ctx.auth.userId);
-        const deletedUser = user.delete()
-        await userRepository.update(deletedUser);
-        return;
-    }),
+    .mutation(async ({ctx}) => await userService.deleteUser(ctx.auth.userId)),
     get: protectedProcedure
-    .query(async ({ctx}): Promise<UserDetails> => {
-
-        const [user,currentParking] = await Promise.all([
-            await userRepository.findOneByUserId(ctx.auth.userId),
-            await carParkRepository.findCurrentParkingOrNull(ctx.auth.userId)
-        ])
-
-        return {
-            ...user.getValue(),
-            currentParking
-        }
-        
-    }),
+    .query(async ({ctx}): Promise<UserDetails> => await userService.getUser(ctx.auth.userId)),
     updatePassword: protectedProcedure
     .input(z.object({
         password: z.string(),
     }))
-    .mutation(async ({ctx,input}) => {
-        try{
-            await clerk.users.updateUser(ctx.auth.userId,{
-                password: input.password
-            })
-            return;
-        } catch (err: unknown) {
-            if (typeof err === 'object' && err !== null && 'errors' in err) {
-              // This is likely a Clerk API error
-              const clerkError = err as { errors: { message: string }[] };
-              throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: clerkError.errors[0]?.message || "An error occurred while updating the password"
-              });
-            }
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "An unexpected error occurred"
-            });
-          }
-    })
+    .mutation(async ({ctx,input}) => await userService.updatePassword(
+        ctx.auth.userId,
+        input.password
+    ))
 });
