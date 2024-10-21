@@ -104,7 +104,7 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
             hours:parseInt(hours)
         },
         {
-            onSuccess: ({rate}) => {
+            onSuccess: (rate) => {
                 setRate(rate)
             }
         })

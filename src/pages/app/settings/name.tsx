@@ -53,8 +53,8 @@ export default function NameSettings() {
     mutateAsync: updateNamesMutationAsync
   } = api.user.updateNames.useMutation()
 
-  const onSubmit = (data: FormData) => {
-    toast.promise(updateNamesMutationAsync({...data}),{
+  const onSubmit = async (data: FormData) => {
+    await toast.promise(updateNamesMutationAsync({...data}),{
       success:"Names updated successfully",
       loading:"Updating names...",
       error:(err:Error) => err.message

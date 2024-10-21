@@ -72,7 +72,7 @@ const PasswordContent = () => {
           error: (err: Error) => err.message,
         }
       );
-      router.push(APP_ROUTES.SETTINGS.MAIN);
+      await router.push(APP_ROUTES.SETTINGS.MAIN);
     } catch (error) {
       console.error("Failed to update password:", error);
     }
