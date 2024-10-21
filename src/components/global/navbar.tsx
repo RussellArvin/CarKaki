@@ -34,7 +34,10 @@ const Navbar = () => {
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink 
+                  className={navigationMenuTriggerStyle()}
+                  onClick={() => router.push(APP_ROUTES.PROFILE.MAIN)}
+                  >
                   Profile
                 </NavigationMenuLink>
               </NavigationMenuItem>

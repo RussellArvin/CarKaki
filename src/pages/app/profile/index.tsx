@@ -25,19 +25,24 @@ import { Input } from "~/components/ui/input"
 
 const notifications = [
   {
-    title: "Update name",
-    description: "Fill in name.",
-    navigation: APP_ROUTES.SETTINGS.NAME
+    title: "View favourite Carparks",
+    description: "View your favourited carparks!",
+    navigation: APP_ROUTES.PROFILE.FAVOURITE
   },
   {
-    title: "Update password",
-    description: "Change password",
-    navigation: APP_ROUTES.SETTINGS.PASSWORD
+    title: "View Parking History",
+    description: "Your most recent parkings!",
+    navigation: APP_ROUTES.PROFILE.HISTORY
   },
   {
-    title: "Delete account",
-    description: "All user data will be removed upon deletion.",
-    navigation: APP_ROUTES.SETTINGS.DELETE
+    title: "Edit saved Carparks",
+    description: "Find your home and work carpark here!",
+    navigation: APP_ROUTES.PROFILE.SAVED
+  },
+  {
+    title: "View Frequented Carparks",
+    description: "Some of the carparks you often visit!",
+    navigation: APP_ROUTES.PROFILE.FREQUENT_CARPARKS
   },
 ]
 
@@ -73,7 +78,7 @@ interface MainSettingsContentProps {
 
 const MainSettingsContent = (props: MainSettingsContentProps) => {
   const router = useRouter();
-
+  const {user,isUserLoading} = useUserStore()
 
   return (
       <Card className={cn("w-[500px]")}>
@@ -81,18 +86,22 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
           <CardTitle>Settings</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="email">First Name</Label>
-                <Input type="email" id="email" placeholder="Email" />
-            </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="t">Last Name</Label>
-                <Input type="email" id="t" placeholder="Email" />
-            </div>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="t">Email</Label>
-                <Input type="email" id="t" placeholder="Email" />
-            </div>
+            {isUserLoading ? (<Skeleton className="h-[250px]" />) : (
+              <>
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input type="text" id="firstName" disabled value={user?.firstName} />
+              </div>
+              <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input type="text" id="lastName" disabled value={user?.lastName}/>
+              </div>
+              <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="email">Email</Label>
+                  <Input type="email" id="email" disabled value={user?.email} />
+              </div>
+              </>
+            )}
           <div>
             {notifications.map((notification, index) => (
               //TODO: CURSOR

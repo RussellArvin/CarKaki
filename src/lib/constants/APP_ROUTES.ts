@@ -8,6 +8,13 @@ const APP_ROUTES = {
         PASSWORD:'/app/settings/password',
         DELETE: '/app/settings/delete'
     },
+    PROFILE: {
+        MAIN: '/app/profile',
+        FAVOURITE: '/app/profile/favourite-carparks',
+        SAVED: '/app/profile/saved-carparks',
+        HISTORY: '/app/profile/parking-history',
+        FREQUENT_CARPARKS: '/app/profile/frequent-carparks'
+    },
     CARPARK: (carParkId: string) => `/app/carpark/${carParkId}`
 }
 
