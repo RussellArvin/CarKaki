@@ -71,29 +71,29 @@ const HomePageContent: React.FC = () => {
     isLoading: isRateLoading,
     data: carParkRate
   } = api.carPark.getRateDetails.useQuery(
-    { id: carPark?.id! }, // Type assertion is safe because of the enabled condition
+    { id: carPark?.id  ?? ''},
     { 
-      enabled: isCarParkLoading === false && carPark !== undefined && carPark.id !== undefined
+      enabled: !isCarParkLoading && Boolean(carPark?.id)
     }
   );
 
   const isPageLoading =  isCarParkLoading || carPark === undefined
     || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined
 
-    const startParking = () => {
-      if (!carPark) return;
+    // const startParking = async () => {
+    //   if (!carPark) return;
     
-      toast.promise(
-        startParkingMutationAsync({
-          id: carPark.id
-        }), 
-        {
-          loading: 'Starting parking session...',
-          success: 'Parking session started!',
-          error: (e:Error) => e.message
-        }
-      );
-    }
+    //   await toast.promise(
+    //     startParkingMutationAsync({
+    //       id: carPark.id
+    //     }), 
+    //     {
+    //       loading: 'Starting parking session...',
+    //       success: 'Parking session started!',
+    //       error: (e:Error) => e.message
+    //     }
+    //   );
+    // }
 
 
   return (
