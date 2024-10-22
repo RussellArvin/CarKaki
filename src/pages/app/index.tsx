@@ -150,11 +150,11 @@ const HomePageContent: React.FC = () => {
                         <>
                           <div className="flex justify-between">
                             <span>Minimum Time</span>
-                            <span>{carParkRate.min}</span>
+                            <span>{carParkRate.min} minutes</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Rate</span>
-                            <span>{carParkRate.rate}</span>
+                            <span>${carParkRate.rate.toFixed(2)}</span>
                           </div>
                         </>
                       ) :  <div className="flex justify-between">
