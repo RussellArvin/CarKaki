@@ -16,7 +16,7 @@ const Rating = (props: RatingProps) => {
                 <Star
                     key={i}
                     fill={i < safeRating ? "gold" : "none"}
-                    stroke={i < safeRating ? "gold" : "black"}
+                    stroke={i < safeRating ? "gold" : "hsl(var(--primary))"}
                 />
             ))}
         </div>
