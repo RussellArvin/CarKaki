@@ -1,7 +1,7 @@
 import { type AppType } from "next/app";
 import { ClerkProvider } from "@clerk/nextjs";
 import { useEffect } from "react";
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import type { AppProps } from "next/app";
 
 import { api } from "~/utils/api";
@@ -36,7 +36,15 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         disableTransitionOnChange
       >
           <Component {...pageProps} />
-          <Toaster />
+          <Toaster
+            toastOptions={{
+              style: userData?.isDarkMode ? {
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                border: '1px solid hsl(var(--border))'
+              } : undefined
+            }}
+          /> 
       </ThemeProvider>
     </ClerkProvider>
   );
