@@ -42,13 +42,9 @@ export class CarParkRateService {
         carParkId: string,
         hours: number
     ): Promise<number> {
+        console.log(carParkId,hours)
         try{
-            const carParkRate = await this.carParkRateRepository.findOneByCarParkId(carParkId);
-            if(!carParkRate) return 0;
-
-            const { min, rate } = this.getDayRate(carParkRate);
-
-            return Math.ceil((hours*60) / min) * rate;
+            return await this.carParkRateRepository.getRate(carParkId,hours)
         }catch(err){
             if(err instanceof TRPCError) throw err;
 

@@ -63,6 +63,29 @@ export class CarParkRateRepository {
         }
     }
 
+    public async getRate(
+        carParkId: string,
+        hours: number
+    ): Promise<number> {
+        try{
+            const result = await this.db.execute<{calculate_parking_rate: number}>(
+                sql`SELECT calculate_parking_rate(${carParkId}::uuid, ${hours}::decimal) as calculate_parking_rate`
+              );
+
+              if(!result.rows[0]) throw new TRPCError({
+                code:"NOT_FOUND",
+                message:"Unable to find error"
+              })
+              return result.rows[0].calculate_parking_rate
+        } catch(err){
+            const e  = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findOneByCarParkId(carParkId: string): Promise<CarParkRate | null>{
         try{
             const result = await this.db.select({
