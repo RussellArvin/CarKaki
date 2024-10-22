@@ -101,7 +101,7 @@ const HomePageContent: React.FC = () => {
       {error ? (
         <p>{error}</p>
       ) : (
-        <div className="flex h-screen bg-gray-100 p-4">
+        <div className="flex h-screen p-4">
             {/* Left Panel */}
             <Card className="w-1/3 mr-4">
               <CardHeader className="bg-blue-600 text-white">

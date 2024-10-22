@@ -21,6 +21,7 @@ import Navbar from "~/components/global/navbar"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import useUserStore from "~/components/global/user-store"
 import toast from "react-hot-toast"
+import { useTheme } from "next-themes"
 
 const notifications = [
   {
@@ -72,6 +73,7 @@ interface MainSettingsContentProps {
 
 const MainSettingsContent = (props: MainSettingsContentProps) => {
   const router = useRouter();
+  const { setTheme } = useTheme()
 
   const [isNotificationsChecked, setIsNotificationsChecked] = useState<boolean>(props.isNotificationsEnabled);
   const [isDarkModeChecked, setIsDarkModeChecked] = useState<boolean>(props.isDarkMode);
@@ -100,6 +102,7 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
       );
       setIsNotificationsChecked(newNotifications);
       setIsDarkModeChecked(newDarkMode);
+      newDarkMode ? setTheme("dark") : setTheme("light")
     } catch (error) {
       console.error("Failed to update settings:", error);
     }
