@@ -12,7 +12,7 @@ import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 const Navbar = () => {
   const router = useRouter();
     return (
-      <div className="border-b bg-blue">
+      <div className="border-b bg-blue-600">
         <div className="flex h-16 items-center px-4">
           <h1 className="text-[#FFFFFF] text-3xl font-bold mr-6">CarKaki</h1>
           <NavigationMenu>
