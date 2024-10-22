@@ -8,7 +8,7 @@ const publicHolidaySchema = pgTable(
       id:uuid("id").notNull().primaryKey(),
       name:text("name").notNull(),
       day: date("day").notNull(),
-      createdAt: timestamp("createdAt").notNull().default(CURRENT_TIMESTAMP)
+      createdAt: timestamp("created_at").notNull().default(CURRENT_TIMESTAMP)
     }
 );
 
