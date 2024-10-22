@@ -1,6 +1,7 @@
 import carParkRateSchema from "./car-park-rate-schema";
 import carParkSchema, { vehicleCategoryEnum, parkingSystemEnum } from "./car-park-schema";
 import parkingHistorySchema from "./parking-history-schema";
+import publicHolidaySchema from "./public-holiday-schema";
 import requestLogSchema, { requestTypeEnum } from "./request-log-schema";
 import uraTokenSchema from "./ura-token-schema";
 import userFavouriteSchema from "./user-favourite-schema";
@@ -15,6 +16,7 @@ export const userFavourite = userFavouriteSchema;
 export const userReview = userReviewSchema;
 export const user = userSchema;
 export const carParkRate = carParkRateSchema;
+export const publicHoliday = publicHolidaySchema;
 
 //ENUMS
 export const vehicleCategory = vehicleCategoryEnum
