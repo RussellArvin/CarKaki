@@ -16,7 +16,12 @@ export class CarParkRateService {
         this.carParkRateRepository = carParkRateRepository;
     }
 
-    private getDayRate(carParkRate: CarParkRate): DayRate {
+    private getDayRate(carParkRate: CarParkRate | null): DayRate {
+        if(!carParkRate) return {
+            min: 0,
+            rate:0
+        }
+
         const dayOfTheWeek = new Date().getDay();
         //TODO: handle public holiday
 
@@ -35,6 +40,23 @@ export class CarParkRateService {
         return {
             min: carParkRate.getValue().weekDayMin,
             rate: carParkRate.getValue().weekDayRate
+        }
+    }
+
+    public async getRateValues(
+        carParkId: string
+    ) {
+        try{
+            const rate = await this.carParkRateRepository.findOneByCarParkId(carParkId)
+            return this.getDayRate(rate)
+        }catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
         }
     }
 

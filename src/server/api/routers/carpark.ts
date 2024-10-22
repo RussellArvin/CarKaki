@@ -11,6 +11,11 @@ export const carParkRouter = createTRPCRouter({
         y:z.number()
     }))
     .query(async ({ctx,input}) => await carParkService.getDetails({...input})),
+    getRateDetails: protectedProcedure
+    .input(z.object({
+        id: z.string()
+    }))
+    .query(async ({ctx,input}) => await carParkRateService.getRateValues(input.id)),
     getFullDetails: protectedProcedure
     .input(z.object({
         id: z.string()

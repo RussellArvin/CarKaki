@@ -93,10 +93,14 @@ export class CarParkRateRepository {
             })
             .from(carParkRateSchema)
             .where(
-                between(sql`CURRENT_TIM`, carParkRateSchema.startTime, carParkRateSchema.endTime)
+                between(
+                    sql`CURRENT_TIME`, // Use CURRENT_TIME instead of timestamp conversion
+                    carParkRateSchema.startTime,
+                    carParkRateSchema.endTime
+                )
             )
             .limit(1)
-
+            
             return result[0] ? this.formatFromDb(result[0]) : null
         } catch(err){
             const e  = err as Error;
