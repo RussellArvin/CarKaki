@@ -152,12 +152,12 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
 const CarParkReviews = () => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Reviews</CardTitle>
-        <CardDescription>Reviews for this particular carpark</CardDescription>
-        <Button
-          variant="outline"
-        >Add</Button>
+      <CardHeader className="flex flex-row justify-between items-start">
+        <div>
+          <CardTitle>Reviews</CardTitle>
+          <CardDescription>Reviews for this particular carpark</CardDescription>
+        </div>
+        <Button variant="outline">Add</Button>
       </CardHeader>
       <CardContent>
         <CarParkReviewItem />
