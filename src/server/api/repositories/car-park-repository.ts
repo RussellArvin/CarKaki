@@ -311,13 +311,18 @@ export class CarParkRepository {
     ) {
         try{
             const results = await this.db.select({
-                ...getTableColumns(carParkSchema)
+                id: carParkSchema.id,
+                name: carParkSchema.name,
+                address: carParkSchema.address
             })
                 .from(userFavouriteSchema)
                 .innerJoin(carParkSchema,eq(carParkSchema.id,userFavouriteSchema.carParkId))
-                .where(eq(userFavouriteSchema.userId,userId))
+                .where(and(
+                    eq(userFavouriteSchema.userId,userId),
+                    isNull(userFavouriteSchema.deletedAt)
+                ))
 
-                return results.map((carpark) => new CarPark({...carpark}))
+                return results
         } catch(err){
             const e = err as Error;
             throw new TRPCError({

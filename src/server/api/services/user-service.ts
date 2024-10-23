@@ -27,9 +27,12 @@ export class UserService {
     }
 
     public async getFavouriteCarParks(userId: string){
-        return (await this.carParkRepository.findUserFavourites(userId)).map(
-            (carpark) => carpark.getValue()
-        )
+        return (await this.carParkRepository.findUserFavourites(userId)).map((carPark) => {
+            return {
+                ...carPark,
+                isFavourited: true
+            }
+        })
     }
 
     public async getCarParkHistory(userId: string){
