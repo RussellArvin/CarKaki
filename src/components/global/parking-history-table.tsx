@@ -45,103 +45,108 @@ import { useRouter } from "next/router"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 
 type ParkingSpot = RouterOutputs["user"]["getCarParkHistory"][number]
-export const columns: ColumnDef<ParkingSpot>[] = [
-  {
-      accessorKey: "startDate",
-      header: ({ column }) => {
-          return (
-              <Button
-                  variant="ghost"
-                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              >
-                  Date
-                  <CaretSortIcon className="ml-2 h-4 w-4" />
-              </Button>
-          )
-      },
-      cell: ({ row }) => {
-          const date = new Date(row.getValue("startDate"))
-          return (
-              <div className="font-medium">
-                  {format(date, "dd/MM/yyyy")}
-              </div>
-          )
-      },
-      sortingFn: "datetime"
-  },
-  {
-      accessorKey: "time",
-      header: "Time",
-      cell: ({ row }) => {
-          const startDate = new Date(row.getValue("startDate"))
-          const endDate = new Date(row.original.endDate!)
-          return (
-              <div className="font-medium">
-                  {format(startDate, "HH:mm")} - {format(endDate, "HH:mm")}
-              </div>
-          )
-      },
-  },
-  {
-      accessorKey: "name",
-      header: ({ column }) => {
-          return (
-              <Button
-                  variant="ghost"
-                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              >
-                  Name
-                  <CaretSortIcon className="ml-2 h-4 w-4" />
-              </Button>
-          )
-      },
-      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "duration",
-    header: "Duration",
-    cell: ({ row }) => {
-        const startDate = new Date(row.original.startDate)
-        const endDate = new Date(row.original.endDate!)
-        
-        // Calculate total seconds difference
-        const diffInSeconds = Math.round((endDate.getTime() - startDate.getTime()) / 1000)
-        
-        // Convert to hours and minutes
-        const hours = Math.floor(diffInSeconds / 3600)
-        const minutes = Math.ceil((diffInSeconds % 3600) / 60)
-        
-        // Format duration to "Xh Ymin"
-        let durationStr = ""
-        if (hours > 0) durationStr += `${hours}h `
-        if (minutes > 0 || (!hours && !minutes)) durationStr += `${minutes}min`
-        
-        return <div className="font-medium">{durationStr.trim()}</div>
+
+const useColumns = () => {
+  const router = useRouter();
+
+  const columns: ColumnDef<ParkingSpot>[] = [
+    {
+        accessorKey: "startDate",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Date
+                    <CaretSortIcon className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("startDate"))
+            return (
+                <div className="font-medium">
+                    {format(date, "dd/MM/yyyy")}
+                </div>
+            )
+        },
+        sortingFn: "datetime"
     },
-},
-{
-  id: "details",
-  header: "View Details", 
-  cell: ({ row }) => {
-    const router = useRouter();
-      return (
-          <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              // You can add your onClick handler here
-              onClick={() => {
-                  // Handle viewing details
-                  router.push(APP_ROUTES.CARPARK(row.original.id))
-              }}
-          >
-              <ArrowRight className="h-4 w-4" />
-              <span className="sr-only">View details</span>
-          </Button>
-      )
+    {
+        accessorKey: "time",
+        header: "Time",
+        cell: ({ row }) => {
+            const startDate = new Date(row.getValue("startDate"))
+            const endDate = new Date(row.original.endDate!)
+            return (
+                <div className="font-medium">
+                    {format(startDate, "HH:mm")} - {format(endDate, "HH:mm")}
+                </div>
+            )
+        },
+    },
+    {
+        accessorKey: "name",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Name
+                    <CaretSortIcon className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "duration",
+      header: "Duration",
+      cell: ({ row }) => {
+          const startDate = new Date(row.original.startDate)
+          const endDate = new Date(row.original.endDate!)
+          
+          // Calculate total seconds difference
+          const diffInSeconds = Math.round((endDate.getTime() - startDate.getTime()) / 1000)
+          
+          // Convert to hours and minutes
+          const hours = Math.floor(diffInSeconds / 3600)
+          const minutes = Math.ceil((diffInSeconds % 3600) / 60)
+          
+          // Format duration to "Xh Ymin"
+          let durationStr = ""
+          if (hours > 0) durationStr += `${hours}h `
+          if (minutes > 0 || (!hours && !minutes)) durationStr += `${minutes}min`
+          
+          return <div className="font-medium">{durationStr.trim()}</div>
+      },
   },
+  {
+    id: "details",
+    header: "View Details", 
+    cell: ({ row }) => {
+        return (
+            <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                // You can add your onClick handler here
+                onClick={async () => {
+                    // Handle viewing details
+                    await router.push(APP_ROUTES.CARPARK(row.original.id))
+                }}
+            >
+                <ArrowRight className="h-4 w-4" />
+                <span className="sr-only">View details</span>
+            </Button>
+        )
+    },
+  }
+  ]
+  return {columns};
 }
-]
 
 interface ParkingHistoryTableProps {
     data: ParkingSpot[]
@@ -149,6 +154,7 @@ interface ParkingHistoryTableProps {
 
 export  function ParkingHistoryTable(props: ParkingHistoryTableProps) {
     const { data } = props;
+    const {columns} = useColumns();
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])

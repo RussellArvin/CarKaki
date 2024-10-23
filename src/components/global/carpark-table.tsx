@@ -48,65 +48,70 @@ import { FavouriteButton } from "./favourite-button"
 type FrequentCarPark = RouterOutputs["user"]["getFrequentlyVisitedCarParks"][number]
 type FavouriteCarPark = RouterOutputs["user"]["getFavouriteCarParks"][number]
 
-export const columns: ColumnDef<FrequentCarPark>[] = [
-    {
-      accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Name
-            <CaretSortIcon className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-    },
-    {
-      accessorKey: "address",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Address
-            <CaretSortIcon className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div className="font-medium">{row.getValue("address")}</div>,
-    },
-    {
-      id: "details",
-      header: "View Details", // Empty header
-      cell: ({ row }) => {
-        const router = useRouter();
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => {
-              router.push(APP_ROUTES.CARPARK(row.original.id))
-            }}
-          >
-            <ArrowRight className="h-4 w-4" />
-            <span className="sr-only">View details</span>
-          </Button>
-        )
-      },
-    },
-    {
-      id: "favourite",
-      header: "Favourite", // Empty header
-      cell: ({ row }) => {
-        return <FavouriteButton carParkId={row.original.id} isFavourited={row.original.isFavourited} />
-      },
+const useColumns = () => {
+    const router = useRouter();
+    const columns: ColumnDef<FrequentCarPark>[] = [
+        {
+          accessorKey: "name",
+          header: ({ column }) => {
+            return (
+              <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              >
+                Name
+                <CaretSortIcon className="ml-2 h-4 w-4" />
+              </Button>
+            )
+          },
+          cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+        },
+        {
+          accessorKey: "address",
+          header: ({ column }) => {
+            return (
+              <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              >
+                Address
+                <CaretSortIcon className="ml-2 h-4 w-4" />
+              </Button>
+            )
+          },
+          cell: ({ row }) => <div className="font-medium">{row.getValue("address")}</div>,
+        },
+        {
+          id: "details",
+          header: "View Details", // Empty header
+          cell: ({ row }) => {
+            return (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={async () => {
+                  await router.push(APP_ROUTES.CARPARK(row.original.id))
+                }}
+              >
+                <ArrowRight className="h-4 w-4" />
+                <span className="sr-only">View details</span>
+              </Button>
+            )
+          },
+        },
+        {
+          id: "favourite",
+          header: "Favourite", // Empty header
+          cell: ({ row }) => {
+            return <FavouriteButton carParkId={row.original.id} isFavourited={row.original.isFavourited} />
+          },
+        }
+      ]
+    return {
+        columns,
     }
-  ]
+}
 
 interface ParkingDataTableProps {
     data: FrequentCarPark[] | FavouriteCarPark[]
@@ -119,6 +124,8 @@ export function ParkingDataTable(props: ParkingDataTableProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const {columns} = useColumns()
 
   const table = useReactTable({
     // @ts-expect-error - type mismatch but almost exactly the same
