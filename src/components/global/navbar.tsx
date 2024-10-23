@@ -49,16 +49,19 @@ const Navbar = () => {
         </div>
 
         {/* Parking notification */}
-        {user?.currentParking && (
-          <Button 
-            variant="secondary"
-            className="bg-black/80 text-white hover:bg-black/70 min-w-[20rem]"
-            onClick={() => router.push(APP_ROUTES.CARPARK(user?.currentParking?.id!))}
-          >
-            <span className="mr-2">🚘</span>
-            Ongoing parking at: {user?.currentParking?.name}
-          </Button>
-        )}
+        {(() => {
+          const currentParking = user?.currentParking;
+          return currentParking !== null && currentParking !== undefined && (
+            <Button 
+              variant="secondary"
+              className="bg-black/80 text-white hover:bg-black/70 min-w-[20rem]"
+              onClick={() => router.push(APP_ROUTES.CARPARK(currentParking.carParkId))}
+            >
+              <span className="mr-2">🚘</span>
+              Ongoing parking at: {currentParking.name}
+            </Button>
+          );
+        })()}
       </div>
     </div>
   );

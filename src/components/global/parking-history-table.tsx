@@ -87,12 +87,11 @@ export const columns: ColumnDef<ParkingSpot>[] = [
     accessorKey: "availableLots",
     header: () => <div className="text-right">Available Lots</div>,
     cell: ({ row }) => {
-      const availableLots = row.getValue("availableLots") as String
       const capacity = row.original.capacity
 
       return (
         <div className="text-right font-medium">
-          {availableLots} / {capacity}
+          {row.getValue("availableLots")} / {capacity}
         </div>
       )
     },
