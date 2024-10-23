@@ -79,10 +79,9 @@ export class UserFavouriteRepository {
 
     public async update(entity: UserFavourite){
         try{
-            await this.db.update(userSchema)
+            await this.db.update(userFavouriteSchema)
             .set({
-                ...entity.getValue(),
-                updatedAt: new Date()
+                ...entity.getValue()
             })
             .where(and(
                 eq(userFavouriteSchema.userId,entity.getValue().userId),
