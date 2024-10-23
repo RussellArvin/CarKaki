@@ -11,6 +11,8 @@ import { toast } from "react-hot-toast"
 import MapEmbed from "~/components/global/map-embed"
 import Rating from "~/components/global/rating"
 import { CreateReviewDialog } from "~/components/dialogs/create-review-dialog"
+import { Car, Clock, DollarSign } from "lucide-react"
+import { ParkingControls } from "~/components/global/parking-controls"
 
 type CarParkReview =  RouterOutputs["carPark"]["getFullDetails"]["reviews"][number]
 
@@ -92,68 +94,101 @@ const CarParkMainContent = () => {
 }
 
 interface CarParkDetailsProps {
-  id: string | undefined
+  id: string
   name: string | undefined
   address: string | null | undefined
   availableSpace: number | undefined
 }
 
 const CarParkDetails = (props: CarParkDetailsProps) => {
-  const {
-    id,
-    name,
-    address,
-    availableSpace,
-  } = props;
+  const { id, name, address, availableSpace } = props;
+  const router = useRouter();
+  const [rate, setRate] = useState<number | null>(null);
 
-  const router = useRouter()
-  const [rate, setRate] = useState<number | null>(null)
-
-  const {
-    mutate: getAppropriateRate
-  } = api.carPark.getRate.useMutation()
+  const { mutate: getAppropriateRate } = api.carPark.getRate.useMutation();
 
   const handleRateChange = (hours: string) => {
-    getAppropriateRate({
-      id: router.query.id as string,
-      hours: parseInt(hours)
-    },
-    {
-      onSuccess: (rate) => {
-        setRate(rate)
+    if(hours === "0" || hours === "") return setRate(null)
+    getAppropriateRate(
+      {
+        id: router.query.id as string,
+        hours: parseInt(hours)
+      },
+      {
+        onSuccess: (rate) => {
+          console.log("The rate is", rate)
+          setRate(rate);
+        }
       }
-    })
-  }
+    );
+  };
 
   return (
-    <Card>
+    <Card className="max-w-2xl">
       <CardHeader>
         <CardTitle>{name ?? <Skeleton className="h-6 w-32 rounded" />}</CardTitle>
         <CardDescription>{address ?? <Skeleton className="h-4 w-48 rounded" />}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div>
-          Available spaces: {availableSpace ?? <Skeleton className="h-4 w-16 rounded" />}
+      <CardContent className="space-y-6">
+        {/* Available Spaces Section */}
+        <div className="flex items-center gap-2">
+          <Car className="h-5 w-5 text-slate-600" />
+          <div className="font-medium">
+            Available spaces: {' '}
+            <span className="text-green-600">
+              {availableSpace ?? <Skeleton className="h-4 w-16 rounded inline-block" />}
+            </span>
+          </div>
         </div>
-        <div>
-          Enter number of hours you are parking for
-        </div>
-        <Input
-          className="w-[200px]"
-          id="hours"
-          type="number"
-          placeholder="Number of hours"
-          onChangeCapture={e => handleRateChange(e.currentTarget.value)}
-        />
 
+        {/* Hours Input and Rate Display Section */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+              <Clock className="h-4 w-4" />
+              Parking Duration
+            </div>
+            <Input
+              className="max-w-[200px]"
+              id="hours"
+              type="number"
+              min="1"
+              placeholder="Number of hours"
+              onChange={e => handleRateChange(e.currentTarget.value)}
+            />
+          </div>
+
+          {/* Rate Display */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+              <DollarSign className="h-4 w-4" />
+              Estimated Cost
+            </div>
+            <div className="h-10 flex items-center">
+              {rate !== null ? (
+                <span className="text-lg font-semibold">${rate}</span>
+              ) : (
+                <span className="text-slate-500">Enter hours to see rate</span>
+              )}
+            </div>
+          </div>
+        </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button>Save as Home</Button>
-        <Button>Save as Work</Button>
+
+      <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
+        <ParkingControls carParkId={id} />
+        <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
+          <Button variant="outline" className="flex-1 sm:flex-none">
+            Save as Home
+          </Button>
+          <Button variant="outline" className="flex-1 sm:flex-none">
+            Save as Work
+          </Button>
+        </div>
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
 
 interface CarParkReviewProps {
   carParkId: string

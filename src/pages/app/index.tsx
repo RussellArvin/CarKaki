@@ -14,6 +14,7 @@ import proj4 from 'proj4';
 import { Skeleton } from "~/components/ui/skeleton";
 import useUserStore from "~/components/global/user-store";
 import toast from "react-hot-toast";
+import { ParkingControls } from "~/components/global/parking-controls";
 
 // Define the projections
 const WGS84 = 'EPSG:4326';
@@ -32,7 +33,6 @@ export default function HomePage(){
 const HomePageContent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const userContext = api.useUtils().user;
 
   const router = useRouter();
   const { user, isUserLoading } = useUserStore();
@@ -65,14 +65,6 @@ const HomePageContent: React.FC = () => {
   );
 
   const {
-    mutateAsync: startParkingMutationAsync
-  } = api.carPark.startParking.useMutation()
-
-  const {
-    mutateAsync: endParkingMutationAsync
-  } = api.carPark.endParking.useMutation()
-
-  const {
     isLoading: isRateLoading,
     data: carParkRate
   } = api.carPark.getRateDetails.useQuery(
@@ -85,41 +77,6 @@ const HomePageContent: React.FC = () => {
   const isPageLoading =  isCarParkLoading || carPark === undefined
     || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined || user === undefined
 
-    const startParking = async () => {
-      if (!carPark) return;
-    
-      await toast.promise(
-        startParkingMutationAsync({
-          id: carPark.id
-        }), 
-        {
-          loading: 'Starting parking session...',
-          success: () => {
-            void userContext.get.invalidate();
-            return 'Parking session started!'
-          },
-          error: (e:Error) => e.message
-        }
-      );
-    }
-
-    const endParking = async () => {
-      if (!carPark) return;
-    
-      await toast.promise(
-        endParkingMutationAsync({
-          id: carPark.id
-        }), 
-        {
-          loading: 'Ending parking session...',
-          success: () => {
-            void userContext.get.invalidate();
-            return 'Parking session ended!'
-          },
-          error: (e:Error) => e.message
-        }
-      );
-    }
 
 
   return (
@@ -193,26 +150,15 @@ const HomePageContent: React.FC = () => {
                         <p className="text-sm">{carPark.address}</p>
                       </div>
                     </div>
-                    <Button
-                      onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
-                      className="w-full mt-6"
-                    >
-                      See More!
-                    </Button>
-                    {( user && carPark.id !== user.currentParking?.id && !user.currentParking)  && <Button
-                      onClick={startParking}
-                      className="w-full mt-3"
-                    >
-                      Start Parking
-                    </Button>
-                    }
-                    {( user && carPark.id === user.currentParking?.carParkId)  && <Button
-                      onClick={endParking}
-                      className="w-full mt-3"
-                    >
-                      End Parking
-                    </Button>
-                    }
+                    <div className="flex gap-2 mt-6 w-full">
+                      <ParkingControls carParkId={carPark.id} />
+                      <Button
+                        onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
+                        className="flex-1 sm:flex-none"
+                      >
+                        See More!
+                      </Button>
+                    </div>
                   </>
                 )}
               </CardContent>
