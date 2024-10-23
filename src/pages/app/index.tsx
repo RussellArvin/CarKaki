@@ -32,6 +32,7 @@ export default function HomePage(){
 const HomePageContent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const userContext = api.useUtils().user;
 
   const router = useRouter();
   const { user, isUserLoading } = useUserStore();
@@ -93,7 +94,10 @@ const HomePageContent: React.FC = () => {
         }), 
         {
           loading: 'Starting parking session...',
-          success: 'Parking session started!',
+          success: () => {
+            userContext.get.invalidate();
+            return 'Parking session started!'
+          },
           error: (e:Error) => e.message
         }
       );
@@ -108,7 +112,10 @@ const HomePageContent: React.FC = () => {
         }), 
         {
           loading: 'Ending parking session...',
-          success: 'Parking session ended',
+          success: () => {
+            userContext.get.invalidate();
+            return 'Parking session ended!'
+          },
           error: (e:Error) => e.message
         }
       );
