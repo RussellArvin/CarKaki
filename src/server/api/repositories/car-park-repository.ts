@@ -121,7 +121,6 @@ export class CarParkRepository {
                 })
                 .from(carParkSchema)
                 .orderBy(sql`${carParkSchema.location}::geometry <-> ${sqlPoint}`)
-                .limit(amount)
                 .offset(1)
 
 

@@ -98,7 +98,7 @@ export class CarParkService{
     public async getFullDetails(
         userId: string,
         carParkId: string,
-    ): Promise<FullCarParkDetails>{
+    ){
         try{
             const [carpark] = await Promise.all([
                 await this.mapOneCarParkWithAddress(
@@ -107,11 +107,12 @@ export class CarParkService{
                 await uraRequestService.checkAndMakeRequests() //Reload URA Data
             ])
     
-            const [nearByCarParks, isFavourited] = await Promise.all([
+            const [nearByCarParks, isFavourited, reviews] = await Promise.all([
                 this.mapManyCarParkWithAddress(
                     await this.carParkRepository.findNearByCarParks(carpark.getValue().location,10)
                 ),
-                this.carParkRepository.isFavouritedByUser(carParkId,userId)
+                this.carParkRepository.isFavouritedByUser(carParkId,userId),
+                this.userReviewRepository.findManyByCarParkId(carParkId)
             ])
     
     
@@ -135,7 +136,9 @@ export class CarParkService{
                     return {
                         id,name,address,capacity,availableLots
                     }
-                })
+                }),
+                reviews
+
             }
         }  catch(err){
             if(err instanceof TRPCError) throw err;
@@ -268,7 +271,7 @@ export class CarParkService{
     
             const [carPark, existingReview] = await Promise.all([
                 await this.carParkRepository.findOneById(carParkId),
-                await this.userReviewRepository.findOneByUserIdAndCarParkId(
+                await this.userReviewRepository.findOneByUserIdAndCarParkIdOrNull(
                     userId,
                     carParkId
                 )

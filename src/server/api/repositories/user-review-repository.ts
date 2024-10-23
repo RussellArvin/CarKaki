@@ -1,8 +1,9 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 import userReviewSchema from "~/server/db/schema/user-review-schema";
 import { UserReview } from "../models/user-review";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import userSchema from "~/server/db/schema/user-schema";
 
 export class UserReviewRepository {
     constructor(private readonly db: NeonHttpDatabase) {}
@@ -45,17 +46,22 @@ export class UserReviewRepository {
 
     public async findManyByCarParkId(
         carParkId: string
-    ): Promise<UserReview[]> {
+    ) {
         try{
-            const results = await this.db.select()
+            const results = await this.db.select({
+                userFirstName: userSchema.firstName,
+                userLastName: userSchema.lastName,
+                rating: userReviewSchema.rating,
+                description: userReviewSchema.description
+            })
                 .from(userReviewSchema)
                 .where(eq(userReviewSchema.carParkId,carParkId))
+                .innerJoin(userSchema,eq(userSchema.id,userReviewSchema.userId))
+                .orderBy(desc(userReviewSchema.createdAt))
+                .limit(3)
 
-            return results.map((result)=>{
-                return new UserReview({
-                   ...result 
-                })
-            })
+            return results;
+            
         } catch(err) {
             if(err instanceof TRPCError) throw err;
 
@@ -67,10 +73,10 @@ export class UserReviewRepository {
         }
     }
 
-    public async findOneByUserIdAndCarParkId(
+    public async findOneByUserIdAndCarParkIdOrNull(
         userId: string, 
         carParkId: string
-    ): Promise<UserReview> {
+    ): Promise<UserReview | null> {
         try{
             const userData = await this.db
                 .select()
@@ -81,10 +87,7 @@ export class UserReviewRepository {
                 ))
                 .limit(1)
 
-            if(!userData[0]) throw new TRPCError({
-                code:"NOT_FOUND",
-                message:"Unable to find user"
-            })
+            if(!userData[0]) return null;
 
             return new UserReview({
                 ...userData[0]

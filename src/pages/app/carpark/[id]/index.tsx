@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { NearbyCarparks } from "../../../../components/global/nearby-carparks"
 import Navbar from "~/components/global/navbar"
-import { api } from "~/utils/api"
+import { api, RouterOutputs } from "~/utils/api"
 import { useRouter } from "next/router"
 import { Skeleton } from "~/components/ui/skeleton"
 import { Input } from "~/components/ui/input"
@@ -10,6 +10,9 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import MapEmbed from "~/components/global/map-embed"
 import Rating from "~/components/global/rating"
+import { CreateReviewDialog } from "~/components/dialogs/create-review-dialog"
+
+type CarParkReview =  RouterOutputs["carPark"]["getFullDetails"]["reviews"][number]
 
 export default function CarParkPage() {
   return (
@@ -77,7 +80,10 @@ const CarParkMainContent = () => {
           {isLoading ? (
             <Skeleton className="w-full h-[300px] rounded" />
           ) : (
-            <CarParkReviews />
+            <CarParkReviews 
+              carParkId={carParkData.id}
+              reviews={carParkData.reviews}
+            />
           )}
         </div>
       </div>
@@ -149,7 +155,14 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
   )
 }
 
-const CarParkReviews = () => {
+interface CarParkReviewProps {
+  carParkId: string
+  reviews:  CarParkReview[]
+}
+
+const CarParkReviews = (props: CarParkReviewProps) => {
+  const { carParkId,reviews } = props;
+
   return (
     <Card>
       <CardHeader className="flex flex-row justify-between items-start">
@@ -157,27 +170,36 @@ const CarParkReviews = () => {
           <CardTitle>Reviews</CardTitle>
           <CardDescription>Reviews for this particular carpark</CardDescription>
         </div>
-        <Button variant="outline">Add</Button>
+        <CreateReviewDialog 
+          carParkId={carParkId}
+        />
       </CardHeader>
       <CardContent>
-        <CarParkReviewItem />
-        <CarParkReviewItem />
+        {reviews.map((review)=> (
+          <CarParkReviewItem review={review} />
+        ))}
       </CardContent>
     </Card>
   )
 }
 
-const CarParkReviewItem = () => {
+interface CarParkReviewItemProps {
+  review: CarParkReview
+}
+
+const CarParkReviewItem = (props: CarParkReviewItemProps) => {
+  const { userFirstName, userLastName, rating, description } = props.review;
+
   return (
-    <Card>
+    <Card className="mt-3">
       <CardHeader>
-        <CardTitle>John Tan</CardTitle>
+        <CardTitle>{userFirstName} {userLastName}</CardTitle>
         <Rating
-          rating={2}
+          rating={rating}
         />
       </CardHeader>
       <CardContent>
-        Very Cool!
+        {description}
       </CardContent>
     </Card>
   )
