@@ -68,6 +68,10 @@ const HomePageContent: React.FC = () => {
   } = api.carPark.startParking.useMutation()
 
   const {
+    mutateAsync: endParkingMutationAsync
+  } = api.carPark.endParking.useMutation()
+
+  const {
     isLoading: isRateLoading,
     data: carParkRate
   } = api.carPark.getRateDetails.useQuery(
@@ -78,22 +82,37 @@ const HomePageContent: React.FC = () => {
   );
 
   const isPageLoading =  isCarParkLoading || carPark === undefined
-    || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined
+    || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined || user === undefined
 
-    // const startParking = async () => {
-    //   if (!carPark) return;
+    const startParking = async () => {
+      if (!carPark) return;
     
-    //   await toast.promise(
-    //     startParkingMutationAsync({
-    //       id: carPark.id
-    //     }), 
-    //     {
-    //       loading: 'Starting parking session...',
-    //       success: 'Parking session started!',
-    //       error: (e:Error) => e.message
-    //     }
-    //   );
-    // }
+      await toast.promise(
+        startParkingMutationAsync({
+          id: carPark.id
+        }), 
+        {
+          loading: 'Starting parking session...',
+          success: 'Parking session started!',
+          error: (e:Error) => e.message
+        }
+      );
+    }
+
+    const endParking = async () => {
+      if (!carPark) return;
+    
+      await toast.promise(
+        endParkingMutationAsync({
+          id: carPark.id
+        }), 
+        {
+          loading: 'Ending parking session...',
+          success: 'Parking session ended',
+          error: (e:Error) => e.message
+        }
+      );
+    }
 
 
   return (
@@ -173,12 +192,20 @@ const HomePageContent: React.FC = () => {
                     >
                       See More!
                     </Button>
-                    <Button
-                      onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
+                    {( user && carPark.id !== user.currentParking?.id && !user.currentParking)  && <Button
+                      onClick={startParking}
                       className="w-full mt-3"
                     >
                       Start Parking
                     </Button>
+                    }
+                    {( user && carPark.id === user.currentParking?.carParkId)  && <Button
+                      onClick={endParking}
+                      className="w-full mt-3"
+                    >
+                      End Parking
+                    </Button>
+                    }
                   </>
                 )}
               </CardContent>

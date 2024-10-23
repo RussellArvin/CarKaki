@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, or, eq, getTableColumns, sql, lte, gte } from "drizzle-orm";
+import { and, or, eq, getTableColumns, sql, lte, gte, isNull } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
@@ -223,21 +223,24 @@ export class CarParkRepository {
     ): Promise<CurrentParking | null> {
         try{
             const results = await this.db
-            .select({
-                id: parkingHistorySchema.id,
-                carParkId: carParkSchema.id,
-                name: carParkSchema.name,
-                address: carParkSchema.address,
-                startDate: parkingHistorySchema.startDate,
-            })
-            .from(parkingHistorySchema)
-            .innerJoin(carParkSchema, eq(carParkSchema.id, parkingHistorySchema.carParkId))
-            .where(and(
-                eq(parkingHistorySchema.userId,userId),
-                lte(parkingHistorySchema.startDate,sql`NOW()`),
-                gte(parkingHistorySchema.endDate, sql`NOW()`)
-            ))
-            .limit(1);
+                .select({
+                    id: parkingHistorySchema.id,
+                    carParkId: carParkSchema.id,
+                    name: carParkSchema.name,
+                    address: carParkSchema.address,
+                    startDate: parkingHistorySchema.startDate,
+                })
+                .from(parkingHistorySchema)
+                .innerJoin(carParkSchema, eq(carParkSchema.id, parkingHistorySchema.carParkId))
+                .where(and(
+                    eq(parkingHistorySchema.userId, userId),
+                    lte(parkingHistorySchema.startDate, sql`NOW()`),
+                    or(
+                        isNull(parkingHistorySchema.endDate),  // Handle case where parking hasn't ended yet
+                        gte(parkingHistorySchema.endDate, sql`NOW()`)  // Or end date is in future
+                    )
+                ))
+                .limit(1);
 
             if(!results[0]) return null;
             return results[0]

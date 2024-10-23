@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql, desc, getTableColumns, lte, gte } from "drizzle-orm";
+import { and, eq, sql, desc, getTableColumns, lte, gte, or, isNull } from "drizzle-orm";
 import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
 import { ParkingHistory } from "../models/parking-history";
 import handleError from "~/server/utils/handleError";
@@ -115,7 +115,10 @@ export class ParkingHistoryRepository {
             .where(and(
                 eq(parkingHistorySchema.userId,userId),
                 lte(parkingHistorySchema.startDate,sql`NOW()`),
-                gte(parkingHistorySchema.endDate, sql`NOW()`)
+                or(
+                    isNull(parkingHistorySchema.endDate),  // Handle case where parking hasn't ended yet
+                    gte(parkingHistorySchema.endDate, sql`NOW()`)  // Or end date is in future
+                )
             ))
             .limit(1);
 
@@ -146,7 +149,10 @@ export class ParkingHistoryRepository {
                 eq(parkingHistorySchema.userId,userId),
                 eq(parkingHistorySchema.carParkId,carParkId),
                 lte(parkingHistorySchema.startDate,sql`NOW()`),
-                gte(parkingHistorySchema.endDate, sql`NOW()`)
+                or(
+                    isNull(parkingHistorySchema.endDate),  // Handle case where parking hasn't ended yet
+                    gte(parkingHistorySchema.endDate, sql`NOW()`)  // Or end date is in future
+                )
             ))
             .limit(1);
 
