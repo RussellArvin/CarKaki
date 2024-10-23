@@ -55,14 +55,16 @@ export class ParkingHistoryRepository {
             const results = await this.db.select({
                 id: carParkSchema.id,
                 name: carParkSchema.name,
+                address: carParkSchema.address,
                 visits: sql<number>`COUNT(*)`.as('visits'),
-                isFavourited: sql<boolean>`MAX(CASE WHEN ${userFavouriteSchema.carParkId} IS NOT NULL THEN true ELSE false END)`.as('isFavourited')
+                isFavourited: sql<boolean>`BOOL_OR(${userFavouriteSchema.carParkId} IS NOT NULL)`.as('isFavourited')
             })
             .from(parkingHistorySchema)
             .innerJoin(carParkSchema,eq(carParkSchema.id, parkingHistorySchema.carParkId))
             .leftJoin(userFavouriteSchema, and(
                 eq(userFavouriteSchema.carParkId, parkingHistorySchema.carParkId),
-                eq(userFavouriteSchema.userId,parkingHistorySchema.userId)
+                eq(userFavouriteSchema.userId,parkingHistorySchema.userId),
+                isNull(userFavouriteSchema.deletedAt)
             ))
             .groupBy(carParkSchema.id, carParkSchema.name)
             .where(eq(parkingHistorySchema.userId,userId))
