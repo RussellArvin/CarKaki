@@ -95,7 +95,7 @@ const HomePageContent: React.FC = () => {
         {
           loading: 'Starting parking session...',
           success: () => {
-            userContext.get.invalidate();
+            void userContext.get.invalidate();
             return 'Parking session started!'
           },
           error: (e:Error) => e.message
@@ -113,7 +113,7 @@ const HomePageContent: React.FC = () => {
         {
           loading: 'Ending parking session...',
           success: () => {
-            userContext.get.invalidate();
+            void userContext.get.invalidate();
             return 'Parking session ended!'
           },
           error: (e:Error) => e.message
