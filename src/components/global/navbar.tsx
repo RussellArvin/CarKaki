@@ -57,10 +57,10 @@ const Navbar = () => {
 
           return canDisplayNotification && (
             <Button 
-              variant="secondary"
-              className="bg-black/80 text-white hover:bg-black/70 min-w-[20rem]"
-              onClick={() => router.push(APP_ROUTES.CARPARK(currentParking.carParkId))}
-            >
+                variant="secondary"
+                className="bg-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary-foreground))]/90 text-[hsl(var(--primary))] min-w-[20rem]"
+                onClick={() => router.push(APP_ROUTES.CARPARK(currentParking.carParkId))}
+              >
               <span className="mr-2">🚘</span>
               Ongoing parking at: {currentParking.name}
             </Button>
