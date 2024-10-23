@@ -33,9 +33,7 @@ export class UserService {
     }
 
     public async getCarParkHistory(userId: string){
-        return (await this.carParkRepository.findUserParkingHistory(userId)).map(
-            (carpark) => carpark.getValue()
-        )
+        return await this.carParkRepository.findUserParkingHistory(userId)
     }
 
     public async getSavedCarParks(userId: string){
@@ -128,6 +126,46 @@ export class UserService {
             await this.userRepository.update(deletedUser);
 
             return;
+        } catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async setWorkCarPark(userId: string, carParkId: string): Promise<void> {
+        try{
+            const [carPark, user] = await Promise.all([
+                this.carParkRepository.findOneById(carParkId),
+                this.userRepository.findOneByUserId(userId)
+            ])
+            
+            const updatedUser = user.setWorkCarPark(carParkId);
+            return await this.userRepository.update(updatedUser);
+        } catch(err){
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
+    public async setHomeCarPark(userId: string, carParkId: string): Promise<void> {
+        try{
+            const [carPark, user] = await Promise.all([
+                this.carParkRepository.findOneById(carParkId),
+                this.userRepository.findOneByUserId(userId)
+            ])
+            
+            const updatedUser = user.setHomeCarPark(carParkId);
+            return await this.userRepository.update(updatedUser);
         } catch(err){
             if(err instanceof TRPCError) throw err;
 

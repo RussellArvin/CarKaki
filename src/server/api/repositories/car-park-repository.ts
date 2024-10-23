@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, or, eq, getTableColumns, sql, lte, gte, isNull } from "drizzle-orm";
+import { and, or, eq, getTableColumns, sql, lte, gte, isNull, isNotNull } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
@@ -284,13 +284,19 @@ export class CarParkRepository {
     ) {
         try{
             const results = await this.db.select({
-                ...getTableColumns(carParkSchema)
+                id: carParkSchema.id,
+                name: carParkSchema.name,
+                startDate: parkingHistorySchema.startDate,
+                endDate: parkingHistorySchema.endDate,
             })
                 .from(parkingHistorySchema)
                 .innerJoin(carParkSchema,eq(carParkSchema.id,parkingHistorySchema.carParkId))
-                .where(eq(parkingHistorySchema.userId,userId))
+                .where(and(
+                    eq(parkingHistorySchema.userId,userId),
+                    isNotNull(parkingHistorySchema.endDate)
+                ))
 
-                return results.map((carpark) => new CarPark({...carpark}))
+                return results
         } catch(err){
             const e = err as Error;
             throw new TRPCError({

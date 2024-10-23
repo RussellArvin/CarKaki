@@ -39,92 +39,108 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { RouterOutputs } from "~/utils/api"
+import { format, formatDuration, intervalToDuration } from "date-fns"
+import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { useRouter } from "next/router"
+import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 
 type ParkingSpot = RouterOutputs["user"]["getCarParkHistory"][number]
 export const columns: ColumnDef<ParkingSpot>[] = [
   {
-    accessorKey: "code",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Code
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("code")}</div>,
+      accessorKey: "startDate",
+      header: ({ column }) => {
+          return (
+              <Button
+                  variant="ghost"
+                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              >
+                  Date
+                  <CaretSortIcon className="ml-2 h-4 w-4" />
+              </Button>
+          )
+      },
+      cell: ({ row }) => {
+          const date = new Date(row.getValue("startDate"))
+          return (
+              <div className="font-medium">
+                  {format(date, "dd/MM/yyyy")}
+              </div>
+          )
+      },
+      sortingFn: "datetime"
   },
   {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+      accessorKey: "time",
+      header: "Time",
+      cell: ({ row }) => {
+          const startDate = new Date(row.getValue("startDate"))
+          const endDate = new Date(row.original.endDate!)
+          return (
+              <div className="font-medium">
+                  {format(startDate, "HH:mm")} - {format(endDate, "HH:mm")}
+              </div>
+          )
+      },
   },
   {
-    accessorKey: "address",
-    header: "Address",
-    cell: ({ row }) => <div className="max-w-[500px]">{row.getValue("address")}</div>,
+      accessorKey: "name",
+      header: ({ column }) => {
+          return (
+              <Button
+                  variant="ghost"
+                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              >
+                  Name
+                  <CaretSortIcon className="ml-2 h-4 w-4" />
+              </Button>
+          )
+      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "vehicleCategory",
-    header: "Vehicle Type",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("vehicleCategory")}</div>
-    ),
-  },
-  {
-    accessorKey: "availableLots",
-    header: () => <div className="text-right">Available Lots</div>,
+    accessorKey: "duration",
+    header: "Duration",
     cell: ({ row }) => {
-      const capacity = row.original.capacity
-
-      return (
-        <div className="text-right font-medium">
-          {row.getValue("availableLots")} / {capacity}
-        </div>
-      )
+        const startDate = new Date(row.original.startDate)
+        const endDate = new Date(row.original.endDate!)
+        
+        // Calculate total seconds difference
+        const diffInSeconds = Math.round((endDate.getTime() - startDate.getTime()) / 1000)
+        
+        // Convert to hours and minutes
+        const hours = Math.floor(diffInSeconds / 3600)
+        const minutes = Math.ceil((diffInSeconds % 3600) / 60)
+        
+        // Format duration to "Xh Ymin"
+        let durationStr = ""
+        if (hours > 0) durationStr += `${hours}h `
+        if (minutes > 0 || (!hours && !minutes)) durationStr += `${minutes}min`
+        
+        return <div className="font-medium">{durationStr.trim()}</div>
     },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const parking = row.original
-
+},
+{
+  id: "details",
+  header: "", // Empty header
+  cell: ({ row }) => {
+    const router = useRouter();
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(parking.id)}
-            >
-              Copy parking ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View on map</DropdownMenuItem>
-            <DropdownMenuItem>View details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              // You can add your onClick handler here
+              onClick={() => {
+                  // Handle viewing details
+                  router.push(APP_ROUTES.CARPARK(row.original.id))
+              }}
+          >
+              <ArrowRight className="h-4 w-4" />
+              <span className="sr-only">View details</span>
+          </Button>
       )
-    },
   },
+}
 ]
 
 interface ParkingHistoryTableProps {

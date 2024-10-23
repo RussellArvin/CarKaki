@@ -109,6 +109,31 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
   const [rate, setRate] = useState<number | null>(null);
 
   const { mutate: getAppropriateRate } = api.carPark.getRate.useMutation();
+  const { 
+    mutateAsync: setHomeCarParkMutationAsync
+   } = api.user.setHomeCarPark.useMutation();
+  
+   const { 
+    mutateAsync: setWorkCarParkMutationAsync
+   } = api.user.setWorkCarPark.useMutation()
+
+  
+  const handleWorkCarPark = async () => {
+    await toast.promise(setWorkCarParkMutationAsync({id}) ,{
+      loading: "Please hold...",
+      success:"Successfully updated!",
+      error:(e:Error) => e.message
+    })
+  } 
+
+
+  const handleHomeCarPark = async () => {
+    await toast.promise(setHomeCarParkMutationAsync({id}) ,{
+      loading: "Please hold...",
+      success:"Successfully updated!",
+      error:(e:Error) => e.message
+    })
+  } 
 
   const handleRateChange = (hours: string) => {
     if(hours === "0" || hours === "") return setRate(null)
@@ -119,7 +144,6 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
       },
       {
         onSuccess: (rate) => {
-          console.log("The rate is", rate)
           setRate(rate);
         }
       }
@@ -184,10 +208,10 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
       <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
         <ParkingControls carParkId={id} />
         <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
-          <Button variant="outline" className="flex-1 sm:flex-none">
+          <Button onClick={handleHomeCarPark} variant="outline" className="flex-1 sm:flex-none">
             Save as Home
           </Button>
-          <Button variant="outline" className="flex-1 sm:flex-none">
+          <Button onClick={handleWorkCarPark} variant="outline" className="flex-1 sm:flex-none">
             Save as Work
           </Button>
         </div>
