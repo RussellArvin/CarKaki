@@ -68,17 +68,13 @@ export class URARequestService {
     
         const updatedCarParks = this.mappingAvailabilityRequest(uraData,carparks);
         console.log("Number of updatd carparks: ", updatedCarParks.length)
-    
-        const promises = updatedCarParks.map((carpark) => {
-            return this.carParkRepository.update(carpark)
-        })
-        promises.push(this.requestLogRepository.save(new RequestLog({
+
+        await this.carParkRepository.updateMany(updatedCarParks);
+        await this.requestLogRepository.save(new RequestLog({
             id: uuidv4(),
             type:"AVAIL",
             createdAt: new Date()
-        })))
-
-        await Promise.all(promises)
+        }))
         return;
     }
 
@@ -108,31 +104,31 @@ export class URARequestService {
         const newCarParksChunks = this.chunkArray(newCarParks, 500);
         const newCarParkRatesChunks = this.chunkArray(newCarParkRates, 500);
         
-        // Create functions that will generate the promises when called
-        const generateCarParkPromises = () => [
-            ...newCarParksChunks.map(chunk => () => this.carParkRepository.saveMany(chunk)),
-            ...updatedCarParks.map(carpark => () => this.carParkRepository.update(carpark))
+        // Create all promises upfront
+        const carParkPromises = newCarParksChunks.map(chunk => 
+            this.carParkRepository.saveMany(chunk)
+        );
+
+        if (updatedCarParkRates.length > 0) {
+            carParkPromises.push(this.carParkRepository.updateMany(updatedCarParks));
+        }
+
+        await Promise.all(carParkPromises);
+
+        const remainingPromises = [
+            // Rate operations
+            ...newCarParkRatesChunks.map(chunk => this.carParkRateRepository.saveMany(chunk)),
+            this.carParkRateRepository.updateMany(updatedCarParkRates),
+            // Request log
+            this.requestLogRepository.save(new RequestLog({
+                id: uuidv4(),
+                type: "INFO",
+                createdAt: new Date(),
+            }))
         ];
-        
-        const generateRatePromises = () => [
-            ...newCarParkRatesChunks.map(chunk => () => this.carParkRateRepository.saveMany(chunk)),
-            ...updatedCarParkRates.map(rate => () => this.carParkRateRepository.update(rate))
-        ];
-        
-        const newRequest = new RequestLog({
-            id:uuidv4(),
-            type:"INFO",
-            createdAt: new Date(),
-        });
-        
-        const saveRequestLog = () => this.requestLogRepository.save(newRequest);
-    
-        // Execute the promises only when you're ready
-         await Promise.all(generateCarParkPromises().map(fn => fn()));
-         await Promise.all([...generateRatePromises().map(fn => fn()), saveRequestLog()]);
-    
-        
-        return;
+
+        // Execute remaining operations
+        await Promise.all(remainingPromises);
     }
 
     private mappingAvailabilityRequest (

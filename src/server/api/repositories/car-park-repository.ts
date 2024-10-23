@@ -61,6 +61,30 @@ export class CarParkRepository {
         }
     }
 
+    public async updateMany(entities: CarPark[]){
+        try{
+
+            const queries = entities.map((entity) => 
+                this.db
+                    .update(carParkSchema)
+                    .set({
+                        ...entity.getValue(),
+                        updatedAt: new Date()
+                    })
+                    .where(eq(carParkSchema.id, entity.getValue().id))
+            )
+            
+            // @ts-expect-error - drizzle-orm batch operation type mismatch but operation works as expected
+            await this.db.batch(queries);
+        } catch(err){
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async update(entity: CarPark){
         try{
             await this.db.update(carParkSchema)
