@@ -9,6 +9,7 @@ interface FavouriteButtonProps {
 
 export const FavouriteButton = ({carParkId, isFavourited}: FavouriteButtonProps) => {
     const carParkContext = api.useUtils().carPark
+    const userContext = api.useUtils().user;
     const {
         mutateAsync: setFavouriteMutationAsync
     } = api.carPark.setFavourite.useMutation()
@@ -23,6 +24,7 @@ export const FavouriteButton = ({carParkId, isFavourited}: FavouriteButtonProps)
                 loading: "Please hold...",
                 success: ()=>{
                     void carParkContext.invalidate()
+                    void userContext.invalidate();
                     return "Carpark has been updated successfully!"
                 },
                 error: (e:Error) => e.message

@@ -43,111 +43,76 @@ import { format, formatDuration, intervalToDuration } from "date-fns"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/router"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
+import { FavouriteButton } from "./favourite-button"
 
-type ParkingSpot = RouterOutputs["user"]["getCarParkHistory"][number]
-export const columns: ColumnDef<ParkingSpot>[] = [
-  {
-      accessorKey: "startDate",
-      header: ({ column }) => {
-          return (
-              <Button
-                  variant="ghost"
-                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              >
-                  Date
-                  <CaretSortIcon className="ml-2 h-4 w-4" />
-              </Button>
-          )
-      },
-      cell: ({ row }) => {
-          const date = new Date(row.getValue("startDate"))
-          return (
-              <div className="font-medium">
-                  {format(date, "dd/MM/yyyy")}
-              </div>
-          )
-      },
-      sortingFn: "datetime"
-  },
-  {
-      accessorKey: "time",
-      header: "Time",
-      cell: ({ row }) => {
-          const startDate = new Date(row.getValue("startDate"))
-          const endDate = new Date(row.original.endDate!)
-          return (
-              <div className="font-medium">
-                  {format(startDate, "HH:mm")} - {format(endDate, "HH:mm")}
-              </div>
-          )
-      },
-  },
-  {
+type FrequentCarPark = RouterOutputs["user"]["getFrequentlyVisitedCarParks"][number]
+type FavouriteCarPark = RouterOutputs["user"]["getFavouriteCarParks"][number]
+
+export const columns: ColumnDef<FrequentCarPark>[] = [
+    {
       accessorKey: "name",
       header: ({ column }) => {
-          return (
-              <Button
-                  variant="ghost"
-                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              >
-                  Name
-                  <CaretSortIcon className="ml-2 h-4 w-4" />
-              </Button>
-          )
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
       },
       cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "duration",
-    header: "Duration",
-    cell: ({ row }) => {
-        const startDate = new Date(row.original.startDate)
-        const endDate = new Date(row.original.endDate!)
-        
-        // Calculate total seconds difference
-        const diffInSeconds = Math.round((endDate.getTime() - startDate.getTime()) / 1000)
-        
-        // Convert to hours and minutes
-        const hours = Math.floor(diffInSeconds / 3600)
-        const minutes = Math.ceil((diffInSeconds % 3600) / 60)
-        
-        // Format duration to "Xh Ymin"
-        let durationStr = ""
-        if (hours > 0) durationStr += `${hours}h `
-        if (minutes > 0 || (!hours && !minutes)) durationStr += `${minutes}min`
-        
-        return <div className="font-medium">{durationStr.trim()}</div>
     },
-},
-{
-  id: "details",
-  header: "View Details", 
-  cell: ({ row }) => {
-    const router = useRouter();
-      return (
+    {
+      accessorKey: "address",
+      header: ({ column }) => {
+        return (
           <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              // You can add your onClick handler here
-              onClick={() => {
-                  // Handle viewing details
-                  router.push(APP_ROUTES.CARPARK(row.original.id))
-              }}
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-              <ArrowRight className="h-4 w-4" />
-              <span className="sr-only">View details</span>
+            Address
+            <CaretSortIcon className="ml-2 h-4 w-4" />
           </Button>
-      )
-  },
-}
-]
+        )
+      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("address")}</div>,
+    },
+    {
+      id: "details",
+      header: "View Details", // Empty header
+      cell: ({ row }) => {
+        const router = useRouter();
+        return (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => {
+              router.push(APP_ROUTES.CARPARK(row.original.id))
+            }}
+          >
+            <ArrowRight className="h-4 w-4" />
+            <span className="sr-only">View details</span>
+          </Button>
+        )
+      },
+    },
+    {
+      id: "favourite",
+      header: "Favourite", // Empty header
+      cell: ({ row }) => {
+        return <FavouriteButton carParkId={row.original.id} isFavourited={row.original.isFavourited} />
+      },
+    }
+  ]
 
-interface ParkingHistoryTableProps {
-    data: ParkingSpot[]
+interface ParkingDataTableProps {
+    data: FrequentCarPark[] | FavouriteCarPark[]
 }
 
-export  function ParkingHistoryTable(props: ParkingHistoryTableProps) {
+export function ParkingDataTable(props: ParkingDataTableProps) {
     const { data } = props;
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -156,6 +121,7 @@ export  function ParkingHistoryTable(props: ParkingHistoryTableProps) {
   const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
+    // @ts-expect-error - type mismatch but almost exactly the same
     data,
     columns,
     onSortingChange: setSorting,
