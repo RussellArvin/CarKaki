@@ -1,4 +1,4 @@
-import { BellRing, Check, Moon } from "lucide-react"
+import { BellRing, Moon } from "lucide-react"
 
 import { cn } from "~/lib/utils"
 import { Button } from "~/components/ui/button"
@@ -22,6 +22,7 @@ import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import useUserStore from "~/components/global/user-store"
 import toast from "react-hot-toast"
 import { useTheme } from "next-themes"
+import { HomeButton } from "~/components/global/home-button"
 
 const notifications = [
   {
@@ -177,9 +178,7 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">
-            <Check className="mr-2 h-4 w-4" /> Mark all as read
-          </Button>
+          <HomeButton />
         </CardFooter>
       </Card>
   )
