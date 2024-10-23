@@ -1,6 +1,6 @@
 import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, eq, getTableColumns, isNull } from "drizzle-orm";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import { UserFavourite } from "../models/user-favourite";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
@@ -35,7 +35,8 @@ export class UserFavouriteRepository {
             .from(userFavouriteSchema)
             .where(and(
                 eq(userFavouriteSchema.carParkId,carParkId),
-                eq(userFavouriteSchema.userId, userId)
+                eq(userFavouriteSchema.userId, userId),
+                isNull(userFavouriteSchema.deletedAt)
             ))
             .limit(1)
 
@@ -83,10 +84,7 @@ export class UserFavouriteRepository {
             .set({
                 ...entity.getValue()
             })
-            .where(and(
-                eq(userFavouriteSchema.userId,entity.getValue().userId),
-                eq(userFavouriteSchema.carParkId,entity.getValue().carParkId)
-            ))
+            .where(eq(userFavouriteSchema.id,entity.getValue().id))
         } catch(err){
             const e = err as Error;
             throw new TRPCError({

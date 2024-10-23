@@ -232,11 +232,13 @@ export class CarParkService{
             }
             //User wants to set to not favourited but already favourited
             else if(!isFavourited && existingFavourite){
+                console.log("HERE")
                 await this.userFavouriteRepository.update(existingFavourite.delete())
             }
             // User wants to set to favourite but is not favourited
             else if(isFavourited && !existingFavourite){
                 await this.userFavouriteRepository.save(new UserFavourite({
+                    id: uuidv4(),
                     carParkId,
                     userId,
                     createdAt: new Date(),

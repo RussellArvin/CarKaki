@@ -13,6 +13,7 @@ import Rating from "~/components/global/rating"
 import { CreateReviewDialog } from "~/components/dialogs/create-review-dialog"
 import { Car, Clock, DollarSign } from "lucide-react"
 import { ParkingControls } from "~/components/global/parking-controls"
+import { FavouriteButton } from "~/components/global/favourite-button"
 
 type CarParkReview =  RouterOutputs["carPark"]["getFullDetails"]["reviews"][number]
 
@@ -49,6 +50,7 @@ const CarParkMainContent = () => {
             <CarParkDetails
               id={carParkData?.id}
               name={carParkData?.name}
+              isFavourited={carParkData?.isFavourited}
               address={carParkData?.address}
               availableSpace={carParkData?.availableLots}
             />
@@ -95,13 +97,14 @@ const CarParkMainContent = () => {
 
 interface CarParkDetailsProps {
   id: string
+  isFavourited: boolean
   name: string | undefined
   address: string | null | undefined
   availableSpace: number | undefined
 }
 
 const CarParkDetails = (props: CarParkDetailsProps) => {
-  const { id, name, address, availableSpace } = props;
+  const { id, name, address, availableSpace, isFavourited } = props;
   const router = useRouter();
   const [rate, setRate] = useState<number | null>(null);
 
@@ -126,7 +129,10 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
   return (
     <Card className="max-w-2xl">
       <CardHeader>
-        <CardTitle>{name ?? <Skeleton className="h-6 w-32 rounded" />}</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>{name ?? <Skeleton className="h-6 w-32 rounded" />}</CardTitle>
+          <FavouriteButton carParkId={id} isFavourited={isFavourited} />
+        </div>
         <CardDescription>{address ?? <Skeleton className="h-4 w-48 rounded" />}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

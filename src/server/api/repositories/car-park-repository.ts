@@ -114,7 +114,8 @@ export class CarParkRepository {
                 .from(userFavouriteSchema)
                 .where(and(
                     eq(userFavouriteSchema.carParkId,carParkId),
-                    eq(userFavouriteSchema.userId,userId)
+                    eq(userFavouriteSchema.userId,userId),
+                    isNull(userFavouriteSchema.deletedAt)
                 ))
                 .limit(1);
 

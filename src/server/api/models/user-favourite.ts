@@ -1,4 +1,5 @@
 interface UserFavouriteProps {
+    id: string
     carParkId: string
     userId: string
     createdAt: Date
