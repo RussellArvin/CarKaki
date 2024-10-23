@@ -51,7 +51,11 @@ const Navbar = () => {
         {/* Parking notification */}
         {(() => {
           const currentParking = user?.currentParking;
-          return currentParking !== null && currentParking !== undefined && (
+          const isNotificationsEnabled = user?.isNotificationsEnabled;
+
+          const canDisplayNotification = currentParking !== null && currentParking !== undefined && isNotificationsEnabled && isNotificationsEnabled !== undefined
+
+          return canDisplayNotification && (
             <Button 
               variant="secondary"
               className="bg-black/80 text-white hover:bg-black/70 min-w-[20rem]"

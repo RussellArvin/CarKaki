@@ -74,6 +74,7 @@ interface MainSettingsContentProps {
 const MainSettingsContent = (props: MainSettingsContentProps) => {
   const router = useRouter();
   const { setTheme } = useTheme()
+  const { setIsNotificationsEnabled, setIsDarkMode } = useUserStore()
 
   const [isNotificationsChecked, setIsNotificationsChecked] = useState<boolean>(props.isNotificationsEnabled);
   const [isDarkModeChecked, setIsDarkModeChecked] = useState<boolean>(props.isDarkMode);
@@ -109,10 +110,12 @@ const MainSettingsContent = (props: MainSettingsContentProps) => {
   };
 
   const onNotificationsChange = () => {
+    setIsNotificationsEnabled(!isNotificationsChecked);
     onSettingsChange(!isNotificationsChecked, isDarkModeChecked);
   };
 
   const onDarkModeChange = () => {
+    setIsDarkMode(!isDarkModeChecked)
     onSettingsChange(isNotificationsChecked, !isDarkModeChecked);
   };
 

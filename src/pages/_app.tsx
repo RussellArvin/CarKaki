@@ -38,11 +38,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           <Component {...pageProps} />
           <Toaster
             toastOptions={{
-              style: userData?.isDarkMode ? {
+              style: {
                 background: 'hsl(var(--background))',
                 color: 'hsl(var(--foreground))',
                 border: '1px solid hsl(var(--border))'
-              } : undefined
+              } 
             }}
           /> 
       </ThemeProvider>
