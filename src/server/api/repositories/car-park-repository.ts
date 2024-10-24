@@ -265,6 +265,7 @@ export class CarParkRepository {
                     carParkId: carParkSchema.id,
                     name: carParkSchema.name,
                     address: carParkSchema.address,
+                    location: carParkSchema.location,
                     startDate: parkingHistorySchema.startDate,
                 })
                 .from(parkingHistorySchema)
