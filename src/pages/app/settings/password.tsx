@@ -27,6 +27,7 @@ import { Input } from "~/components/ui/input"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import { toast } from "react-hot-toast"
 import { api } from "~/utils/api"
+import { TRPCClientError } from "@trpc/client"
 
 const passwordSchema = z.object({
   newPassword: z.string().min(8, "Password must be at least 8 characters long"),
@@ -63,19 +64,20 @@ const PasswordContent = () => {
   } = api.user.updatePassword.useMutation()
 
   const onSubmit = async (data: PasswordFormData) => {
-    try {
-      await toast.promise(
-        updatePasswordMutationAsync({ password: data.newPassword }),
-        {
-          loading: "Updating password...",
-          success: "Password updated successfully",
-          error: (err: Error) => err.message,
-        }
-      );
-      await router.push(APP_ROUTES.SETTINGS.MAIN);
-    } catch (error) {
-      console.error("Failed to update password:", error);
-    }
+    await toast.promise(
+      updatePasswordMutationAsync({ password: data.newPassword }),
+      {
+        loading: "Updating password...",
+        success: "Password updated successfully",
+        error: (error) => {
+          if (error instanceof TRPCClientError) {
+              return error.message;
+          }
+          return "Failed to update passwords";
+      }
+      }
+    );
+    await router.push(APP_ROUTES.SETTINGS.MAIN);
   };
 
   return (

@@ -1,3 +1,4 @@
+import { TRPCClientError } from "@trpc/client"
 import { Heart } from "lucide-react"
 import toast from "react-hot-toast"
 import { api } from "~/utils/api"
@@ -27,7 +28,12 @@ export const FavouriteButton = ({carParkId, isFavourited}: FavouriteButtonProps)
                     void userContext.invalidate();
                     return "Carpark has been updated successfully!"
                 },
-                error: (e:Error) => e.message
+                error: (error) => {
+                    if (error instanceof TRPCClientError) {
+                        return error.message;
+                    }
+                    return "Failed to favourite carpark";
+                }
             }
         )
     }

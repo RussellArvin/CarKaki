@@ -45,6 +45,7 @@ import { useRouter } from "next/router"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import useUserStore from "./user-store"
 import toast from "react-hot-toast"
+import { TRPCClientError } from "@trpc/client"
 
 type ParkingSpot = RouterOutputs["user"]["getSavedCarParks"][number]
 
@@ -132,7 +133,12 @@ const useColumns = () => {
                             void userContext.invalidate()
                             return "Successfully deleted!"
                         },
-                        error: (e:Error) => e.message
+                        error: (error) => {
+                            if (error instanceof TRPCClientError) {
+                                return error.message;
+                            }
+                            return "Failed to deleted home carpark";
+                        }
                     })
                 } else {
                     void toast.promise(deleteWorkCarParkMutationAsync(),{
@@ -141,7 +147,12 @@ const useColumns = () => {
                             void userContext.invalidate()
                             return "Successfully deleted!"
                         },
-                        error: (e:Error) => e.message
+                        error: (error) => {
+                            if (error instanceof TRPCClientError) {
+                                return error.message;
+                            }
+                            return "Failed to delete work carpark";
+                        }
                     })
                 }
             }

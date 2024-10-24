@@ -2,6 +2,7 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import useUserStore from "./user-store";
 import { api } from "~/utils/api";
+import { TRPCClientError } from "@trpc/client";
 
 interface ParkingControlsProps {
     carParkId: string
@@ -35,7 +36,12 @@ export const ParkingControls = ({ carParkId }: ParkingControlsProps) => {
               void userContext.get.invalidate();
               return 'Parking session started!'
             },
-            error: (e:Error) => e.message
+            error: (error) => {
+              if (error instanceof TRPCClientError) {
+                  return error.message;
+              }
+              return "Failed to start parking session";
+          }
           }
         );
       }
@@ -52,7 +58,12 @@ export const ParkingControls = ({ carParkId }: ParkingControlsProps) => {
               void userContext.get.invalidate();
               return 'Parking session ended!'
             },
-            error: (e:Error) => e.message
+            error: (error) => {
+              if (error instanceof TRPCClientError) {
+                  return error.message;
+              }
+              return "Failed to end parking session";
+          }
           }
         );
       }

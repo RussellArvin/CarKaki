@@ -27,6 +27,7 @@ import { Input } from "~/components/ui/input"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import { toast } from "react-hot-toast"
 import { api } from "~/utils/api"
+import { TRPCClientError } from "@trpc/client"
 
 // Define the schema for our form
 const formSchema = z.object({
@@ -57,7 +58,12 @@ export default function NameSettings() {
     await toast.promise(updateNamesMutationAsync({...data}),{
       success:"Names updated successfully",
       loading:"Updating names...",
-      error:(err:Error) => err.message
+      error: (error) => {
+        if (error instanceof TRPCClientError) {
+            return error.message;
+        }
+        return "Failed to update user names";
+    }
     })
     
   };

@@ -14,6 +14,7 @@ import { CreateReviewDialog } from "~/components/dialogs/create-review-dialog"
 import { Car, Clock, DollarSign } from "lucide-react"
 import { ParkingControls } from "~/components/global/parking-controls"
 import { FavouriteButton } from "~/components/global/favourite-button"
+import { TRPCClientError } from '@trpc/client';
 
 type CarParkReview =  RouterOutputs["carPark"]["getFullDetails"]["reviews"][number]
 
@@ -118,20 +119,34 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
    } = api.user.setWorkCarPark.useMutation()
 
   
-  const handleWorkCarPark = async () => {
-    await toast.promise(setWorkCarParkMutationAsync({id}) ,{
-      loading: "Please hold...",
-      success:"Successfully updated!",
-      error:(e:Error) => e.message
-    })
-  } 
+
+   const handleWorkCarPark = () => {
+       return toast.promise(
+           setWorkCarParkMutationAsync({id}), 
+           {
+               loading: "Please hold...",
+               success: "Successfully updated!",
+               error: (error) => {
+                   if (error instanceof TRPCClientError) {
+                       return error.message;
+                   }
+                   return "Failed to update work carpark";
+               }
+           }
+       );
+   }
 
 
   const handleHomeCarPark = async () => {
     await toast.promise(setHomeCarParkMutationAsync({id}) ,{
       loading: "Please hold...",
       success:"Successfully updated!",
-      error:(e:Error) => e.message
+      error: (error) => {
+        if (error instanceof TRPCClientError) {
+            return error.message;
+        }
+        return "Failed to update home carpark";
+    }
     })
   } 
 

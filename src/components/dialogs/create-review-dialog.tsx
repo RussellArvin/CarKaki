@@ -17,6 +17,7 @@ import { Textarea } from "../ui/textarea"
 import { Form, FormField, FormItem, FormMessage } from "../ui/form"
 import toast from "react-hot-toast"
 import { api } from "~/utils/api"
+import { TRPCClientError } from "@trpc/client"
 
 const formSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -54,7 +55,12 @@ export function CreateReviewDialog(props: CreateReviewDialogProps) {
     }),{
         loading: "Creating review....",
         success: "Review created successfully!",
-        error: (e:Error) => e.message
+        error: (error) => {
+          if (error instanceof TRPCClientError) {
+              return error.message;
+          }
+          return "Failed to create review";
+      }
     })
   }
 
