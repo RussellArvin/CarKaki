@@ -18,6 +18,7 @@ import { Form, FormField, FormItem, FormMessage } from "../ui/form"
 import toast from "react-hot-toast"
 import { api } from "~/utils/api"
 import { TRPCClientError } from "@trpc/client"
+import { useState } from "react"
 
 const formSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -32,6 +33,8 @@ interface CreateReviewDialogProps {
 
 export function CreateReviewDialog(props: CreateReviewDialogProps) {
     const { carParkId } = props;
+    const carParkContext = api.useUtils().carPark;
+    const [open, setOpen] = useState<boolean>(false)
 
     const {
         mutateAsync: createReviewMutationAsync
@@ -54,7 +57,11 @@ export function CreateReviewDialog(props: CreateReviewDialogProps) {
         id: carParkId
     }),{
         loading: "Creating review....",
-        success: "Review created successfully!",
+        success: ()=>{
+          setOpen(false)
+          void carParkContext.invalidate();
+          return "Review created successfully!"
+        },
         error: (error) => {
           if (error instanceof TRPCClientError) {
               return error.message;
@@ -65,7 +72,7 @@ export function CreateReviewDialog(props: CreateReviewDialogProps) {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Add</Button>
       </DialogTrigger>
