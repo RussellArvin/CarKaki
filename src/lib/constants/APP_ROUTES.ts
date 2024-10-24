@@ -3,9 +3,20 @@ import Location from "~/server/api/types/location";
 const APP_ROUTES = {
     CLERK_WEBHOOK:'/api/clerk',
     LANDING: '/',
-    HOME: (location?: Location) => {
-        if(location === undefined) return '/app'
-        else return `/app?x=${location.x}&y=${location.y}`
+    HOME: (location?: Location, navigate?: boolean) => {
+        const params = new URLSearchParams();
+        
+        if (location) {
+            params.set('x', location.x.toString());
+            params.set('y', location.y.toString());
+        }
+        
+        if (navigate !== undefined) {
+            params.set('navigate', navigate.toString());
+        }
+    
+        const queryString = params.toString();
+        return `/app${queryString ? `?${queryString}` : ''}`;
     },
     SETTINGS: {
         MAIN: '/app/settings',

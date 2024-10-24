@@ -39,6 +39,14 @@ const HomePageContent: React.FC = () => {
   const { user, isUserLoading } = useUserStore();
 
   useEffect(() => {
+
+    const {navigate} = router.query;
+    if(typeof navigate === 'string'){
+      const isNavigating = navigate === 'true';
+
+      setNavigate(isNavigating)
+    }
+
     if (!isUserLoading && user && router.isReady) {
       // Priority 1: Check for current parking
       if (user.currentParking?.location?.x != null && user.currentParking?.location?.y != null) {
