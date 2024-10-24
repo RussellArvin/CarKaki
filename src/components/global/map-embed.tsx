@@ -1,10 +1,12 @@
+import { env } from "~/env";
+
 interface MapEmbedProps  {
     address: string
 }
 
 const MapEmbed = (props: MapEmbedProps) => {
     const { address } = props;
-    const API_KEY = 'AIzaSyDZlGggHFMUbVH0aEY7b4JtJvd-MPF1OoY'
+    const API_KEY = env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
     return (
         <iframe
