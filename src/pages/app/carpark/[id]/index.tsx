@@ -15,6 +15,8 @@ import { Car, Clock, DollarSign, Navigation } from "lucide-react"
 import { ParkingControls } from "~/components/global/parking-controls"
 import { FavouriteButton } from "~/components/global/favourite-button"
 import { TRPCClientError } from '@trpc/client';
+import APP_ROUTES from "~/lib/constants/APP_ROUTES"
+import Location from "~/server/api/types/location"
 
 type CarParkReview =  RouterOutputs["carPark"]["getFullDetails"]["reviews"][number]
 
@@ -53,6 +55,7 @@ const CarParkMainContent = () => {
               name={carParkData?.name}
               isFavourited={carParkData?.isFavourited}
               address={carParkData?.address}
+              location={carParkData?.location}
               availableSpace={carParkData?.availableLots}
             />
           )}
@@ -99,13 +102,14 @@ const CarParkMainContent = () => {
 interface CarParkDetailsProps {
   id: string
   isFavourited: boolean
+  location: Location
   name: string | undefined
   address: string | null | undefined
   availableSpace: number | undefined
 }
 
 const CarParkDetails = (props: CarParkDetailsProps) => {
-  const { id, name, address, availableSpace, isFavourited } = props;
+  const { id, name, address, availableSpace, isFavourited, location } = props;
   const router = useRouter();
   const [rate, setRate] = useState<number | null>(null);
 
@@ -219,11 +223,11 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
           </div>
         </div>
       </CardContent>
-
       <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
         <ParkingControls carParkId={id} />
         <Button
           variant="outline"
+          onClick={() => router.push(APP_ROUTES.HOME(location,true))}
         >
           <Navigation className="h-4 w-4 mr-2" />
           Navigate Here

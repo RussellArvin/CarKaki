@@ -22,6 +22,7 @@ interface CarParkDetails {
 
 interface FullCarParkDetails extends CarParkDetails{
     isFavourited: boolean
+    location: Location
     nearByCarParks: CarParkDetails[]
     reviews: CarParkReviewItems[]
 }
@@ -124,6 +125,7 @@ export class CarParkService{
                 address,
                 capacity,
                 availableLots,
+                location,
             } = carpark.getValue()
     
             return{
@@ -132,6 +134,7 @@ export class CarParkService{
                 address,
                 capacity,
                 availableLots,
+                location,
                 isFavourited,
                 nearByCarParks: nearByCarParks.map((item) => {
                     const {id,name,address,capacity,availableLots} = item.getValue();
