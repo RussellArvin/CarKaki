@@ -33,16 +33,24 @@ const HomePageContent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [navigate, setNavigate] = useState<boolean>(false);
-  const [offset ,setOffset] = useState<number>(0);
+  const [offset, setOffset] = useState<number>(0);
 
   const router = useRouter();
   const { user, isUserLoading } = useUserStore();
 
   useEffect(() => {
-    // Check for query parameters first
-    if (router.isReady) {
+    if (!isUserLoading && user && router.isReady) {
+      // Priority 1: Check for current parking
+      if (user.currentParking?.location?.x != null && user.currentParking?.location?.y != null) {
+        setCoordinates({
+          x: user.currentParking.location.x,
+          y: user.currentParking.location.y
+        });
+        return;
+      }
+
+      // Priority 2: Check for query parameters
       const { x, y } = router.query;
-      
       if (typeof x === 'string' && typeof y === 'string') {
         const xNum = parseInt(x);
         const yNum = parseInt(y);
@@ -52,11 +60,11 @@ const HomePageContent: React.FC = () => {
             x: xNum,
             y: yNum
           });
-          return; // Exit early if we have valid query parameters
+          return;
         }
       }
 
-      // Only get geolocation if we don't have valid query parameters
+      // Priority 3: Use geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -73,7 +81,7 @@ const HomePageContent: React.FC = () => {
         setError("Geolocation is not supported by this browser.");
       }
     }
-  }, [router.isReady, router.query]);
+  }, [router.isReady, router.query, user, isUserLoading]);
 
   const {
     isLoading: isCarParkLoading,
