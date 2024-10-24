@@ -11,6 +11,7 @@ import { UserFavourite } from "../models/user-favourite";
 import { UserFavouriteRepository } from "../repositories/user-favourite-repository";
 import { UserReview } from "../models/user-review";
 import { UserReviewRepository } from "../repositories/user-review-repository";
+import CarParkReviewItems from "../types/car-park-review";
 interface CarParkDetails {
     id: string
     name: string
@@ -22,6 +23,7 @@ interface CarParkDetails {
 interface FullCarParkDetails extends CarParkDetails{
     isFavourited: boolean
     nearByCarParks: CarParkDetails[]
+    reviews: CarParkReviewItems[]
 }
 
 export class CarParkService{
@@ -98,7 +100,7 @@ export class CarParkService{
     public async getFullDetails(
         userId: string,
         carParkId: string,
-    ){
+    ): Promise<FullCarParkDetails>{
         try{
             const [carpark] = await Promise.all([
                 await this.mapOneCarParkWithAddress(

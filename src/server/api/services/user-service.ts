@@ -6,6 +6,8 @@ import { getUserInformation } from "~/server/utils/clerk";
 import { User } from "../models/user";
 import UserDetails from "../types/user-details";
 import clerk from "@clerk/clerk-sdk-node";
+import FavouriteCarPark from "../types/favourite-carpark";
+import CarParkHistory from "../types/car-park-history";
 
 export class UserService {
     private carParkRepository: CarParkRepository
@@ -26,7 +28,7 @@ export class UserService {
         return await this.parkingHistoryRepostiory.findFrequentlyVisited(userId)
     }
 
-    public async getFavouriteCarParks(userId: string){
+    public async getFavouriteCarParks(userId: string): Promise<FavouriteCarPark[]>{
         return (await this.carParkRepository.findUserFavourites(userId)).map((carPark) => {
             return {
                 ...carPark,
@@ -35,7 +37,7 @@ export class UserService {
         })
     }
 
-    public async getCarParkHistory(userId: string){
+    public async getCarParkHistory(userId: string): Promise<CarParkHistory[]>{
         return await this.carParkRepository.findUserParkingHistory(userId)
     }
 
