@@ -84,7 +84,7 @@ export const ParkingControls = ({ carParkId }: ParkingControlsProps) => {
 
     return (
         <Button 
-            className="text-white w-full sm:w-auto bg-green-600 hover:bg-green-700"
+            className="text-white w-full sm:w-auto bg-green-600 hover:bg-green-700 flex-1"
             onClick={startParking}
         >
             Start Parking

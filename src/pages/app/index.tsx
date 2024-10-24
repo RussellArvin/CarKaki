@@ -1,4 +1,4 @@
-import { MapPin, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapIcon, MapPin, Navigation, Search } from "lucide-react";
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
 import Navbar from "~/components/global/navbar"
@@ -156,22 +156,60 @@ const HomePageContent: React.FC = () => {
                         <p className="text-sm">{carPark.address}</p>
                       </div>
                     </div>
-                    <div className="flex gap-2 mt-6 w-full">
-                      <ParkingControls carParkId={carPark.id} />
+                    <div className="mt-6 space-y-3">
+                    {/* Primary actions - Start Parking and See More */}
+                    <div className="flex gap-3">
+                      <ParkingControls carParkId={carPark.id}/>
                       <Button
+                        variant="outline"
                         onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
-                        className="flex-1 sm:flex-none"
+                        className="flex-1"
                       >
                         See More!
                       </Button>
-                      <Button
-                        onClick={handleNavigate}
+                    </div>
+                    
+                    {/* Navigation controls */}
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="default"
+                          className="w-full"
+                          //onClick={() => handlePrevious()}
                         >
-                        {
-                          navigate ? ("Overview") : ("Navigate")
-                        }
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          Previous
+                        </Button>
+                        
+                        <Button
+                          variant="default"
+                          className="w-full"
+                          //onClick={() => handleNext()}
+                        >
+                          Next
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={handleNavigate}
+                        className="w-full"
+                      >
+                        {navigate ? (
+                          <>
+                            <MapIcon className="h-4 w-4 mr-2" />
+                            Show Overview
+                          </>
+                        ) : (
+                          <>
+                            <Navigation className="h-4 w-4 mr-2" />
+                            Navigate Here
+                          </>
+                        )}
                       </Button>
                     </div>
+                  </div>
                   </>
                 )}
               </CardContent>
