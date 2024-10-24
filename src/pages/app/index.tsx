@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Input } from "~/components/ui/input";
 import Location from "~/server/api/types/location";
 import {Progress} from "~/components/ui/progress"
-import { api } from "~/utils/api"
+import { api, RouterOutputs } from "~/utils/api"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import MapEmbed from "~/components/global/map-embed";
 import proj4 from 'proj4';
@@ -15,6 +15,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import useUserStore from "~/components/global/user-store";
 import toast from "react-hot-toast";
 import { ParkingControls } from "~/components/global/parking-controls";
+import AdaptiveMap from "~/components/global/adaptive-map";
 
 // Define the projections
 const WGS84 = 'EPSG:4326';
@@ -33,6 +34,7 @@ export default function HomePage(){
 const HomePageContent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [navigate, setNavigate] = useState<boolean>(false);
 
   const router = useRouter();
   const { user, isUserLoading } = useUserStore();
@@ -73,6 +75,10 @@ const HomePageContent: React.FC = () => {
       enabled: !isCarParkLoading && Boolean(carPark?.id)
     }
   );
+
+  const handleNavigate = () => {
+    setNavigate(!navigate);
+  }
 
   const isPageLoading =  isCarParkLoading || carPark === undefined
     || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined || user === undefined
@@ -158,6 +164,13 @@ const HomePageContent: React.FC = () => {
                       >
                         See More!
                       </Button>
+                      <Button
+                        onClick={handleNavigate}
+                        >
+                        {
+                          navigate ? ("Overview") : ("Navigate")
+                        }
+                      </Button>
                     </div>
                   </>
                 )}
@@ -171,8 +184,9 @@ const HomePageContent: React.FC = () => {
                   <Skeleton className="w-full h-full rounded-[1rem]" />
                 ) : (
                   carPark.address ? (
-                    <MapEmbed 
+                    <AdaptiveMap 
                       address={carPark.address}
+                      navigate={navigate}
                     />
                   ) : (
                     <p>none</p>
@@ -186,6 +200,8 @@ const HomePageContent: React.FC = () => {
   );
   
 };
+
+//const customMapEmbed
 
 // const HomePageSideBar = () => {
 
