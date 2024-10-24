@@ -1,7 +1,12 @@
+import Location from "~/server/api/types/location";
+
 const APP_ROUTES = {
     CLERK_WEBHOOK:'/api/clerk',
     LANDING: '/',
-    HOME:'/app',
+    HOME: (location?: Location) => {
+        if(location === undefined) return '/app'
+        else return `/app?x=${location.x}&y=${location.y}`
+    },
     SETTINGS: {
         MAIN: '/app/settings',
         NAME: '/app/settings/name',

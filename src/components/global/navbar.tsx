@@ -22,7 +22,7 @@ const Navbar = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuLink 
-                  onClick={()=>router.push(APP_ROUTES.HOME)}
+                  onClick={()=>router.push(APP_ROUTES.HOME())}
                   className={navigationMenuTriggerStyle()}
                 >
                   Home

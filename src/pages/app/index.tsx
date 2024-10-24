@@ -39,23 +39,41 @@ const HomePageContent: React.FC = () => {
   const { user, isUserLoading } = useUserStore();
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          // Add the definition for EPSG:3414
-          proj4.defs('EPSG:3414', '+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1.0 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs');
-          const [easting, northing] = proj4(WGS84, SVY21, [longitude, latitude]);
-          setCoordinates({ x: easting, y: northing });
-        },
-        (err) => {
-          setError("Geolocation is not enabled or available.");
+    // Check for query parameters first
+    if (router.isReady) {
+      const { x, y } = router.query;
+      
+      if (typeof x === 'string' && typeof y === 'string') {
+        const xNum = parseInt(x);
+        const yNum = parseInt(y);
+        
+        if (!isNaN(xNum) && !isNaN(yNum)) {
+          setCoordinates({
+            x: xNum,
+            y: yNum
+          });
+          return; // Exit early if we have valid query parameters
         }
-      );
-    } else {
-      setError("Geolocation is not supported by this browser.");
+      }
+
+      // Only get geolocation if we don't have valid query parameters
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            proj4.defs('EPSG:3414', '+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1.0 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs');
+            const [easting, northing] = proj4(WGS84, SVY21, [longitude, latitude]);
+            setCoordinates({ x: easting, y: northing });
+          },
+          (err) => {
+            setError("Geolocation is not enabled or available.");
+          }
+        );
+      } else {
+        setError("Geolocation is not supported by this browser.");
+      }
     }
-  }, []);
+  }, [router.isReady, router.query]);
 
   const {
     isLoading: isCarParkLoading,
@@ -69,7 +87,7 @@ const HomePageContent: React.FC = () => {
     isLoading: isRateLoading,
     data: carParkRate
   } = api.carPark.getRateDetails.useQuery(
-    { id: carPark?.id  ?? ''},
+    { id: carPark?.id ?? '' },
     { 
       enabled: !isCarParkLoading && Boolean(carPark?.id)
     }
@@ -80,17 +98,16 @@ const HomePageContent: React.FC = () => {
   }
 
   const handleNext = () => {
-    setOffset(offset+1)
+    setOffset(offset + 1);
   }
   
   const handlePrevious = () => {
-    if(offset == 0) return;
-    setOffset(offset-1);
+    if (offset === 0) return;
+    setOffset(offset - 1);
   }
 
-  const isPageLoading =  isCarParkLoading || carPark === undefined
-    || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined || user === undefined
-
+  const isPageLoading = isCarParkLoading || carPark === undefined
+    || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined;
 
 
   return (

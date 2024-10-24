@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast"
 import MapEmbed from "~/components/global/map-embed"
 import Rating from "~/components/global/rating"
 import { CreateReviewDialog } from "~/components/dialogs/create-review-dialog"
-import { Car, Clock, DollarSign } from "lucide-react"
+import { Car, Clock, DollarSign, Navigation } from "lucide-react"
 import { ParkingControls } from "~/components/global/parking-controls"
 import { FavouriteButton } from "~/components/global/favourite-button"
 import { TRPCClientError } from '@trpc/client';
@@ -222,6 +222,12 @@ const CarParkDetails = (props: CarParkDetailsProps) => {
 
       <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
         <ParkingControls carParkId={id} />
+        <Button
+          variant="outline"
+        >
+          <Navigation className="h-4 w-4 mr-2" />
+          Navigate Here
+        </Button>
         <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
           <Button onClick={handleHomeCarPark} variant="outline" className="flex-1 sm:flex-none">
             Save as Home

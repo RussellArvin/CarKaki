@@ -9,7 +9,7 @@ export const HomeButton = () => {
     return (
         <Button 
             className="w-full"
-            onClick={()=>router.push(APP_ROUTES.HOME)}
+            onClick={()=>router.push(APP_ROUTES.HOME())}
         >
             <House className="mr-2 h-4 w-4" /> Back to Home
           </Button>

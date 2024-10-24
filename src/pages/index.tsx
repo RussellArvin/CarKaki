@@ -43,12 +43,12 @@ export default function LandingPage() {
                   <Button 
                     className="w-full bg-blue-500 text-white hover:bg-blue-600" 
                     size="lg"
-                    onClick={() => router.push(APP_ROUTES.HOME)}
+                    onClick={() => router.push(APP_ROUTES.HOME())}
                   >
                     Sign in
                   </Button>
                   <p className="text-sm text-center mt-4">
-                    No account? <a href={APP_ROUTES.HOME} className="text-blue-500 hover:underline">Sign up.</a>
+                    No account? <a href={APP_ROUTES.HOME()} className="text-blue-500 hover:underline">Sign up.</a>
                   </p>
                 </>
               ) : (
@@ -56,7 +56,7 @@ export default function LandingPage() {
                   <Button 
                     className="w-full bg-blue-500 text-white hover:bg-blue-600" 
                     size="lg"
-                    onClick={() => router.push(APP_ROUTES.HOME)}
+                    onClick={() => router.push(APP_ROUTES.HOME())}
                   >
                     Let&apos;s go!
                   </Button>
