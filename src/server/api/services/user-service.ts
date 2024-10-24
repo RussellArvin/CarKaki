@@ -146,6 +146,11 @@ export class UserService {
                 this.carParkRepository.findOneById(carParkId),
                 this.userRepository.findOneByUserId(userId)
             ])
+
+            if(user.getValue().homeCarParkId === carParkId) throw new TRPCError({
+                code:"BAD_REQUEST",
+                message:"Home and work carpark must be different!"
+            })
             
             const updatedUser = user.setWorkCarPark(carParkId);
             return await this.userRepository.update(updatedUser);
@@ -166,6 +171,11 @@ export class UserService {
                 this.carParkRepository.findOneById(carParkId),
                 this.userRepository.findOneByUserId(userId)
             ])
+
+            if(user.getValue().workCarParkId === carParkId) throw new TRPCError({
+                code:"BAD_REQUEST",
+                message:"Home and work carpark must be different!"
+            })
             
             const updatedUser = user.setHomeCarPark(carParkId);
             return await this.userRepository.update(updatedUser);
