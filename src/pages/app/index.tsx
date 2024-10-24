@@ -133,10 +133,6 @@ const HomePageContent: React.FC = () => {
           </div>
                 ) : (
                   <>
-                    <div className="flex space-x-2 mb-6">
-                      <Input placeholder="Location" />
-                      <Button size="icon"><Search className="h-4 w-4" /></Button>
-                    </div>
                     <div className="space-y-4">
                       <div>
                         <div className="flex justify-between mb-2">
