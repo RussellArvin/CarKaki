@@ -93,7 +93,7 @@ const useColumns = () => {
         accessorKey: "savedAs",
         header: "Saved As",
         cell: ({row}) => {
-            const value = user?.homeCarParkId === row.original.id ? "Home" : "Work"
+            const value = user?.homeCarParkId && user.homeCarParkId === row.original.id ? "Home" : "Work"
             return <div className="font-medium">{value}</div>
         }, // Empty cell as requested
       },
