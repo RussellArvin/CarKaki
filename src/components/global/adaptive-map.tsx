@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Skeleton } from '../ui/skeleton';
+import { env } from '~/env';
 
 interface AdaptiveMapProps {
   address: string;
@@ -13,7 +14,7 @@ const AdaptiveMap: React.FC<AdaptiveMapProps> = ({
 
   const [userLocation, setUserLocation] = useState<string>('');
   const [isLoadingLocation, setIsLoadingLocation] = useState(navigate);
-  const API_KEY = 'AIzaSyDZlGggHFMUbVH0aEY7b4JtJvd-MPF1OoY'
+  const API_KEY = env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
   // Get user's current location when in navigation mode
   useEffect(() => {

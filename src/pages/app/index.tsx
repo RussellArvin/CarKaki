@@ -47,17 +47,7 @@ const HomePageContent: React.FC = () => {
       setNavigate(isNavigating)
     }
 
-    if (!isUserLoading && user && router.isReady) {
-      // Priority 1: Check for current parking
-      if (user.currentParking?.location?.x != null && user.currentParking?.location?.y != null) {
-        setCoordinates({
-          x: user.currentParking.location.x,
-          y: user.currentParking.location.y
-        });
-        return;
-      }
-
-      // Priority 2: Check for query parameters
+      // Priority 1: Check for query parameters
       const { x, y } = router.query;
       if (typeof x === 'string' && typeof y === 'string') {
         const xNum = parseInt(x);
@@ -71,6 +61,17 @@ const HomePageContent: React.FC = () => {
           return;
         }
       }
+
+    if (!isUserLoading && user && router.isReady) {
+      // Priority 2: Check for current parking
+      if (user.currentParking?.location?.x != null && user.currentParking?.location?.y != null) {
+        setCoordinates({
+          x: user.currentParking.location.x,
+          y: user.currentParking.location.y
+        });
+        return;
+      }
+
 
       // Priority 3: Use geolocation
       if (navigator.geolocation) {
