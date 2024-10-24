@@ -128,6 +128,8 @@ export class UserService {
         try{
             const user = await this.userRepository.findOneByUserId(userId);
             const deletedUser = user.delete()
+
+            await clerk.users.deleteUser(userId);
             await this.userRepository.update(deletedUser);
 
             return;
