@@ -180,6 +180,22 @@ export class UserService {
         }
     }
 
+    public async deleteHomeCarPark(userId: string): Promise<void>{
+        const user = await this.userRepository.findOneByUserId(userId);
+        const updatedUser = user.setHomeCarPark(null);
+
+        await this.userRepository.update(updatedUser);
+        return;
+    }
+
+    public async deleteWorkCarPark(userId: string): Promise<void>{
+        const user = await this.userRepository.findOneByUserId(userId);
+        const updatedUser = user.setWorkCarPark(null);
+
+        await this.userRepository.update(updatedUser);
+        return;
+    }
+
     public async getUser(userId: string) : Promise<UserDetails>{
         try{
             const [user,currentParking] = await Promise.all([

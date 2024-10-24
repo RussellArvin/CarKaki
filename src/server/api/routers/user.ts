@@ -38,6 +38,10 @@ export const userRouter = createTRPCRouter({
         id: z.string()
     }))
     .mutation( async ({ctx,input}) => await userService.setHomeCarPark(ctx.auth.userId, input.id)),
+    deleteHomeCarPark: protectedProcedure
+    .mutation(async ({ctx,input}) => await userService.deleteHomeCarPark(ctx.auth.userId)),
+    deleteWorkCarPark: protectedProcedure
+    .mutation(async ({ctx,input}) => await userService.deleteWorkCarPark(ctx.auth.userId)),
     setWorkCarPark: protectedProcedure
     .input(z.object({
         id: z.string()

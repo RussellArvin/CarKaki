@@ -220,15 +220,27 @@ export class CarParkRepository {
         userId: string
     ): Promise<CarPark[]> {
         try{
-            const userData = this.db.select().from(userSchema).where(eq(userSchema.id,userId)).as('userData')
+            const userSubquery = this.db
+                .select({
+                    homeCarParkId: userSchema.homeCarParkId,
+                    workCarParkId: userSchema.workCarParkId
+                })
+                .from(userSchema)
+                .where(eq(userSchema.id, userId))
+                .as('userData');
 
             const results = await this.db
-                .select({...getTableColumns(carParkSchema)})
+                .select({
+                    ...getTableColumns(carParkSchema)
+                })
                 .from(carParkSchema)
-                .where(or(
-                    eq(carParkSchema.id, userData.homeCarParkId),
-                    eq(carParkSchema.id,userData.workCarParkId)
-                ))
+                .innerJoin(
+                    userSubquery,
+                    or(
+                        eq(carParkSchema.id, userSubquery.homeCarParkId),
+                        eq(carParkSchema.id, userSubquery.workCarParkId)
+                    )
+                );
             
                 return results.map((result) => new CarPark({...result}))
         }catch(err){

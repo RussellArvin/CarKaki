@@ -34,14 +34,14 @@ export class User {
         });
     }
 
-    public setHomeCarPark(carParkId: string): User {
+    public setHomeCarPark(carParkId: string | null): User {
         return new User({
             ...this.props,
             homeCarParkId: carParkId
         });
     }
 
-    public setWorkCarPark(carParkId: string): User {
+    public setWorkCarPark(carParkId: string | null): User {
         return new User({
             ...this.props,
             workCarParkId: carParkId
