@@ -35,6 +35,7 @@ const HomePageContent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [navigate, setNavigate] = useState<boolean>(false);
+  const [offset ,setOffset] = useState<number>(0);
 
   const router = useRouter();
   const { user, isUserLoading } = useUserStore();
@@ -62,7 +63,7 @@ const HomePageContent: React.FC = () => {
     isLoading: isCarParkLoading,
     data: carPark
   } = api.carPark.getDetails.useQuery(
-    { x: coordinates?.x ?? 0, y: coordinates?.y ?? 0 },
+    { x: coordinates?.x ?? 0, y: coordinates?.y ?? 0, offset },
     { enabled: !!coordinates }
   );
 
@@ -78,6 +79,15 @@ const HomePageContent: React.FC = () => {
 
   const handleNavigate = () => {
     setNavigate(!navigate);
+  }
+
+  const handleNext = () => {
+    setOffset(offset+1)
+  }
+  
+  const handlePrevious = () => {
+    if(offset == 0) return;
+    setOffset(offset-1);
   }
 
   const isPageLoading =  isCarParkLoading || carPark === undefined
@@ -175,7 +185,7 @@ const HomePageContent: React.FC = () => {
                         <Button
                           variant="default"
                           className="w-full"
-                          //onClick={() => handlePrevious()}
+                          onClick={handlePrevious}
                         >
                           <ChevronLeft className="h-4 w-4 mr-1" />
                           Previous
@@ -184,7 +194,7 @@ const HomePageContent: React.FC = () => {
                         <Button
                           variant="default"
                           className="w-full"
-                          //onClick={() => handleNext()}
+                          onClick={handleNext}
                         >
                           Next
                           <ChevronRight className="h-4 w-4 ml-1" />

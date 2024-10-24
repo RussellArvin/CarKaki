@@ -160,7 +160,7 @@ export class CarParkRepository {
         }
     }
 
-    public async findOneByLocation(location: Location): Promise<CarPark>{
+    public async findOneByLocation(location: Location, offset: number): Promise<CarPark>{
         try{
             const sqlPoint = sql`ST_SetSRID(ST_MakePoint(${location.x}, ${location.y}), 3414)`;
 
@@ -174,6 +174,7 @@ export class CarParkRepository {
                 })
                 .from(carParkSchema)
                 .orderBy(sql`${carParkSchema.location}::geometry <-> ${sqlPoint}`)
+                .offset(offset)
                 .limit(1)
 
             if(!results[0]) throw Error("Unable to find a carpark")

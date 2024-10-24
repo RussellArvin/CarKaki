@@ -58,13 +58,13 @@ export class CarParkService{
         return Promise.all(carParks.map(carPark => this.mapOneCarParkWithAddress(carPark)))
     }
 
-    public async getDetails(location: Location): Promise<CarParkDetails>{
+    public async getDetails(location: Location, offset: number): Promise<CarParkDetails>{
         try{
             const {x,y} = location
 
             const [carpark] = await Promise.all([
                 await this.mapOneCarParkWithAddress(
-                    await this.carParkRepository.findOneByLocation({x,y})
+                    await this.carParkRepository.findOneByLocation({x,y}, offset)
                 ),
                 await uraRequestService.checkAndMakeRequests()
             ])
