@@ -1,4 +1,3 @@
-import CarParkAgency from "../types/car-park-agency"
 import Location from "../types/location"
 import ParkingSystem from "../types/parking-system"
 import VehicleCategory from "../types/vehicle-category"

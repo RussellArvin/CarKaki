@@ -1,8 +1,6 @@
 import { env } from "~/env";
 import Location from "../types/location";
-import axios from "axios";
-import { GoogleMapsGeocodingResponse } from "../types/google-maps-types";
-import {Client, GeocodeResult, LatLng} from "@googlemaps/google-maps-services-js";
+import {Client, GeocodeResult } from "@googlemaps/google-maps-services-js";
 import { TRPCError } from "@trpc/server";
 import proj4 from 'proj4';
 

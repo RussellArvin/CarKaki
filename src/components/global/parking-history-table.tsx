@@ -4,7 +4,6 @@ import * as React from "react"
 import {
   CaretSortIcon,
   ChevronDownIcon,
-  DotsHorizontalIcon,
 } from "@radix-ui/react-icons"
 import {
   ColumnDef,
@@ -24,9 +23,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { Input } from "~/components/ui/input"
@@ -39,8 +35,8 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { RouterOutputs } from "~/utils/api"
-import { format, formatDuration, intervalToDuration } from "date-fns"
-import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { format } from "date-fns"
+import { ArrowRight } from "lucide-react"
 import { useRouter } from "next/router"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 

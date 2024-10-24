@@ -1,11 +1,6 @@
 import { UserButton } from "@clerk/nextjs";
 import Head from "next/head";
-import Link from "next/link";
-import Image from "next/image"
-import { useSeedNewUser } from "~/hooks/use-seed-new-user";
 import { Button } from "~/components/ui/button";
-
-import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import useUserStore from "~/components/global/user-store";

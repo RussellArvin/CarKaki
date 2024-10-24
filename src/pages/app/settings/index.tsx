@@ -1,22 +1,18 @@
 import { BellRing, Moon } from "lucide-react"
 
 import { cn } from "~/lib/utils"
-import { Button } from "~/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
 import { Switch } from "~/components/ui/switch"
-import { Router, useRouter } from "next/router"
-import { api, RouterOutputs } from "~/utils/api"
+import { useRouter } from "next/router"
+import { api } from "~/utils/api"
 import { Skeleton } from "~/components/ui/skeleton"
 import React, { useEffect, useState } from 'react';
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Label } from "~/components/ui/label";
 import Navbar from "~/components/global/navbar"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import useUserStore from "~/components/global/user-store"

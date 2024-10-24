@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, MapIcon, MapPin, Navigation, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapIcon, MapPin, Navigation } from "lucide-react";
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
 import Navbar from "~/components/global/navbar"
@@ -7,13 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Input } from "~/components/ui/input";
 import Location from "~/server/api/types/location";
 import {Progress} from "~/components/ui/progress"
-import { api, RouterOutputs } from "~/utils/api"
+import { api } from "~/utils/api"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
-import MapEmbed from "~/components/global/map-embed";
 import proj4 from 'proj4';
 import { Skeleton } from "~/components/ui/skeleton";
 import useUserStore from "~/components/global/user-store";
-import toast from "react-hot-toast";
 import { ParkingControls } from "~/components/global/parking-controls";
 import AdaptiveMap from "~/components/global/adaptive-map";
 

@@ -1,10 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql, desc } from "drizzle-orm";
-import parkingHistorySchema from "~/server/db/schema/parking-history-schema";
-import { ParkingHistory } from "../models/parking-history";
-import handleError from "~/server/utils/handleError";
-import carParkSchema from "~/server/db/schema/car-park-schema";
-import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
 import uraTokenSchema from "~/server/db/schema/ura-token-schema";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 

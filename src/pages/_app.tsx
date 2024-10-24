@@ -1,11 +1,9 @@
 import { type AppType } from "next/app";
 import { ClerkProvider } from "@clerk/nextjs";
 import { useEffect } from "react";
-import toast, { Toaster } from 'react-hot-toast';
-import type { AppProps } from "next/app";
+import { Toaster } from 'react-hot-toast';
 
 import { api } from "~/utils/api";
-import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "~/components/global/theme-provider"
 
 import "~/styles/globals.css";

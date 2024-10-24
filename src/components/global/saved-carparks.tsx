@@ -24,9 +24,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { Input } from "~/components/ui/input"
@@ -39,8 +36,7 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { api, RouterOutputs } from "~/utils/api"
-import { format, formatDuration, intervalToDuration } from "date-fns"
-import { ArrowRight, ArrowUpRight, Trash2 } from "lucide-react"
+import { ArrowRight, Trash2 } from "lucide-react"
 import { useRouter } from "next/router"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import useUserStore from "./user-store"

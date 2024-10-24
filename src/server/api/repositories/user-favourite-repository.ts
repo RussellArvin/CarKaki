@@ -1,4 +1,3 @@
-import userSchema from "~/server/db/schema/user-schema";
 import { TRPCError } from "@trpc/server";
 import { and, eq, getTableColumns, isNull } from "drizzle-orm";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";

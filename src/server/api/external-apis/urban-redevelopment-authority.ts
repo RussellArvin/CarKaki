@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import axios from 'axios';
-import { AvailabilityCarPark, InformationCarPark, URAAuthenticationResponse, URAResponse, URAResult } from "../types/ura-types";
+import { AvailabilityCarPark, InformationCarPark, URAAuthenticationResponse } from "../types/ura-types";
 import { env } from "~/env";
 import { availabilityValidator, informationValidator } from "../validators/ura-validators";
 import { uraTokenRepository } from "../repositories";
