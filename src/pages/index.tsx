@@ -4,10 +4,12 @@ import { Button } from "~/components/ui/button";
 import { useRouter } from "next/router";
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import useUserStore from "~/components/global/user-store";
+import { useClerkSignUpUrl } from "~/hooks/use-clerk-sign-up-url";
 
 export default function LandingPage() {
   const router = useRouter();
   const {user: userData} = useUserStore();
+  const signUpUrl = useClerkSignUpUrl();
 
   return (
     <>
@@ -48,7 +50,7 @@ export default function LandingPage() {
                     Sign in
                   </Button>
                   <p className="text-sm text-center mt-4">
-                    No account? <a href={APP_ROUTES.HOME()} className="text-blue-500 hover:underline">Sign up.</a>
+                    No account? <a href={signUpUrl} className="text-blue-500 hover:underline">Sign up.</a>
                   </p>
                 </>
               ) : (
