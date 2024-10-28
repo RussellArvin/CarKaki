@@ -1,8 +1,10 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { Webhook } from "svix";
-import { type WebhookEvent } from "@clerk/nextjs/server";
+import { UserJSON, type WebhookEvent } from "@clerk/nextjs/server";
 import { env } from "~/env";
 import getRawBody from "raw-body";
+import { userRepository } from "~/server/api/repositories";
+import { User } from "~/server/api/models/user";
 
 export default async function handler(
   req: NextApiRequest,
