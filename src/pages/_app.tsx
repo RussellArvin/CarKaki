@@ -15,8 +15,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   const { setUser, setIsUserLoading } = useUserStore();
   const { data: userData, isLoading: userDataIsLoading } = api.user.get.useQuery();
 
-  useSeedNewUser({ data: userData, isLoading: userDataIsLoading });
-
   useEffect(() => {
     if (userData && !userDataIsLoading) {
       setUser(userData);
