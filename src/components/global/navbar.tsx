@@ -9,6 +9,7 @@ import {
 import APP_ROUTES from "~/lib/constants/APP_ROUTES";
 import { Button } from "../ui/button";
 import useUserStore from "./user-store";
+import { UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   const router = useRouter();
@@ -47,25 +48,27 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
+      <div className="flex items-center gap-4">
+          {/* Parking notification */}
+          {(() => {
+            const currentParking = user?.currentParking;
+            const isNotificationsEnabled = user?.isNotificationsEnabled;
 
-        {/* Parking notification */}
-        {(() => {
-          const currentParking = user?.currentParking;
-          const isNotificationsEnabled = user?.isNotificationsEnabled;
+            const canDisplayNotification = currentParking !== null && currentParking !== undefined && isNotificationsEnabled && isNotificationsEnabled !== undefined
 
-          const canDisplayNotification = currentParking !== null && currentParking !== undefined && isNotificationsEnabled && isNotificationsEnabled !== undefined
-
-          return canDisplayNotification && (
-            <Button 
-                variant="secondary"
-                className="bg-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary-foreground))]/90 text-[hsl(var(--primary))] min-w-[20rem]"
-                onClick={() => router.push(APP_ROUTES.CARPARK(currentParking.carParkId))}
-              >
-              <span className="mr-2">🚘</span>
-              Ongoing parking at: {currentParking.name}
-            </Button>
-          );
-        })()}
+            return canDisplayNotification && (
+              <Button 
+                  variant="secondary"
+                  className="bg-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary-foreground))]/90 text-[hsl(var(--primary))] min-w-[20rem]"
+                  onClick={() => router.push(APP_ROUTES.CARPARK(currentParking.carParkId))}
+                >
+                <span className="mr-2">🚘</span>
+                Ongoing parking at: {currentParking.name}
+              </Button>
+            );
+          })()}
+      <UserButton />
+      </div>
       </div>
     </div>
   );
