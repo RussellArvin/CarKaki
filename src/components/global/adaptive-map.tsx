@@ -56,7 +56,44 @@ const AdaptiveMap: React.FC<AdaptiveMapProps> = ({
 
   if (isLoadingLocation) {
     return (
-        <Skeleton className="w-full h-full rounded-[1rem]" />
+      <div className="w-full h-full p-6 bg-gray-50 rounded-lg">
+        <div className="space-y-6">
+          {/* Loading text - now more prominent */}
+          <div className="flex flex-col items-center justify-center space-y-3 py-4">
+            <div className="flex items-center justify-center space-x-3">
+              <Skeleton className="h-6 w-6 rounded-full animate-pulse" />
+              <h2 className="text-xl font-semibold text-gray-800">
+                {navigate ? 'Getting your location...' : 'Loading map...'}
+              </h2>
+            </div>
+            <p className="text-gray-500 text-center">
+              {navigate 
+                ? 'Please wait while we determine your current position' 
+                : 'Preparing your map view'
+              }
+            </p>
+          </div>
+          
+          {/* Map skeleton */}
+          <div className="space-y-3">
+            {/* Top bar */}
+            <Skeleton className="h-10 w-full rounded" />
+            
+            {/* Main map area with grid pattern */}
+            <div className="grid grid-cols-3 gap-2">
+              {[...Array(9)].map((_, i) => (
+                <Skeleton key={i} className="h-24 w-full rounded" />
+              ))}
+            </div>
+            
+            {/* Bottom controls */}
+            <div className="flex justify-end space-x-2">
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-8 w-8 rounded" />
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
