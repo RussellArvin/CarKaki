@@ -67,7 +67,9 @@ const Navbar = () => {
               </Button>
             );
           })()}
-      <UserButton />
+      <UserButton
+      afterSignOutUrl={APP_ROUTES.LANDING} 
+      />
       </div>
       </div>
     </div>

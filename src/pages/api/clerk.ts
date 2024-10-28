@@ -1,0 +1,109 @@
+import { type NextApiRequest, type NextApiResponse } from "next";
+import { Webhook } from "svix";
+import { UserJSON, type WebhookEvent } from "@clerk/nextjs/server";
+import { env } from "~/env";
+import { userRepository } from "~/server/api/repositories";
+import { User } from "~/server/api/models/user";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  // Only allow POST
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
+  const payload = JSON.stringify(req.body);
+  
+  // Get the headers
+  const svix_id = req.headers["svix-id"] as string;
+  const svix_timestamp = req.headers["svix-timestamp"] as string;
+  const svix_signature = req.headers["svix-signature"] as string;
+
+  if (!svix_id || !svix_timestamp || !svix_signature) {
+    return res.status(400).end();
+  }
+
+  const wh = new Webhook(env.CLERK_WEBHOOK_SECRET);
+  let event: WebhookEvent;
+
+  try {
+    event = wh.verify(payload, {
+      "svix-id": svix_id,
+      "svix-timestamp": svix_timestamp,
+      "svix-signature": svix_signature,
+    }) as WebhookEvent;
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.log("Error verifying webhook:", err.message);
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  try {
+    switch (event.type) {
+      case "user.created":
+        const response = await handleUserCreated(event);
+        return res.status(response.status).end();
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+        return res.status(200).end();
+    }
+  } catch (error) {
+    console.error("Error processing webhook:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Internal server error" 
+    });
+  }
+}
+
+// Optionally disable body parsing, as you might need the raw body for webhook signature verification
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+
+export const handleUserCreated = async (event: WebhookEvent) => {
+    const {
+      first_name: firstName,
+      last_name: lastName,
+      email_addresses,
+      id: clerkId,
+    } = event.data as UserJSON;
+    const email = email_addresses[0]?.email_address;
+  
+    if (!email) return { status: 400 };
+  
+    const existingUser = await userRepository.findOneByUserIdOrNull(clerkId);
+  
+    if (existingUser) return { status: 200 };
+  
+    const currentDate = new Date();
+    const newUser = new User({
+      id: clerkId,
+      email,
+      firstName,
+      lastName,
+      isDarkMode: false,
+      isNotificationsEnabled: false,
+      homeCarParkId: null,
+      workCarParkId: null,
+      createdAt: currentDate,
+      deletedAt: null, // Fixed the deletedAt issue mentioned earlier
+      updatedAt: currentDate
+    });
+  
+    try {
+      await userRepository.save(newUser);
+      return { status: 200 };
+    } catch (error) {
+      console.error("Error saving new user:", error);
+      return { status: 500 };
+    }
+  };
