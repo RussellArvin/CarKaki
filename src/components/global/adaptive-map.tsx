@@ -81,7 +81,7 @@ const AdaptiveMap: React.FC<AdaptiveMapProps> = ({
             
             {/* Main map area with grid pattern */}
             <div className="grid grid-cols-3 gap-2">
-              {[...Array(9)].map((_, i) => (
+              {Array.from({ length: 9 }, (_, i: number) => (
                 <Skeleton key={i} className="h-24 w-full rounded" />
               ))}
             </div>
