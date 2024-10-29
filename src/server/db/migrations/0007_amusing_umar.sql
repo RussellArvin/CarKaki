@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "has_set_name" boolean DEFAULT true NOT NULL;
