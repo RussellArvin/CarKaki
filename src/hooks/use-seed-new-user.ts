@@ -7,12 +7,12 @@ interface useSeedNewUserArgs {
 }
 
 export const useSeedNewUser = (args: useSeedNewUserArgs) => {
-    const { data: userData, isLoading: userDataIsLoading } = args;
-    const { mutate: userRegisterMutation } = api.user.register.useMutation();
+    // const { data: userData, isLoading: userDataIsLoading } = args;
+    // const { mutate: userRegisterMutation } = api.user.register.useMutation();
 
-    return useEffect(() => {
-        if (!userData && !userDataIsLoading) {
-          userRegisterMutation();
-        }
-      }, [userData, userDataIsLoading]);
+    // return useEffect(() => {
+    //     if (!userData && !userDataIsLoading) {
+    //       userRegisterMutation();
+    //     }
+    //   }, [userData, userDataIsLoading]);
 }

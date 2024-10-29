@@ -47,8 +47,6 @@ export const userRouter = createTRPCRouter({
         id: z.string()
     }))
     .mutation( async ({ctx,input}) => await userService.setWorkCarPark(ctx.auth.userId, input.id)),
-    register: protectedProcedure
-    .mutation(async ({ctx})=> await userService.register(ctx.auth.userId)),
     delete: protectedProcedure
     .mutation(async ({ctx}) => await userService.deleteUser(ctx.auth.userId)),
     get: protectedProcedure

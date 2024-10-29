@@ -5,6 +5,7 @@ import { env } from "~/env";
 import getRawBody from "raw-body";
 import { userRepository } from "~/server/api/repositories";
 import { User } from "~/server/api/models/user";
+import { userService } from "~/server/api/services";
 
 export default async function handler(
   req: NextApiRequest,
@@ -80,27 +81,11 @@ export const handleUserCreated = async (event: WebhookEvent) => {
   
     if (!email) return { status: 400 };
   
-    const existingUser = await userRepository.findOneByUserIdOrNull(clerkId);
-  
-    if (existingUser) return { status: 200 };
-  
-    const currentDate = new Date();
-    const newUser = new User({
-      id: clerkId,
-      email,
-      firstName,
-      lastName,
-      isDarkMode: false,
-      isNotificationsEnabled: false,
-      homeCarParkId: null,
-      workCarParkId: null,
-      createdAt: currentDate,
-      deletedAt: null, // Fixed the deletedAt issue mentioned earlier
-      updatedAt: currentDate
-    });
   
     try {
-      await userRepository.save(newUser);
+      await userService.register(
+        clerkId, firstName, lastName, email
+      )
       return { status: 200 };
     } catch (error) {
       console.error("Error saving new user:", error);

@@ -94,24 +94,34 @@ export class UserService {
         }
     }
 
-    public async register(userId: string){
+    public async register(
+        userId: string,
+        firstName: string | null,
+        lastName: string | null,
+        email: string,
+    ){
         try{
-            const userDetails = await getUserInformation(userId);
+            const existingUser = await this.userRepository.findOneByUserIdOrNull(userId);
+  
+            if (existingUser) return { status: 200 };
+        
             const currentDate = new Date();
+            const newUser = new User({
+            id: userId,
+            email,
+            firstName: firstName ?? "NOT SET",
+            lastName: lastName ?? "NOT SET",
+            hasSetName: firstName !== null && lastName !== null,
+            isDarkMode: false,
+            isNotificationsEnabled: false,
+            homeCarParkId: null,
+            workCarParkId: null,
+            createdAt: currentDate,
+            deletedAt: null, 
+            updatedAt: currentDate
+            });
 
-            const user = new User({
-                ...userDetails,
-                id: userId,
-                isDarkMode:false,
-                isNotificationsEnabled: false,
-                createdAt: currentDate,
-                updatedAt: currentDate,
-                deletedAt: null,
-                homeCarParkId: null,
-                workCarParkId: null
-            })
-
-            await this.userRepository.save(user);
+            await this.userRepository.save(newUser);
             return;
         } catch(err){
             if(err instanceof TRPCError) throw err;

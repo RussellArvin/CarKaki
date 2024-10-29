@@ -3,6 +3,7 @@ export interface UserProps {
     email: string;
     firstName: string;
     lastName: string;
+    hasSetName: boolean;
     isDarkMode: boolean;
     isNotificationsEnabled: boolean
     createdAt: Date;
