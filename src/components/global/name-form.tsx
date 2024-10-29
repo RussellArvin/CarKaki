@@ -37,15 +37,15 @@ const NameForm = forwardRef<NameFormRef>((_, ref) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
     },
   });
 
   const onSubmit = async (data: FormData) => {
     await toast.promise(updateNamesMutationAsync({...data}), {
       success: () => {
-        userContext.invalidate();
+        void userContext.invalidate();
         return "Names updated successfully"
       },
       loading: "Updating names...",
