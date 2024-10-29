@@ -9,6 +9,7 @@ import { ThemeProvider } from "~/components/global/theme-provider"
 import "~/styles/globals.css";
 import useUserStore from "~/components/global/user-store";
 import { useSeedNewUser } from "~/hooks/use-seed-new-user";
+import NameDialog from "~/components/global/name-dialog";
 
 // Remove the AppContent component and keep everything in MyApp
 const MyApp: AppType = ({ Component, pageProps }) => {
@@ -31,6 +32,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         storageKey="theme"
         disableTransitionOnChange
       >
+          <NameDialog />
           <Component {...pageProps} />
           <Toaster
             toastOptions={{
