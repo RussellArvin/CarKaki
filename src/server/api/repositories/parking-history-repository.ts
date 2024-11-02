@@ -89,7 +89,10 @@ export class ParkingHistoryRepository {
                 isNull(userFavouriteSchema.deletedAt)
             ))
             .groupBy(carParkSchema.id, carParkSchema.name)
-            .where(eq(parkingHistorySchema.userId,userId))
+            .where(and(
+                isNull(parkingHistorySchema.deletedAt),
+                eq(parkingHistorySchema.userId,userId)
+            ))
             .orderBy(desc(sql`visits`))
             .limit(5)
 
@@ -109,7 +112,10 @@ export class ParkingHistoryRepository {
         try{
             const results = await this.db.select()
                 .from(parkingHistorySchema)
-                .where(eq(parkingHistorySchema.userId,userId))
+                .where(and(
+                    isNull(parkingHistorySchema.deletedAt),
+                    eq(parkingHistorySchema.userId,userId)
+                ))
 
             return results.map((result) => {
                 return new ParkingHistory({
@@ -137,6 +143,7 @@ export class ParkingHistoryRepository {
             })
             .from(parkingHistorySchema)
             .where(and(
+                isNull(parkingHistorySchema.deletedAt),
                 eq(parkingHistorySchema.userId,userId),
                 lte(parkingHistorySchema.startDate,sql`NOW()`),
                 or(
@@ -170,6 +177,7 @@ export class ParkingHistoryRepository {
             })
             .from(parkingHistorySchema)
             .where(and(
+                isNull(parkingHistorySchema.deletedAt),
                 eq(parkingHistorySchema.userId,userId),
                 eq(parkingHistorySchema.carParkId,carParkId),
                 lte(parkingHistorySchema.startDate,sql`NOW()`),
@@ -204,6 +212,7 @@ export class ParkingHistoryRepository {
             const results = await this.db.select()
                 .from(parkingHistorySchema)
                 .where(and(
+                    isNull(parkingHistorySchema.deletedAt),
                     eq(parkingHistorySchema.userId,userId),
                     eq(parkingHistorySchema.carParkId,carParkId)
                 ))
