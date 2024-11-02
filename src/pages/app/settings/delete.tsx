@@ -1,5 +1,7 @@
+import { TRPCClientError } from "@trpc/client"
 import { useRouter } from "next/router"
 import * as React from "react"
+import toast from "react-hot-toast"
 import Navbar from "~/components/global/navbar"
 
 import { Button } from "~/components/ui/button"
@@ -11,6 +13,7 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
+import { api } from "~/utils/api"
 
 export default function DeleteUserSettings(){
     return (
@@ -22,6 +25,27 @@ export default function DeleteUserSettings(){
 }
 
 const DeleteUserContent = () => {
+
+    const {
+        mutateAsync: deleteUserMutationAsync
+    } = api.user.delete.useMutation();
+
+    const handleDelete = async () => {
+        await toast.promise(
+            deleteUserMutationAsync(), 
+            {
+              loading: 'Deleting User...',
+              success: 'User Successfully deleted!',
+              error: (error) => {
+                if (error instanceof TRPCClientError) {
+                    return error.message;
+                }
+                return "Failed to delete user";
+            }
+            }
+          );
+    }
+
     const router = useRouter();
     return (
         <div className="flex items-center justify-center min-h-screen">
@@ -44,6 +68,7 @@ const DeleteUserContent = () => {
                     Cancel
                 </Button>
                 <Button
+                    onClick={handleDelete}
                     variant="destructive"
                 >
                     Confirm
