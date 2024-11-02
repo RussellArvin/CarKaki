@@ -44,6 +44,28 @@ export class UserReviewRepository {
         }
     }
 
+    public async deleteByUserId(
+        userId: string
+    ) {
+        try{
+            await this.db.update(userReviewSchema)
+            .set({
+                deletedAt: new Date()
+            })
+            .where(eq(
+                userReviewSchema.userId, userId
+            ))
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findManyByCarParkId(
         carParkId: string
     ) {

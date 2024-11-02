@@ -50,6 +50,28 @@ export class ParkingHistoryRepository {
         }
     }
 
+    public async deleteByUserId(
+        userId: string
+    ) {
+        try{
+            await this.db.update(parkingHistorySchema)
+            .set({
+                deletedAt: new Date()
+            })
+            .where(eq(
+                parkingHistorySchema.userId, userId
+            ))
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findFrequentlyVisited(userId: string): Promise<FrequentlyVisitedCarParks[]>{
         try{
             const results = await this.db.select({
