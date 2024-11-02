@@ -16,7 +16,8 @@ const parkingHistorySchema = pgTable(
       .notNull(),
       updatedAt:timestamp("updated_at")
       .default(CURRENT_TIMESTAMP)
-      .notNull()
+      .notNull(),
+      deletedAt: timestamp("deleted_at")
     }
 );
 
