@@ -6,6 +6,7 @@ interface ParkingHistoryProps {
     userId: string
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
 }
 
 export class ParkingHistory {
