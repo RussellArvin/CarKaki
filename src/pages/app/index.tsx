@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, MapIcon, MapPin, Navigation } from "lucide-react";
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
 import Navbar from "~/components/global/navbar"
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
@@ -19,12 +20,28 @@ import AdaptiveMap from "~/components/global/adaptive-map";
 const WGS84 = 'EPSG:4326';
 const SVY21 = 'EPSG:3414';
 
+const DynamicHomePageContent = dynamic(
+  () => Promise.resolve(HomePageContent),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex h-screen p-4">
+        <div className="w-1/3 mr-4">
+          <div className="animate-pulse bg-gray-200 h-[200px] rounded-lg"></div>
+        </div>
+        <div className="w-2/3">
+          <div className="animate-pulse bg-gray-200 h-full rounded-lg"></div>
+        </div>
+      </div>
+    )
+  }
+);
 
 export default function HomePage(){
     return (
         <>
             <Navbar />
-            <HomePageContent />
+            <DynamicHomePageContent />
         </>
     )
 }
@@ -276,9 +293,3 @@ const HomePageContent: React.FC = () => {
   );
   
 };
-
-//const customMapEmbed
-
-// const HomePageSideBar = () => {
-
-// }

@@ -1,0 +1,26 @@
+{
+    "name": "CarKaki",
+    "short_name": "CarKaki",
+    "theme_color": "#8936FF",
+    "background_color": "#2EC6FE",
+    "display": "standalone",
+    "orientation": "any",
+    "dir": "auto",
+    "lang": "en-US",
+    "scope": "/",
+    "start_url": "/",
+    "icons": [
+      {
+        "src": "/icon512_maskable.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
+      },
+      {
+        "src": "/icon512_rounded.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      }
+    ]
+  }
