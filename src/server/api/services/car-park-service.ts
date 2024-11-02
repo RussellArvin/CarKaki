@@ -180,7 +180,8 @@ export class CarParkService{
                 startDate: currentDate,
                 endDate: null,
                 createdAt: currentDate,
-                updatedAt: currentDate
+                updatedAt: currentDate,
+                deletedAt: null,
             })
             await this.parkingHistoryRepository.save(newParkingHistory)
         }catch(err){

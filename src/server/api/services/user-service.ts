@@ -2,26 +2,33 @@ import { TRPCError } from "@trpc/server";
 import { CarParkRepository } from "../repositories/car-park-repository";
 import { ParkingHistoryRepository } from "../repositories/parking-history-repository";
 import { UserRepository } from "../repositories/user-repository";
-import { getUserInformation } from "~/server/utils/clerk";
 import { User } from "../models/user";
 import UserDetails from "../types/user-details";
 import clerk from "@clerk/clerk-sdk-node";
 import FavouriteCarPark from "../types/favourite-carpark";
 import CarParkHistory from "../types/car-park-history";
+import { UserReviewRepository } from "../repositories/user-review-repository";
+import { UserFavouriteRepository } from "../repositories/user-favourite-repository";
 
 export class UserService {
     private carParkRepository: CarParkRepository
     private parkingHistoryRepostiory: ParkingHistoryRepository
     private userRepository: UserRepository
+    private userReviewRepository: UserReviewRepository
+    private userFavouriteRepository: UserFavouriteRepository
 
     constructor(
         carParkRepository: CarParkRepository,
         parkingHistoryRepository: ParkingHistoryRepository,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        userReviewRepository: UserReviewRepository,
+        userFavouriteRepository: UserFavouriteRepository,
     ){
         this.carParkRepository = carParkRepository;
         this.parkingHistoryRepostiory = parkingHistoryRepository;
         this.userRepository = userRepository;
+        this.userReviewRepository = userReviewRepository;
+        this.userFavouriteRepository = userFavouriteRepository;
     }
 
     public async getFrequentlyVisitedCarParks(userId: string){
@@ -139,8 +146,13 @@ export class UserService {
             const user = await this.userRepository.findOneByUserId(userId);
             const deletedUser = user.delete()
 
-            await clerk.users.deleteUser(userId);
-            await this.userRepository.update(deletedUser);
+            await Promise.all([
+                clerk.users.deleteUser(userId),
+                this.userRepository.update(deletedUser),
+                this.userReviewRepository.deleteByUserId(userId),
+                this.parkingHistoryRepostiory.deleteByUserId(userId),
+                this.userFavouriteRepository.deleteByUserId(userId)
+            ])
 
             return;
         } catch(err){

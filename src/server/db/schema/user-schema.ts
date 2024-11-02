@@ -9,7 +9,7 @@ const userSchema = pgTable(
       firstName: text("first_name").notNull(),
       lastName: text("last_name").notNull(),
       hasSetName: boolean("has_set_name").notNull().default(true),
-      email:text("email").unique().notNull(),
+      email:text("email").notNull(),
       isDarkMode: boolean("is_dark_mode").notNull().default(false),
       isNotificationsEnabled: boolean("is_notifications_enabled").notNull().default(false),
       homeCarParkId: uuid("home_car_park_id").references(() => carParkSchema.id),

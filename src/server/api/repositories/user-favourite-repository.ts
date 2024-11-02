@@ -23,6 +23,28 @@ export class UserFavouriteRepository {
         }
     }
 
+    public async deleteByUserId(
+        userId: string
+    ) {
+        try{
+            await this.db.update(userFavouriteSchema)
+            .set({
+                deletedAt: new Date()
+            })
+            .where(eq(
+                userFavouriteSchema.userId, userId
+            ))
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findOneByCarParkAndUserIdOrNull(
         carParkId: string,
         userId: string

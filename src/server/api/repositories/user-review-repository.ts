@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, desc } from "drizzle-orm";
+import { and, eq, desc, isNull } from "drizzle-orm";
 import userReviewSchema from "~/server/db/schema/user-review-schema";
 import { UserReview } from "../models/user-review";
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
@@ -44,6 +44,28 @@ export class UserReviewRepository {
         }
     }
 
+    public async deleteByUserId(
+        userId: string
+    ) {
+        try{
+            await this.db.update(userReviewSchema)
+            .set({
+                deletedAt: new Date()
+            })
+            .where(eq(
+                userReviewSchema.userId, userId
+            ))
+        } catch(err) {
+            if(err instanceof TRPCError) throw err;
+
+            const e = err as Error;
+            throw new TRPCError({
+                code:"INTERNAL_SERVER_ERROR",
+                message:e.message
+            })
+        }
+    }
+
     public async findManyByCarParkId(
         carParkId: string
     ) {
@@ -55,7 +77,10 @@ export class UserReviewRepository {
                 description: userReviewSchema.description
             })
                 .from(userReviewSchema)
-                .where(eq(userReviewSchema.carParkId,carParkId))
+                .where(and(
+                    isNull(userReviewSchema.deletedAt),
+                    eq(userReviewSchema.carParkId,carParkId)
+                ))
                 .innerJoin(userSchema,eq(userSchema.id,userReviewSchema.userId))
                 .orderBy(desc(userReviewSchema.createdAt))
                 .limit(3)
@@ -82,6 +107,7 @@ export class UserReviewRepository {
                 .select()
                 .from(userReviewSchema)
                 .where(and(
+                    isNull(userReviewSchema.deletedAt),
                     eq(userReviewSchema.carParkId,carParkId),
                     eq(userReviewSchema.userId,userId)
                 ))
