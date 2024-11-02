@@ -1,3 +1,4 @@
+import { useClerk } from "@clerk/nextjs"
 import { TRPCClientError } from "@trpc/client"
 import { useRouter } from "next/router"
 import * as React from "react"
@@ -25,6 +26,7 @@ export default function DeleteUserSettings(){
 }
 
 const DeleteUserContent = () => {
+    const { signOut } = useClerk();
 
     const {
         mutateAsync: deleteUserMutationAsync
@@ -35,7 +37,10 @@ const DeleteUserContent = () => {
             deleteUserMutationAsync(), 
             {
               loading: 'Deleting User...',
-              success: 'User Successfully deleted!',
+              success: () => {
+                void signOut();
+                return 'User Successfully deleted!'
+              },
               error: (error) => {
                 if (error instanceof TRPCClientError) {
                     return error.message;
