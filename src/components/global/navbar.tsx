@@ -27,7 +27,7 @@ const Navbar = () => {
   ];
 
   const handleNavigation = (route: Url) => {
-    router.push(route);
+    void router.push(route);
     setIsOpen(false);
   };
 
