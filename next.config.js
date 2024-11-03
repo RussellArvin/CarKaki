@@ -4,6 +4,8 @@
  */
 await import("./src/env.js");
 
+import withPWA from 'next-pwa';
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -17,6 +19,38 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+
+  // Add these for tRPC compatibility
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  // Increase timeout for static generation
+  staticPageGenerationTimeout: 1000,
 };
 
-export default config;
+const nextConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  // Add runtime caching for network requests
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'https-calls',
+        networkTimeoutSeconds: 15,
+        expiration: {
+          maxEntries: 150,
+          maxAgeSeconds: 30 * 24 * 60 * 60 // 1 month
+        },
+        cacheableResponse: {
+          statuses: [0, 200]
+        }
+      }
+    }
+  ]
+});
+
+export default nextConfig;

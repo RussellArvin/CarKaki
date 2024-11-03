@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, MapIcon, MapPin, Navigation } from "lucide-react";
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
 import Navbar from "~/components/global/navbar"
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
@@ -19,12 +20,28 @@ import AdaptiveMap from "~/components/global/adaptive-map";
 const WGS84 = 'EPSG:4326';
 const SVY21 = 'EPSG:3414';
 
+const DynamicHomePageContent = dynamic(
+  () => Promise.resolve(HomePageContent),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex h-screen p-4">
+        <div className="w-1/3 mr-4">
+          <div className="animate-pulse bg-gray-200 h-[200px] rounded-lg"></div>
+        </div>
+        <div className="w-2/3">
+          <div className="animate-pulse bg-gray-200 h-full rounded-lg"></div>
+        </div>
+      </div>
+    )
+  }
+);
 
 export default function HomePage(){
     return (
         <>
             <Navbar />
-            <HomePageContent />
+            <DynamicHomePageContent />
         </>
     )
 }
@@ -127,14 +144,14 @@ const HomePageContent: React.FC = () => {
     || isUserLoading || user === undefined || isRateLoading || carParkRate === undefined;
 
 
-  return (
-    <div>
-      {error ? (
-        <p>{error}</p>
-      ) : (
-        <div className="flex h-screen p-4">
-            {/* Left Panel */}
-            <Card className="w-1/3 mr-4">
+    return (
+      <div>
+        {error ? (
+          <p>{error}</p>
+        ) : (
+          <div className="flex flex-col lg:flex-row min-h-screen p-4 gap-4">
+            {/* Left Panel - stacks on top for mobile */}
+            <Card className="w-full lg:w-1/3">
               <CardHeader className="bg-blue-600 text-white">
                 {isPageLoading ? (
                   <Skeleton />
@@ -146,23 +163,23 @@ const HomePageContent: React.FC = () => {
                 )}
               </CardHeader>
               <CardContent className="p-6">
-              {isPageLoading ? (
-          <div className="space-y-4">
-            <div className="flex space-x-2">
-              <Skeleton className="w-full h-10 rounded" />
-              <Skeleton className="w-10 h-10 rounded-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="w-full h-4 rounded" />
-              <Skeleton className="w-2/3 h-4 rounded" />
-              <Skeleton className="w-1/2 h-4 rounded" />
-            </div>
-            <div className="flex items-start space-x-2">
-              <Skeleton className="w-5 h-5 rounded-full" />
-              <Skeleton className="w-full h-4 rounded" />
-            </div>
-            <Skeleton className="w-full h-10 rounded" />
-          </div>
+                {isPageLoading ? (
+                  <div className="space-y-4">
+                    <div className="flex space-x-2">
+                      <Skeleton className="w-full h-10 rounded" />
+                      <Skeleton className="w-10 h-10 rounded-full" />
+                    </div>
+                    <div className="space-y-2">
+                      <Skeleton className="w-full h-4 rounded" />
+                      <Skeleton className="w-2/3 h-4 rounded" />
+                      <Skeleton className="w-1/2 h-4 rounded" />
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <Skeleton className="w-5 h-5 rounded-full" />
+                      <Skeleton className="w-full h-4 rounded" />
+                    </div>
+                    <Skeleton className="w-full h-10 rounded" />
+                  </div>
                 ) : (
                   <>
                     <div className="space-y-4">
@@ -184,79 +201,80 @@ const HomePageContent: React.FC = () => {
                             <span>${carParkRate.rate.toFixed(2)}</span>
                           </div>
                         </>
-                      ) :  <div className="flex justify-between">
-                      <span>Rate</span>
-                      <span>Parking is free currently!</span>
-                    </div>
-                    }
+                      ) : (
+                        <div className="flex justify-between">
+                          <span>Rate</span>
+                          <span>Parking is free currently!</span>
+                        </div>
+                      )}
                       <div className="flex items-start pt-4">
                         <MapPin className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                         <p className="text-sm">{carPark.address}</p>
                       </div>
                     </div>
                     <div className="mt-6 space-y-3">
-                    {/* Primary actions - Start Parking and See More */}
-                    <div className="flex gap-3">
-                      <ParkingControls carParkId={carPark.id}/>
-                      <Button
-                        variant="outline"
-                        onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
-                        className="flex-1"
-                      >
-                        See More!
-                      </Button>
-                    </div>
-                    
-                    {/* Navigation controls */}
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-2 gap-2">
+                      {/* Primary actions - Start Parking and See More */}
+                      <div className="flex gap-3">
+                        <ParkingControls carParkId={carPark.id}/>
                         <Button
-                          variant="default"
-                          className="w-full"
-                          onClick={handlePrevious}
+                          variant="outline"
+                          onClick={() => router.push(APP_ROUTES.CARPARK(carPark.id))}
+                          className="flex-1"
                         >
-                          <ChevronLeft className="h-4 w-4 mr-1" />
-                          Previous
-                        </Button>
-                        
-                        <Button
-                          variant="default"
-                          className="w-full"
-                          onClick={handleNext}
-                        >
-                          Next
-                          <ChevronRight className="h-4 w-4 ml-1" />
+                          See More!
                         </Button>
                       </div>
                       
-                      <Button
-                        variant="outline"
-                        onClick={handleNavigate}
-                        className="w-full"
-                      >
-                        {navigate ? (
-                          <>
-                            <MapIcon className="h-4 w-4 mr-2" />
-                            Show Overview
-                          </>
-                        ) : (
-                          <>
-                            <Navigation className="h-4 w-4 mr-2" />
-                            Navigate Here
-                          </>
-                        )}
-                      </Button>
+                      {/* Navigation controls */}
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant="default"
+                            className="w-full"
+                            onClick={handlePrevious}
+                          >
+                            <ChevronLeft className="h-4 w-4 mr-1" />
+                            Previous
+                          </Button>
+                          
+                          <Button
+                            variant="default"
+                            className="w-full"
+                            onClick={handleNext}
+                          >
+                            Next
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </div>
+                        
+                        <Button
+                          variant="outline"
+                          onClick={handleNavigate}
+                          className="w-full"
+                        >
+                          {navigate ? (
+                            <>
+                              <MapIcon className="h-4 w-4 mr-2" />
+                              Show Overview
+                            </>
+                          ) : (
+                            <>
+                              <Navigation className="h-4 w-4 mr-2" />
+                              Navigate Here
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
-                  </div>
                   </>
                 )}
               </CardContent>
             </Card>
-
-            {/* Right Panel - Map */}
-            <Card className="w-2/3">
-              <CardContent className="p-4 h-full">
-              {isPageLoading ? (
+    
+            {/* Right Panel - Map, stacks below for mobile */}
+            <Card className="w-full lg:w-2/3 flex-grow">
+              <CardContent className="p-4 h-[400px] lg:h-full">
+                {isPageLoading ? (
                   <Skeleton className="w-full h-full rounded-[1rem]" />
                 ) : (
                   carPark.address ? (
@@ -271,14 +289,8 @@ const HomePageContent: React.FC = () => {
               </CardContent>
             </Card>
           </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
   
 };
-
-//const customMapEmbed
-
-// const HomePageSideBar = () => {
-
-// }
