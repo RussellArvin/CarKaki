@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, or, eq, getTableColumns, sql, lte, gte, isNull, isNotNull } from "drizzle-orm";
+import { and, or, eq, getTableColumns, sql, lte, gte, isNull, isNotNull, desc } from "drizzle-orm";
 import { CarPark } from "../models/car-park";
 import carParkSchema from "~/server/db/schema/car-park-schema";
 import userFavouriteSchema from "~/server/db/schema/user-favourite-schema";
@@ -309,6 +309,7 @@ export class CarParkRepository {
                     eq(parkingHistorySchema.userId,userId),
                     isNotNull(parkingHistorySchema.endDate)
                 ))
+                .orderBy(desc(parkingHistorySchema.endDate))
 
                 return results
         } catch(err){
