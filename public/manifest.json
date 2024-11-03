@@ -1,7 +1,7 @@
 {
     "name": "CarKaki",
     "short_name": "CarKaki",
-    "theme_color": "#8936FF",
+    "theme_color": "#2564EB",
     "background_color": "#2EC6FE",
     "display": "standalone",
     "orientation": "any",
