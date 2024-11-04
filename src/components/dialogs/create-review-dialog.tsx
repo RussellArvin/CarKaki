@@ -21,7 +21,7 @@ import { TRPCClientError } from "@trpc/client"
 import { useState } from "react"
 
 const formSchema = z.object({
-  rating: z.number().min(1).max(5),
+  rating: z.number().min(0).max(5),
   description: z.string().min(1)
 })
 
@@ -86,28 +86,33 @@ export function CreateReviewDialog(props: CreateReviewDialogProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="rating"
-                render={({ field: { onChange, ...field } }) => (
-                  <FormItem>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="rating" className="text-right">
-                        Rating
-                      </Label>
-                      <div className="col-span-3">
-                        <Input
-                          type="number"
-                          onChange={(e) => onChange(Number(e.target.value))}
-                          {...field}
-                          className="col-span-3"
-                        />
-                        <FormMessage />
-                      </div>
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="rating" className="text-right">
+                      Rating
+                    </Label>
+                    <div className="col-span-3">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={5}
+                        onChange={(e) => {
+                          const newValue = Math.min(5, Math.max(0, parseInt(e.target.value) || 0))
+                          field.onChange(newValue)
+                        }}
+                        value={field.value ?? ''}
+                        className="col-span-3"
+                      />
+                      <FormMessage />
                     </div>
-                  </FormItem>
-                )}
-              />
+                  </div>
+                </FormItem>
+              )}
+            />
               <FormField
                 control={form.control}
                 name="description"
