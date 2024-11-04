@@ -13,7 +13,7 @@ import {
 import NameForm, { NameFormRef } from "~/components/global/name-form"
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 
-export default function NameSettings() {
+export default function NameSettingsPage() {
   const router = useRouter();
   const formRef = useRef<NameFormRef>(null);
 

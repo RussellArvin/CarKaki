@@ -39,7 +39,7 @@ const notifications = [
 ]
 
 
-export default function MainSettings() {
+export default function MainSettingsPage() {
   const { user, isUserLoading } = useUserStore();
 
   return (

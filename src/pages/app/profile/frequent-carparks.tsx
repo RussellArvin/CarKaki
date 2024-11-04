@@ -6,7 +6,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { api} from "~/utils/api";
 
 
-  export default function ParkingHistoryPage() {
+  export default function FrequentCarParksPage() {
 
     const {
         isLoading,

@@ -16,7 +16,7 @@ import {
 import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 import { api } from "~/utils/api"
 
-export default function DeleteUserSettings(){
+export default function DeleteUserSettingsPage(){
     return (
         <>
         <Navbar />

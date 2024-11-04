@@ -38,7 +38,7 @@ const passwordSchema = z.object({
 
 type PasswordFormData = z.infer<typeof passwordSchema>
 
-export default function PasswordSettings() {
+export default function PasswordSettingsPage() {
   return (
     <>
       <Navbar />
