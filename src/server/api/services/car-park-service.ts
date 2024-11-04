@@ -17,6 +17,7 @@ interface CarParkDetails {
     name: string
     address: string | null
     capacity: number
+    location: Location
     availableLots: number
 }
 
@@ -85,6 +86,7 @@ export class CarParkService{
                 name,
                 address,
                 capacity,
+                location,
                 availableLots,
             }
         } catch(err){
@@ -137,9 +139,9 @@ export class CarParkService{
                 location,
                 isFavourited,
                 nearByCarParks: nearByCarParks.map((item) => {
-                    const {id,name,address,capacity,availableLots} = item.getValue();
+                    const {id,name,address,capacity,availableLots,location} = item.getValue();
                     return {
-                        id,name,address,capacity,availableLots
+                        id,name,address,capacity,availableLots,location
                     }
                 }),
                 reviews

@@ -47,93 +47,6 @@ import APP_ROUTES from "~/lib/constants/APP_ROUTES"
 
 type NearbyCarPark = RouterOutputs["carPark"]["getFullDetails"]["nearByCarParks"][number]
 
-
-const columns: ColumnDef<NearbyCarPark>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
-  },
-  {
-    accessorKey: "address",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Address
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div>{row.getValue("address")}</div>,
-  },
-  {
-    accessorKey: "availableLots",
-    header: () => <div className="text-right">Available/Total</div>,
-    cell: ({ row }) => {
-      const available = parseInt(row.getValue("availableLots"))
-      const total = row.original.capacity;
-      return <div className="text-right font-medium">{available}/{total}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const carPark = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(carPark.name)}
-            >
-              Copy car park name
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-            >View details</DropdownMenuItem>
-            <DropdownMenuItem>Check route</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
-
 export function NearbyCarparks(props: NearByCarParksProps) {
   const {nearByCarParks} = props;
 
@@ -239,7 +152,11 @@ const useColumns = () => {
               <DropdownMenuItem
                 onClick={()=> router.push(APP_ROUTES.CARPARK(carPark.id))}
               >View details</DropdownMenuItem>
-              <DropdownMenuItem>Check route</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => router.push(APP_ROUTES.HOME(carPark.location,true))}
+              >
+                Check route
+                </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -257,10 +174,11 @@ function DataTable(props: NearByCarParksProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const columns = useColumns();
 
   const table = useReactTable({
     data: nearByCarParks,
-    columns: useColumns(),
+    columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
