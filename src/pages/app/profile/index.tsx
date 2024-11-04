@@ -50,12 +50,12 @@ export default function MainSettingsPage() {
         {isUserLoading ? (
           <Skeleton className="h-[500px] w-[500px] rounded-xl" />
         ) : user ? (
-        <MainSettingsContent
+        <MainProfileContent
             isNotificationsEnabled={user.isNotificationsEnabled}
             isDarkMode={user.isDarkMode}
           />
         ) : (
-          <div>No settings available</div> // Optional: handle the undefined case
+          <div>No profile data available</div> // Optional: handle the undefined case
         )}
       </div>
     </div>
@@ -69,14 +69,14 @@ interface MainSettingsContentProps {
   isDarkMode: boolean
 }
 
-const MainSettingsContent = (props: MainSettingsContentProps) => {
+const MainProfileContent = (props: MainSettingsContentProps) => {
   const router = useRouter();
   const {user,isUserLoading} = useUserStore()
 
   return (
       <Card className={cn("w-[500px]")}>
         <CardHeader>
-          <CardTitle>Settings</CardTitle>
+          <CardTitle>Profile</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
             {isUserLoading ? (<Skeleton className="h-[250px]" />) : (
