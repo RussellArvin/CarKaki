@@ -34,7 +34,6 @@ export class URARequestService {
     }
 
     public async checkAndMakeRequests(){
-        //await this.handleInformationRequest();
         if(env.IS_DEVELOPMENT == true) return;
         return Promise.all([this.handleAvailabilityRequest(), this.handleInformationRequest()]);
     }
@@ -155,15 +154,14 @@ export class URARequestService {
         return updatedCarParks;
     }
 
-    private mappingInformationRequest (
+    private mappingInformationRequest(
         uraData: InformationCarPark[],
         existingCarParks: CarPark[],
         existingCarParkRates: CarParkRate[],
     ): MappedInformationRequest {
         console.log(`Processing ${uraData.length} URA car parks`);
-        console.log(`Existing car parks: ${existingCarParks.length}`);
-        console.log(`Existing car park rates: ${existingCarParkRates.length}`);
-    
+        
+        // Create efficient lookup maps
         const existingCarParksMap = new Map(
             existingCarParks.map((carpark) => [carpark.getValue().code, carpark])
         );
@@ -179,58 +177,40 @@ export class URARequestService {
         const updatedCarParkRates: CarParkRate[] = [];
         const newCarParkRates: CarParkRate[] = [];
     
-        uraData.forEach((uraCarPark, index) => {
-            console.log(`Processing URA car park ${index + 1}/${uraData.length}: ${uraCarPark.ppCode}`);
-            
+        for (const uraCarPark of uraData) {
             const existingCarpark = existingCarParksMap.get(uraCarPark.ppCode);
             
             if (existingCarpark) {
-                console.log(`Existing car park found for ${uraCarPark.ppCode}`);
                 if (!this.areCarParksIdentical(existingCarpark, uraCarPark)) {
                     const updatedCarPark = this.createUpdatedCarparkFromUra(existingCarpark, uraCarPark);
                     if (updatedCarPark) {
                         updatedCarParks.push(updatedCarPark);
-                        console.log(`Updated car park: ${updatedCarPark.getValue().code}`);
                         
                         const existingRate = existingCarParkRatesMap.get({
-                            id:updatedCarPark.getValue().id,
-                            min:uraCarPark.satdayMin
+                            id: updatedCarPark.getValue().id,
+                            min: uraCarPark.satdayMin
                         });
+    
                         if (existingRate) {
-                            console.log(`Existing rate found for car park ${updatedCarPark.getValue().code}`);
-                            console.log('Existing rate:', JSON.stringify(existingRate.getValue()));
-                            console.log('URA car park data:', JSON.stringify(uraCarPark));
-                            
                             if (!this.areRatesIdentical(existingRate, uraCarPark)) {
-                                console.log('Rates are not identical. Creating updated rate.');
                                 const updatedRate = this.createUpdatedRateFromUra(existingRate, uraCarPark);
                                 updatedCarParkRates.push(updatedRate);
-                                console.log(`Updated rate for car park ${updatedCarPark.getValue().code}: ${updatedRate.getValue().id}`);
-                            } else {
-                                console.log('Rates are identical. No update needed.');
                             }
                         } else {
-                            console.log(`No existing rate found for car park ${updatedCarPark.getValue().code}. Creating new rate.`);
                             const newRate = this.createNewRateFromUra(updatedCarPark.getValue().id, uraCarPark);
                             newCarParkRates.push(newRate);
-                            console.log(`Created new rate for existing car park ${updatedCarPark.getValue().code}: ${newRate.getValue().id}`);
                         }
                     }
-                } else {
-                    console.log(`Car park ${uraCarPark.ppCode} is identical. No update needed.`);
                 }
             } else {
-                console.log(`New car park found: ${uraCarPark.ppCode}`);
                 const newCarPark = this.createNewCarparkFromUra(uraCarPark);
                 if (newCarPark) {
                     newCarParks.push(newCarPark);
-                    console.log(`Created new car park: ${newCarPark.getValue().code}`);
                     const newRate = this.createNewRateFromUra(newCarPark.getValue().id, uraCarPark);
                     newCarParkRates.push(newRate);
-                    console.log(`Created new rate for new car park ${newCarPark.getValue().code}: ${newRate.getValue().id}`);
                 }
             }
-        });
+        }
     
         console.log(`Processing complete. Results:`);
         console.log(`Updated car parks: ${updatedCarParks.length}`);
@@ -239,9 +219,18 @@ export class URARequestService {
         console.log(`New car park rates: ${newCarParkRates.length}`);
     
         return { updatedCarParks, newCarParks, updatedCarParkRates, newCarParkRates };
-    };
-
-    private areRatesIdentical (existingRate: CarParkRate, uraCarPark: InformationCarPark): boolean {
+    }
+    
+    private areCarParksIdentical(existingCarPark: CarPark, uraCarPark: InformationCarPark): boolean {
+        const existing = existingCarPark.getValue();
+        return (
+            existing.vehicleCategory === uraCarPark.vehCat &&
+            existing.parkingSystem === uraCarPark.parkingSystem &&
+            existing.capacity === uraCarPark.parkCapacity
+        );
+    }
+    
+    private areRatesIdentical(existingRate: CarParkRate, uraCarPark: InformationCarPark): boolean {
         const existing = existingRate.getValue();
         const isIdentical = (
             existing.startTime === uraCarPark.startTime &&
@@ -254,22 +243,9 @@ export class URARequestService {
             existing.sunPHMin === uraCarPark.sunPHMin
         );
         
-        console.log(`Rates identical: ${isIdentical}`);
-        if (!isIdentical) {
-            console.log('Differences:');
-            if (existing.startTime !== uraCarPark.startTime) console.log(`startTime: ${existing.startTime} vs ${uraCarPark.startTime}`);
-            if (existing.endTime !== uraCarPark.endTime) console.log(`endTime: ${existing.endTime} vs ${uraCarPark.endTime}`);
-            if (existing.weekDayRate !== uraCarPark.weekdayRate) console.log(`weekDayRate: ${existing.weekDayRate} vs ${uraCarPark.weekdayRate}`);
-            if (existing.weekDayMin !== uraCarPark.weekdayMin) console.log(`weekDayMin: ${existing.weekDayMin} vs ${uraCarPark.weekdayMin}`);
-            if (existing.satRate !== uraCarPark.satdayRate) console.log(`satRate: ${existing.satRate} vs ${uraCarPark.satdayRate}`);
-            if (existing.satMin !== uraCarPark.satdayMin) console.log(`satMin: ${existing.satMin} vs ${uraCarPark.satdayMin}`);
-            if (existing.sunPHRate !== uraCarPark.sunPHRate) console.log(`sunPHRate: ${existing.sunPHRate} vs ${uraCarPark.sunPHRate}`);
-            if (existing.sunPHMin !== uraCarPark.sunPHMin) console.log(`sunPHMin: ${existing.sunPHMin} vs ${uraCarPark.sunPHMin}`);
-        }
-        
         return isIdentical;
-    };
-
+    }
+    
     private createUpdatedRateFromUra(existingRate: CarParkRate, uraCarPark: InformationCarPark): CarParkRate {
         const existingValues = existingRate.getValue();
         return new CarParkRate({
@@ -313,16 +289,18 @@ export class URARequestService {
             ...existingCarPark.getValue(),
             vehicleCategory: uraCarPark.vehCat,
             parkingSystem: uraCarPark.parkingSystem,
+            capacity: uraCarPark.parkCapacity,
             location: updatedLocation,
+            updatedAt: new Date()
         });
     }
     
     private createNewCarparkFromUra(uraCarPark: InformationCarPark): CarPark | null {
-        const currentDate = new Date();
         const coordinates = uraCarPark.geometries[0]?.coordinates;
         const location = coordinates ? this.formatLocation(coordinates, null) : null;
         if (!location) return null;
     
+        const currentDate = new Date();
         return new CarPark({
             id: uuidv4(),
             code: uraCarPark.ppCode,
@@ -352,21 +330,6 @@ export class URARequestService {
             x: parseFloat(segments[0]!),
             y: parseFloat(segments[1]!)
         };
-    }
-    
-    private areCarParksIdentical(existingCarPark: CarPark, uraCarPark: InformationCarPark): boolean {
-        const coordinates = uraCarPark.geometries[0]?.coordinates;
-        if (!coordinates) return false;
-    
-        const existing = existingCarPark.getValue();
-        const coordSegments = coordinates.split(',');
-    
-        return (
-            existing.vehicleCategory === uraCarPark.vehCat &&
-            existing.parkingSystem === uraCarPark.parkingSystem &&
-            existing.location.x === parseFloat(coordSegments[0]!) &&
-            existing.location.y === parseFloat(coordSegments[1]!)
-        );
     }
     
 }
