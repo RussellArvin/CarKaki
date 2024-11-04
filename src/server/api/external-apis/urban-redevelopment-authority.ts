@@ -16,7 +16,7 @@ export class UrbanRedevelopmentAuthority {
 
     public async initialize(): Promise<void> {
         const existingToken = await uraTokenRepository.findOne();
-        const tokenExpired = existingToken && existingToken.createdAt > new Date(Date.now() - 23 * 60 * 60 * 1000);
+        const tokenExpired = !existingToken?.createdAt || new Date(existingToken.createdAt) < new Date(Date.now() - 23 * 60 * 60 * 1000);
     
         if (!existingToken || tokenExpired) {
             const newToken = await this.generateAccessToken();
@@ -69,7 +69,6 @@ export class UrbanRedevelopmentAuthority {
                     'Token': this.token
                 }
             });
-
             const response = availabilityValidator.parse(rawResponse.data);
 
             if(response.Status === 'Success') return response.Result
