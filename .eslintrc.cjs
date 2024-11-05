@@ -10,6 +10,16 @@ const config = {
         // You can add more rules to ignore here if needed
       },
     },
+    {
+      files:['src/tests/**/*.ts'],
+      rules: {
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/unbound-method': 'off',
+        '@typescript-eslint/consistent-type-imports': 'off',
+        '@typescript-eslint/no-unused-vars': 'off'
+      }
+    }
   ],
   parserOptions: {
     project: true,
