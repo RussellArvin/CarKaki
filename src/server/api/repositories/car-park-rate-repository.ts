@@ -1,7 +1,7 @@
 import { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import { CarParkRate } from "../models/car-park-rate";
 import { TRPCError } from "@trpc/server";
-import { eq, getTableColumns, between, sql } from "drizzle-orm";
+import { eq, getTableColumns, between, sql, and, or, gte, lte } from "drizzle-orm";
 import carParkRateSchema from "~/server/db/schema/car-park-rate-schema";
 import { convertToDrizzleTime, formatFromDrizzleTime } from "~/server/utils/handleTime";
 import carParkSchema from "~/server/db/schema/car-park-schema";
@@ -117,10 +117,23 @@ export class CarParkRateRepository {
             })
             .from(carParkRateSchema)
             .where(
-                between(
-                    sql`CURRENT_TIME`, // Use CURRENT_TIME instead of timestamp conversion
-                    carParkRateSchema.startTime,
-                    carParkRateSchema.endTime
+                and(
+                    or(
+                        // Case 1: Normal time range (e.g., 09:00 to 17:00)
+                        and(
+                            lte(carParkRateSchema.startTime, sql`CAST((CURRENT_TIME + INTERVAL '8 hours') AS TIME)`),
+                            gte(carParkRateSchema.endTime, sql`CAST((CURRENT_TIME + INTERVAL '8 hours') AS TIME)`)
+                        ),
+                        // Case 2: Overnight time range (e.g., 22:00 to 06:00)
+                        and(
+                            gte(carParkRateSchema.startTime, carParkRateSchema.endTime),
+                            or(
+                                gte(sql`CAST((CURRENT_TIME + INTERVAL '8 hours') AS TIME)`, carParkRateSchema.startTime),
+                                lte(sql`CAST((CURRENT_TIME + INTERVAL '8 hours') AS TIME)`, carParkRateSchema.endTime)
+                            )
+                        )
+                    ),
+                    eq(carParkRateSchema.carParkId, carParkId)
                 )
             )
             .limit(1)
