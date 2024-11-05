@@ -154,7 +154,7 @@ export class URARequestService {
         return updatedCarParks;
     }
 
-    private mappingInformationRequest(
+    public mappingInformationRequest(
         uraData: InformationCarPark[],
         existingCarParks: CarPark[],
         existingCarParkRates: CarParkRate[],
@@ -221,7 +221,7 @@ export class URARequestService {
         return { updatedCarParks, newCarParks, updatedCarParkRates, newCarParkRates };
     }
     
-    private areCarParksIdentical(existingCarPark: CarPark, uraCarPark: InformationCarPark): boolean {
+    public areCarParksIdentical(existingCarPark: CarPark, uraCarPark: InformationCarPark): boolean {
         const existing = existingCarPark.getValue();
         return (
             existing.vehicleCategory === uraCarPark.vehCat &&
@@ -230,7 +230,7 @@ export class URARequestService {
         );
     }
     
-    private areRatesIdentical(existingRate: CarParkRate, uraCarPark: InformationCarPark): boolean {
+    public areRatesIdentical(existingRate: CarParkRate, uraCarPark: InformationCarPark): boolean {
         const existing = existingRate.getValue();
         const isIdentical = (
             existing.startTime === uraCarPark.startTime &&

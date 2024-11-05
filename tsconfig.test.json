@@ -1,0 +1,29 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      // Override module settings for Jest
+      "module": "commonjs",
+      "moduleResolution": "node",
+      // Remove Next.js specific settings
+      "jsx": "react-jsx",
+      "plugins": [],
+      // Add Jest types
+      "types": ["jest", "node"],
+      // Ensure immediate feedback during tests
+      "noEmit": true
+    },
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "jest.setup.ts",
+      "jest.config.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      ".next",
+      "build",
+      "dist"
+    ]
+  }
