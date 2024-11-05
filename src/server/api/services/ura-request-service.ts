@@ -130,7 +130,7 @@ export class URARequestService {
         await Promise.all(remainingPromises);
     }
 
-    private mappingAvailabilityRequest (
+    public mappingAvailabilityRequest (
         uraData: AvailabilityCarPark[],
         existingCarParks: CarPark[]
     ): CarPark[]  {
