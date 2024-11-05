@@ -120,7 +120,7 @@ export class UserService {
             lastName: lastName ?? "NOT SET",
             hasSetName: firstName !== null && lastName !== null,
             isDarkMode: false,
-            isNotificationsEnabled: false,
+            isNotificationsEnabled: true,
             homeCarParkId: null,
             workCarParkId: null,
             createdAt: currentDate,
