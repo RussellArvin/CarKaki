@@ -8,6 +8,8 @@ import {
 import { AvailabilityCarPark } from '~/server/api/types/ura-types';
 import { CarPark } from '~/server/api/models/car-park';
 
+
+
 describe('Availability Mapping', () => {
     let uraRequestService: URARequestService;
     
@@ -128,5 +130,6 @@ describe('Availability Mapping', () => {
 
             expect(result).toHaveLength(0);
         });
+
     });
 });

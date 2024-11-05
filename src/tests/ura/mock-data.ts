@@ -1,6 +1,6 @@
 import { CarPark } from "~/server/api/models/car-park";
 import { CarParkRate } from "~/server/api/models/car-park-rate";
-import { InformationCarPark } from "~/server/api/types/ura-types";
+import { AvailabilityCarPark, InformationCarPark } from "~/server/api/types/ura-types";
 import Location from "~/server/api/types/location";
 import VehicleCategory from "~/server/api/types/vehicle-category";
 import ParkingSystem from "~/server/api/types/parking-system";
@@ -57,3 +57,15 @@ export const mockExistingRate = new CarParkRate({
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
 });
+
+
+export const mockAvailabilityData: AvailabilityCarPark[] = [
+    {
+        lotsAvailable: 50,
+        lotType: "C",
+        carparkNo: "TEST1",
+        geometries: [{
+            coordinates: "1.3,103.8"
+        }]
+    }
+];
