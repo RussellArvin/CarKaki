@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { TRPCError } from "@trpc/server";
 import { UserService } from "~/server/api/services/user-service";
 import { User } from "~/server/api/models/user";

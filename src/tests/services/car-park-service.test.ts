@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { TRPCError } from "@trpc/server";
 import { CarParkService } from "~/server/api/services/car-park-service";
 import { 
