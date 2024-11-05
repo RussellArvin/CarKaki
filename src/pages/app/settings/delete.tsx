@@ -38,7 +38,9 @@ const DeleteUserContent = () => {
             {
               loading: 'Deleting User...',
               success: () => {
-                void signOut();
+                void signOut(() => {
+                    window.location.href = APP_ROUTES.HOME();
+                });
                 return 'User Successfully deleted!'
               },
               error: (error) => {
