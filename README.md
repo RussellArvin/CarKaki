@@ -35,6 +35,47 @@ Our application is built with a clear separation of concerns across five main la
    - Ensures data integrity and predictability
    - Thread-safe operations for concurrent requests
 
+## Cross-Platform Compatibility
+
+CarKaki is designed to work seamlessly across multiple platforms and devices using next-pwa and progressive web app capabilities:
+
+### Desktop Applications
+- **Windows**: Available as a standalone app through PWA installation
+- **macOS**: Native-like experience through Safari or Chrome PWA support
+- **Linux**: Compatible with major browsers supporting PWA
+
+### Mobile Devices
+- **iOS**: 
+  - Installable PWA through Safari
+  - Full integration with Apple CarPlay
+  - Native-like experience with home screen installation
+  - Optimized for all iPhone models
+  
+- **Android**:
+  - Available through Play Store as TWA (Trusted Web Activity)
+  - Android Auto integration for safe in-car usage
+  - Full support for Android's PWA features
+  - Adaptive layouts for various screen sizes
+
+### Automotive Integration
+- **Apple CarPlay**:
+  - Simplified interface for driving mode
+  - Voice-controlled parking search
+  - Turn-by-turn navigation integration
+  - Quick access to favorite parking locations
+  
+- **Android Auto**:
+  - Distraction-minimized UI for driving
+  - Voice command support
+  - Seamless Google Maps integration
+  - Real-time parking availability updates
+
+### PWA Features
+- Offline functionality for saved locations
+- Responsive design adapting to all screen sizes
+- App-like experience with smooth transitions
+- Automatic updates without user intervention
+
 ## Tech Stack
 
 - [Next.js](https://nextjs.org) - React framework with SSR/SSG capabilities
@@ -44,6 +85,7 @@ Our application is built with a clear separation of concerns across five main la
 - [tRPC](https://trpc.io) - End-to-end typesafe API layer
 - [Neon.tech](https://neon.tech) - Serverless PostgreSQL database
 - [Vercel](https://vercel.com) - Serverless deployment platform
+- [next-pwa](https://github.com/shadowwalker/next-pwa) - PWA support for Next.js
 
 ## External APIs
 
@@ -173,6 +215,8 @@ The application will automatically handle database migrations on startup.
 - Comprehensive search functionality
 - Type-safe database operations
 - Automatic scaling with serverless architecture
+- Cross-platform compatibility with PWA support
+- Apple CarPlay and Android Auto integration
 
 ## Deployment
 
@@ -191,8 +235,6 @@ The application utilizes Neon.tech for serverless PostgreSQL, offering:
 ## Contributing
 
 While this is primarily an academic project, we welcome contributions that could improve the application. Please feel free to submit issues and pull requests.
-
-
 
 ## Acknowledgments
 
