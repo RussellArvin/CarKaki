@@ -4,20 +4,27 @@ Welcome to CarKaki - A smart parking solution developed for NTU SC2006 Software 
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
-2. [System Architecture](#system-architecture)
-3. [Cross-Platform Compatibility](#cross-platform-compatibility)
-4. [Tech Stack](#tech-stack)
-5. [External APIs](#external-apis)
-6. [Getting Started](#getting-started)
-7. [Key Features](#key-features)
-8. [Testing](#testing)
-9. [Deployment](#deployment)
-10. [Contributing](#contributing)
-11. [Acknowledgments](#acknowledgments)
+2. [Demo Video](#demo-video)
+3. [System Architecture](#system-architecture)
+4. [Cross-Platform Compatibility](#cross-platform-compatibility)
+5. [Tech Stack](#tech-stack)
+6. [External APIs](#external-apis)
+7. [Getting Started](#getting-started)
+8. [Key Features](#key-features)
+9. [Testing](#testing)
+10. [Deployment](#deployment)
+11. [Contributing](#contributing)
+12. [Acknowledgments](#acknowledgments)
 
 ## Project Overview
 
 CarKaki is built using the modern [T3 Stack](https://create.t3.gg/), implementing a robust, layered architecture that ensures scalability, type safety, and maintainable code. The application helps users locate available parking spaces, check parking rates, and navigate to their desired parking locations.
+
+## Demo Video
+
+🎥 Watch our application demo here:
+
+https://www.youtube.com/watch?v=0ctdqLdn9tA
 
 ## System Architecture
 
@@ -329,44 +336,7 @@ Our backend tests focus on validating tRPC endpoint functionality:
    - Favorite locations
    - Search history
    - Settings management
-
-Example test structure:
-
-```typescript
-import { appRouter } from "@/server/api/root";
-import { createInnerTRPCContext } from "@/server/api/trpc";
-
-describe("Carpark API", () => {
-  const ctx = createInnerTRPCContext({ session: null });
-  const caller = appRouter.createCaller(ctx);
-
-  test("fetches nearby carparks", async () => {
-    const result = await caller.carpark.getNearby({
-      latitude: 1.2929,
-      longitude: 103.8547,
-      radius: 1000
-    });
-    expect(result).toBeDefined();
-    expect(result.length).toBeGreaterThan(0);
-  });
-});
-```
-
-### Test Coverage Requirements
-
-We maintain strict test coverage requirements:
-- Minimum 80% line coverage
-- Minimum 70% branch coverage
-- All critical paths must be tested
-- All error conditions must be validated
-
-### Continuous Integration
-
-Tests are automatically run in our CI/CD pipeline:
-- Pre-commit hooks run relevant tests
-- GitHub Actions run full test suite on pull requests
-- Coverage reports are generated and uploaded
-- Failed tests block deployments
+   
 
 ## Deployment
 
