@@ -11,7 +11,8 @@
     "db:migrate": "tsx -r dotenv/config ./migrate.ts",
     "dev": "pnpm run db:migrate && next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.21",
