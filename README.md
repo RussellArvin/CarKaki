@@ -306,7 +306,7 @@ CarKaki implements comprehensive testing using Jest and React Testing Library, f
 
 - Run specific test file:
   ```bash
-  pnpm test carpark.test.ts
+  pnpm test car-park-service.test.ts
   ```
 
 ### Backend tRPC Endpoint Tests
