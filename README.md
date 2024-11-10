@@ -2,6 +2,19 @@
 
 Welcome to CarKaki - A smart parking solution developed for NTU SC2006 Software Engineering Module. CarKaki helps Singapore drivers find, navigate to, and manage their parking experiences efficiently.
 
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [System Architecture](#system-architecture)
+3. [Cross-Platform Compatibility](#cross-platform-compatibility)
+4. [Tech Stack](#tech-stack)
+5. [External APIs](#external-apis)
+6. [Getting Started](#getting-started)
+7. [Key Features](#key-features)
+8. [Testing](#testing)
+9. [Deployment](#deployment)
+10. [Contributing](#contributing)
+11. [Acknowledgments](#acknowledgments)
+
 ## Project Overview
 
 CarKaki is built using the modern [T3 Stack](https://create.t3.gg/), implementing a robust, layered architecture that ensures scalability, type safety, and maintainable code. The application helps users locate available parking spaces, check parking rates, and navigate to their desired parking locations.
@@ -72,6 +85,8 @@ CarKaki is designed to work seamlessly across multiple platforms and devices usi
 
 ### PWA Features
 - Offline functionality for saved locations
+- Push notifications for parking reminders
+- Background sync for availability updates
 - Responsive design adapting to all screen sizes
 - App-like experience with smooth transitions
 - Automatic updates without user intervention
@@ -165,10 +180,40 @@ Handles user authentication and session management.
 
 ## Getting Started
 
-### Step 1: Installation
+### Prerequisites
+
+1. **Install Node.js**
+   - Download and install Node.js from [official website](https://nodejs.org/)
+   - Recommended version: 18.x or later
+   - Verify installation:
+     ```bash
+     node --version
+     npm --version
+     ```
+
+2. **Install pnpm**
+   - Using npm:
+     ```bash
+     npm install -g pnpm
+     ```
+   - On macOS using Homebrew:
+     ```bash
+     brew install pnpm
+     ```
+   - On Windows using Scoop:
+     ```bash
+     scoop install pnpm
+     ```
+   - Verify installation:
+     ```bash
+     pnpm --version
+     ```
+
+### Step 1: Clone the Repository
 
 ```bash
-pnpm install
+git clone https://github.com/RussellArvin/carkaki.git
+cd carkaki
 ```
 
 ### Step 2: Environment Setup
@@ -196,13 +241,32 @@ CLERK_WEBHOOK_SECRET="your_clerk_webhook_secret_here"
 NODE_ENV="development"
 ```
 
-### Step 3: Launch the Application
+### Step 3: Install Dependencies
+
+```bash
+pnpm install
+```
+
+### Step 4: Run Database Migrations
+
+```bash
+pnpm db:push
+```
+
+### Step 5: Start Development Server
 
 ```bash
 pnpm dev
 ```
 
-The application will automatically handle database migrations on startup.
+The application will be available at `http://localhost:3000`
+
+### Step 6: Build for Production
+
+```bash
+pnpm build
+pnpm start
+```
 
 ## Key Features
 
@@ -217,6 +281,92 @@ The application will automatically handle database migrations on startup.
 - Automatic scaling with serverless architecture
 - Cross-platform compatibility with PWA support
 - Apple CarPlay and Android Auto integration
+- Offline functionality and background sync
+
+## Testing
+
+CarKaki implements comprehensive testing using Jest and React Testing Library, focusing on backend tRPC endpoint validation and frontend component testing.
+
+### Running Tests
+
+- Run all tests:
+  ```bash
+  pnpm test
+  ```
+
+- Run tests in watch mode:
+  ```bash
+  pnpm test:watch
+  ```
+
+- Run tests with coverage:
+  ```bash
+  pnpm test:coverage
+  ```
+
+- Run specific test file:
+  ```bash
+  pnpm test carpark.test.ts
+  ```
+
+### Backend tRPC Endpoint Tests
+
+Our backend tests focus on validating tRPC endpoint functionality:
+
+1. **Authentication Tests**
+   - User registration
+   - Login flows
+   - Session management
+   - Token validation
+
+2. **Carpark API Tests**
+   - Availability checking
+   - Rate calculation
+   - Location services
+   - Search functionality
+
+3. **User Preference Tests**
+   - Favorite locations
+   - Search history
+   - Settings management
+
+Example test structure:
+
+```typescript
+import { appRouter } from "@/server/api/root";
+import { createInnerTRPCContext } from "@/server/api/trpc";
+
+describe("Carpark API", () => {
+  const ctx = createInnerTRPCContext({ session: null });
+  const caller = appRouter.createCaller(ctx);
+
+  test("fetches nearby carparks", async () => {
+    const result = await caller.carpark.getNearby({
+      latitude: 1.2929,
+      longitude: 103.8547,
+      radius: 1000
+    });
+    expect(result).toBeDefined();
+    expect(result.length).toBeGreaterThan(0);
+  });
+});
+```
+
+### Test Coverage Requirements
+
+We maintain strict test coverage requirements:
+- Minimum 80% line coverage
+- Minimum 70% branch coverage
+- All critical paths must be tested
+- All error conditions must be validated
+
+### Continuous Integration
+
+Tests are automatically run in our CI/CD pipeline:
+- Pre-commit hooks run relevant tests
+- GitHub Actions run full test suite on pull requests
+- Coverage reports are generated and uploaded
+- Failed tests block deployments
 
 ## Deployment
 
